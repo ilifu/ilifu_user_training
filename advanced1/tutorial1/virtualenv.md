@@ -33,7 +33,7 @@ $ virtualenv ~/.venv/tutenv
 In order to make use of the virtual environment and included packages as well as install new packages, the virtual environment must be activated:
 
 ```bash
-$ source ~/.vent/tutenv/bin/activate
+$ source ~/.venv/tutenv/bin/activate
 ```
 
 The activated environment will be indicated by a change in the command line prompt:

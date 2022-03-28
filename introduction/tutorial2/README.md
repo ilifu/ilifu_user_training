@@ -6,16 +6,16 @@ Submmiting a job to slurm is more like submmitting a code script to prodcution.
 ## Example :
 
 + `job_script.py` is a simple algorithm that plays out a game called _*Tic-Tac*_.
-+ `slurm_job_submission.sh` is the slurm script for submitting the algorithm script.
++ `slurm_job_script.sh` is the slurm script for submitting the algorithm script.
 
  
-## To submit job
+### To submit job
 
-`$ sbatch slurm_job_submission.sh`
+`$ sbatch slurm_job_script.sh`
 
-## Diagnostics
+### Diagnostics
 
-### Check what's happenig with the job
+#### Check what's happenig with the job
 `$ squeue -u (username)`
 
 

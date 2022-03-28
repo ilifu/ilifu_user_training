@@ -1,4 +1,3 @@
-# will write stuff in here for demo.
 
 """ Tic Tac Toe
 ----------------------------------------
@@ -89,18 +88,18 @@ result='%%% Deuce ! %%%'
 while space_exist():
     print()
     print_board()
-    print('#Make your move Player!: ', end='')
-    move = int(input())
+    print('# Make your move Random Player!: ', end='')
+    move = random.randint(0,9) #int(input())
     moved, won = make_move(board, player, move)
     if not moved:
-        print(' >> Invalid move Player! Try again !')
+        print(' >> Invalid move Random Player! Try again !')
         continue
     
     if won:
-        result='*** Congratulations ! You won ! ***'
+        result='*** Congratulations ! You won ! Random Player ***'
         break
     elif computer_move()[1]:
-        result='=== You lose ! =='
+        result='=== You lose ! Buddy =='
         break;
 print()
 print_board()

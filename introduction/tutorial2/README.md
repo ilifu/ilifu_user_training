@@ -1,5 +1,5 @@
 # Slurm Job Submission
-Submmiting a job to slurm is more like submmitting a code script to prodcution.
+Submitting a job to slurm is more like deploying a code script to prodcution.
 
  e.g. after building/testing the code on jupyter-notebook or a computing node and building a working pipepline/algortihm/etc. that has been tested.
 

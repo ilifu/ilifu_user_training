@@ -29,4 +29,11 @@ This will submit the job to the Slurm queue. If the requested resources are avai
 
 `$ squeue -u <username>`
 
+## Outpus
+
+To get the outputs, you can create a folder, for example `tic-tac_ouputs` where you can send your log files to, which you specify in the sbatch script, as follows:
+
+`#SBATCH --output=tic-tac_output/demo-job-%j.out`
+`#SBATCH --error=tic-tac_output/demo-job-%j.err`
+
 

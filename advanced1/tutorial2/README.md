@@ -1,11 +1,11 @@
 # Interactive Session
 
-An interactive session is more of a development space. This is where you can access a compute nde and run your code interacitvely in real-time without having to submit the code to a queue to be automatically ran. 
+An interactive session is more of a development space. This is where you can access a compute and run your code interacitvely in real-time without having to submit the code to a queue to be automatically ran. 
 
 # Logging-in
 In the event that you wish to use software that provides a GUI, such as CASA plotms, you can start an interactive session with X11 forwarding.You must ssh into the Slurm login node with the -Y parameter, which sets your DISPLAY variable. As shown below : 
 
-`$ ssh -Y (username)`
+`$ ssh -Y (username)@slurm.ilifu.ac.za`
 
 # Cluster info
 Before running a session, you can view the available resources on ilifu using `sinfo`, example below (there's other parameters that you may select to view):

@@ -90,7 +90,7 @@ while space_exist():
     print()
     print_board()
     print('# Make your move Random Player!: ', end='')
-    move = random.randint(0,9) #int(input())
+    move = int(input())
     moved, won = make_move(board, player, move)
     if not moved:
         print(' >> Invalid move Random Player! Try again !')
@@ -105,4 +105,3 @@ while space_exist():
 print()
 print_board()
 print(result)
-time.sleep(5)

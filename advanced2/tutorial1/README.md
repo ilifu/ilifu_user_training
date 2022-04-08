@@ -2,7 +2,7 @@ Thanks to Robin Hall for creating this tutorial: https://github.com/robinlh/slur
 
 # SLURM MPI demo
 
-This is a demo for running a very simple python script in parallel within a node and across nodes, using MPI and SLURM. The python script uses `mpi4py`'s `Scatterv` and `Reduce` functions for simply adding up the numbers in an array. The sbatch scripts can be changed to any configuration of tasks and nodes, but you need to make sure you change the relevant print statements, jobs names or log output names to reflect the resource configuration. After cloning this repo and starting an interactive session (e.g. with `git clone` and `sinteractive`), there are 2 ways to run these scripts on ilifu.
+This is a demo for running a very simple python script in parallel within a node and across nodes, using MPI and SLURM. The python script uses `mpi4py`'s `Scatterv` and `Reduce` functions for simply adding up the numbers in an array. The sbatch scripts can be changed to any configuration of tasks and nodes, but you need to make sure you change the relevant print statements, jobs names or log output names to reflect the resource configuration (and make sure to create the `logs` directory). After cloning this repo and starting an interactive session (e.g. with `git clone` and `sinteractive`), there are 2 ways to run these scripts on ilifu.
 
 ### 1. Using a virtual environment and OpenMPI module
 Set up a virtual environment using the `requirements.txt` file within this repo:

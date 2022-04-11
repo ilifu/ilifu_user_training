@@ -13,9 +13,9 @@ module load openmpi/4.0.3
 
 Set up a virtual environment using the `requirements.txt` file within this repo:
 ```
-> virtualenv mpi_env
-> source mpi_env/bin/activate
-(mpi_env) > pip install -r requirements.txt
+$ virtualenv mpi_env
+$ source mpi_env/bin/activate
+(mpi_env) $ pip install -r requirements.txt
 ```
 
 Once installed, activate the virtual environment

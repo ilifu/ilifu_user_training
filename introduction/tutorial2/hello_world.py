@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-
+from sys import stderr
 
 def who_am_i():
     return os.environ['USER']
@@ -16,8 +16,10 @@ def get_slurm_job_information():
 
 
 def main():
-    print(f'Hello {who_am_i()}!')
-    print(f'This snippet of code is running on "{get_hostname()}"')
+    the_host = get_hostname()
+    the_user = who_am_i()
+    print(f'Hello {the_user}!')
+    print(f'This snippet of code is running on "{the_host}"')
     print()
     slurm_information = get_slurm_job_information()
     if slurm_information:
@@ -25,6 +27,8 @@ def main():
         print('\n'.join(get_slurm_job_information()))
     else:
         print(f'As far as I can tell, this is not a slurm job.')
+
+    stderr.write(f'Here is something written to stderr from node "{the_host}" for user "{the_user}".\n')
 
 
 if __name__ == '__main__':

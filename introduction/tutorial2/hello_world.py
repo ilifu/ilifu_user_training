@@ -4,7 +4,7 @@ import os
 
 
 def who_am_i():
-    return os.getlogin()
+    return os.environ['USER']
 
 
 def get_hostname():
@@ -21,7 +21,7 @@ def main():
     print()
     print('The following SLURM environment variables are set:')
     print('\n'.join(get_slurm_job_information()))
-    
+
 
 if __name__ == '__main__':
     main()

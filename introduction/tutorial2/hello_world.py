@@ -12,7 +12,8 @@ def get_hostname():
 
 
 def get_slurm_job_information():
-    return [env_var for env_var in os.environ if env_var.startswith('SLURM_JOB')]
+    keys = [env_var for env_var in os.environ if env_var.startswith('SLURM_JOB')]
+    return [f'{key}={os.environ[key]}' for key in keys]
 
 
 def main():

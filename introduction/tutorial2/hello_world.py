@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 import os
 
 
@@ -20,8 +19,12 @@ def main():
     print(f'Hello {who_am_i()}!')
     print(f'This snippet of code is running on "{get_hostname()}"')
     print()
-    print('The following SLURM environment variables are set:')
-    print('\n'.join(get_slurm_job_information()))
+    slurm_information = get_slurm_job_information()
+    if slurm_information:
+        print('The following SLURM environment variables are set:')
+        print('\n'.join(get_slurm_job_information()))
+    else:
+        print(f'As far as I can tell, this is not a slurm job.')
 
 
 if __name__ == '__main__':

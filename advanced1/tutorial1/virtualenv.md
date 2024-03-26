@@ -22,10 +22,16 @@ $ module load python/3.9.4
 
 ## Virtual environment creation
 
+Allocate a job on the Devel partition:
+
+```bash
+$ sinteractive
+```
+
 Create a virtual environment at the desired path:
 
 ```bash
-$ virtualenv ~/.venv/tutenv
+$ virtualenv .venv/tutenv
 ```
 
 ## Activating the virtual environment
@@ -33,13 +39,13 @@ $ virtualenv ~/.venv/tutenv
 In order to make use of the virtual environment and included packages as well as install new packages, the virtual environment must be activated:
 
 ```bash
-$ source ~/.venv/tutenv/bin/activate
+$ source .venv/tutenv/bin/activate
 ```
 
 The activated environment will be indicated by a change in the command line prompt:
 
 ```bash
-(.tutenv) jeremy@slurm-login:~$
+(.tutenv) jeremy@compute-001:~$
 ```
 
 By activating the virtual environment, several PATH environment variables will be updated to point to binary specific to the virtual environment, such as `pip`, for install new packages.

@@ -2,7 +2,8 @@
 #SBATCH --job-name=tutorial2_R_container
 #SBATCH --time=00-00:01:00
 #SBATCH --mem=4G
-#SBATCH --partition=Devel
+#SBATCH --partition=Main
+#SBATCH --reservation=intro_training
 #SBATCH --output=R_container-%j.stdout
 #SBATCH --error=R_container-%j.stderr
 #SBATCH --mail-user=dane@idia.ac.za

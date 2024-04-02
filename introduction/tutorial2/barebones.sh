@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --partition=Devel
+#SBATCH --reservation=intro_training
 
 module add python/3.11.2
 

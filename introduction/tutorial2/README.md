@@ -3,14 +3,14 @@ Submitting a job to slurm is more like deploying a code script to prodcution.Sub
 
  e.g. after building/testing the code on jupyter-notebook or a computing node and building a working pipepline/algortihm/etc. that has been tested.
 
-# Loggin-in 
+# Logging in
 Slurm is a job scheduling system. It consists of a single login node and many compute nodes. The login node is likened to a controller and manages the cluster resources and job submissions.
 
 The Slurm system can be accessed via ssh at slurm.ilifu.ac.za
 
 some activities require direct access to Slurm compute nodes via ssh, such as running htop to monitor your running job. In order to achieve this you must use authentication forwarding when sshing onto the Slurm login node using the -A parameter
 
-`$ ssh -A <username>@slurm.ilifu.ac.za`
+`$ ssh <username>@slurm.ilifu.ac.za`
 
 ## Example 
 After sshing into slurm.ilifu.ac.za, you can submit a job to Slurm using a shell script

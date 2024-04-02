@@ -10,4 +10,5 @@
 
 echo "Submitting SLURM job: simple_mpi.py using 1 core & 1 node"
 module add openmpi/4.0.3
+source .venv/bin/activate
 mpirun python simple_mpi.py

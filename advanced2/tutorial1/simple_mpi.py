@@ -1,11 +1,18 @@
+from socket import gethostname
+
 import numpy as np
 from mpi4py import MPI
+
+
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 nprocs = comm.Get_size()
 
 start_time = MPI.Wtime()
+
+print(f'This process (rank {rank}) is running on host {gethostname()}')
+
 if rank == 0:
     sendbuf = np.arange(1, 10000001.0)
     print('Adding numbers from 1 to 10 000 000')
@@ -21,7 +28,7 @@ if rank == 0:
 else:
     sendbuf = None
     # initialize count on worker processes
-    count = np.zeros(nprocs, dtype=np.int)
+    count = np.zeros(nprocs, dtype=int)
     displ = None
 
 # broadcast count

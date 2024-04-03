@@ -126,7 +126,7 @@ sbatch -d afterok:$jobid_script1 --kill-on-invalid-dep=yes slurm_script2_calc.sb
 
 ## Submit Dependent Jobs - Automatic
 
-We have also included a script that can submit the job dependencies without any manaul work required.
+We have also included a script that can submit the job dependencies without requiring any manual capturing of jobids.
 
 ```
 ./slurm_script_dependent.sh

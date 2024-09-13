@@ -1,10 +1,8 @@
-# --------------------
-# Interactive Job Demo
-# --------------------
+# Tutotial 2: Interactive Job Demo
 
-This demo will show a three dummy scripts that form part of a workflow, that are ran as interactive jobs.
+This demo will show an example where three dummy scripts are executed in order as part of workflow that are ran as interactive jobs.
 
-Interactive jobs are jobs where the 
+Interactive jobs are jobs that requires ongoing input or interaction from a user while it's running.
 
 There are two main ways to run interactive jobs. To run an interactive job on the development partition use the `sinteractive` command.
 If you want to run an interactive job on the Main partition, please use: `srun --pty bash -i`

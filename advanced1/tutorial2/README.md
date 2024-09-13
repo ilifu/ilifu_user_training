@@ -5,7 +5,7 @@ This demo will show an example where three dummy scripts are executed in order a
 Interactive jobs are jobs that requires ongoing input or interaction from a user while it's running.
 
 There are two main ways to run interactive jobs. To run an interactive job on the development partition use the `sinteractive` command.
-If you want to run an interactive job on the Main partition, please use: `srun --pty bash -i`
+If you want to run an interactive job on the Main partition, please use: `srun --pty bash`
 
 There are three scripts in the directory, namely:
 * script1_setup.sh

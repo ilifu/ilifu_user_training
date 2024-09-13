@@ -13,8 +13,6 @@ There are three scripts in the directory, namely:
 * script3_summarise.sh
 
 If you navigate to the directory, you can use the following linux command to see all the scripts:
-
-# show scripts
 `ls` 
 
 If you wanted to run the first script you would use: `./script1_setup.sh`. 

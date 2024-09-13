@@ -1,4 +1,4 @@
-# Tutotial 2: Interactive Job Demo
+# Tutorial 2: Interactive Job Demo
 
 This demo will show an example where three dummy scripts are executed in order as part of workflow that are ran as interactive jobs.
 

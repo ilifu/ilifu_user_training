@@ -7,6 +7,8 @@
 #SBATCH --time=00:01:00
 #SBATCH --output=logs/%x-%j.out
 #SBATCH --error=logs/%x-%j.err
+#SBATCH --reservation=advanced_training_2
+
 
 echo "Submitting SLURM job: simple_mpi.py using 1 core & 1 node"
 module add openmpi/4.0.3

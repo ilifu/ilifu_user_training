@@ -1,5 +1,5 @@
 # Slurm Job Submission
-Submitting a job to slurm is more like deploying a code script to prodcution.Submitting jobs using a batch script allows for multiple jobs to be submitted in parallel, or for a series of jobs to be submitted, where one job may depend on the output of a previous job. Interactive jobs are useful for developing workflows or scripts, or working with software interactively.
+Submitting a job to slurm is more like deploying a code script to prodcution. Submitting jobs using a batch script allows for multiple jobs to be submitted in parallel, or for a series of jobs to be submitted, where one job may depend on the output of a previous job. Interactive jobs are useful for developing workflows or scripts, or working with software interactively.
 
  e.g. after building/testing the code on jupyter-notebook or a computing node and building a working pipepline/algortihm/etc. that has been tested.
 

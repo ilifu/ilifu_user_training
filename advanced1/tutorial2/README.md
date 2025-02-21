@@ -1,39 +1,38 @@
-# Interactive Session
+# Tutorial 2: Interactive Job Demo
 
-An interactive session is more of a development space. This is where you can access a compute and run your code interacitvely in real-time without having to submit the code to a queue to be automatically ran. 
+This demo will show an example where three dummy scripts are executed in order as part of workflow that are ran as interactive jobs.
 
-# Logging-in
-In the event that you wish to use software that provides a GUI, such as CASA plotms, you can start an interactive session with X11 forwarding.You must ssh into the Slurm login node with the -Y parameter, which sets your DISPLAY variable. As shown below : 
+Interactive jobs are jobs that requires ongoing input or interaction from a user while it's running.
 
-`$ ssh -Y (username)@slurm.ilifu.ac.za`
+There are two main ways to run interactive jobs. To run an interactive job on the development partition use the `sinteractive` command.
+If you want to run an interactive job on the Main partition, please use: `srun --pty bash`
 
-# Cluster info
-Before running a session, you can view the available resources on ilifu using `sinfo`, example below (there's other parameters that you may select to view):
+There are three scripts in the directory, namely:
+* script1_setup.sh
+* script2_calculate.sh
+* script3_summarise.sh
 
-`$ sinfo -O "partition,available,cpus,nodes,memory,statecompact" `
+If you navigate to the directory, you can use the following linux command to see all the scripts:
+`ls` 
 
-# Starting a session
+If you wanted to run the first script you would use: `./script1_setup.sh`. 
+However, don't run the script on the login node. 
 
-You can use these two commands `sinteractive` or `srun`.
+First use `sinteractive`. This will open up a session for you so you can run on the development partion. 
+Your prompt should change to reflect this e.g. USERNAME@compute-101 $
 
-## Difference between the two
-+ If you need to do interactive work and don't want to wait in the queue, the `sinteractive` command aims to provide on-demand access to resources on the Devel partition. This partition is designed to eliminate wait time by sharing resources between mulitple users.
-+ With `srun`, by default, the session will run on the Main partition and the resources allocated to the session will not be shared with other users, however, the session may be queued if the requested resources are not available
+Now you can run the scripts:
 
-We will use `srun`.
+```
+./script1_setup.sh
+./script2_calculate.sh
+./script3_summarise.sh
+```
 
-`$ srun -x11 --time=10 --pty bash`
+You will see that a input parameter can be given for the second script. This is why interactive scripts are useful for debugging a workflow. 
+If this was a sbatch script you would have had to find a way to directly pass a parameter to this script. 
 
-### GUI
+Finally, when you are done you can exit the sinteractive session with:
+`exit`
 
-`$ xmessage "Playing Tic-Tac-Toe"`
-
-## Invoking a singurality Shell
-
-`$ singularity shell /idia/software/containers/python-3.6.img`
-This will start an interactive session on a compute node and open a shell in the python3 container, which contains a large suite of python tools.
-
-### Run job script
-`$ python3 job_script.py`
-# Note
-Interactive sessions may be lost if you lose connection to the ilifu cluster. Persistent terminals, such as tmux or GNU screen can help to reduce volatility. See the section Persistent Terminals for instructions.
+Or alternatively by pressing: `ctrl+d`

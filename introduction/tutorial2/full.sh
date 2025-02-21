@@ -6,7 +6,7 @@
 #SBATCH --reservation=intro_training
 #SBATCH --output=R_container-%j.stdout
 #SBATCH --error=R_container-%j.stderr
-#SBATCH --mail-user=dane@idia.ac.za
+#SBATCH --mail-user=your@email_address
 #SBATCH --mail-type=BEGIN,END,FAIL,TIME_LIMIT_80
 #SBATCH --account=b34-admins-ag
 

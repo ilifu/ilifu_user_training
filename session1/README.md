@@ -1,4 +1,4 @@
-# Introduction Training Material
+# Session 1
 
 ## Tutorial 1: Example Jupyter notebook demonstrating useful features
 

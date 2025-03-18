@@ -1,4 +1,4 @@
-# Ilifu user training - Advance session 1 - Tutorial 1
+# Ilifu user training - Session 2 - Tutorial 1
 
 An introduction into Python virtual environments and using Python virtual environments as custom kernels in Jupyter.
 

@@ -7,12 +7,12 @@ This is a demo for running a very simple python script in parallel within a node
 ### 1. Using a virtual environment and OpenMPI module
 Load your  desired OpenMPI version before building the virtual environment. Available versions can be shown with `module avail`. For example:
 
-```
+```bash
 module load openmpi/5.0.3
 ```
 
 Set up a virtual environment using the `requirements.txt` file within this repo:
-```
+```bash
 $ virtualenv mpi_env
 $ source mpi_env/bin/activate
 (mpi_env) $ pip install -r requirements.txt
@@ -20,7 +20,7 @@ $ source mpi_env/bin/activate
 
 Once installed, activate the virtual environment
 
-```
+```bash
 source mpi_env/bin/activate
 ```
 
@@ -30,9 +30,12 @@ Any sbatch file that uses this virtual environment will need to load the same Op
 module load openmpi/5.0.3
 ```
 
-Finally, run the relevant sbatch script, or manually call the MPI wrapper around the script you want to run:
-
+Finally, run the relevant sbatch script:
+```bash
+sbatch 1_cpu_1_node.sbatch
 ```
+or manually call the MPI wrapper around the script you want to run:
+```bash
 mpirun python simple_mpi.py
 ```
 

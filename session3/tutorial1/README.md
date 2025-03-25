@@ -8,7 +8,7 @@ This is a demo for running a very simple python script in parallel within a node
 Load your  desired OpenMPI version before building the virtual environment. Available versions can be shown with `module avail`. For example:
 
 ```
-module load openmpi/4.0.3
+module load openmpi/5.0.3
 ```
 
 Set up a virtual environment using the `requirements.txt` file within this repo:
@@ -27,7 +27,7 @@ source mpi_env/bin/activate
 Any sbatch file that uses this virtual environment will need to load the same OpenMPI module that we used to build the virtual environment, after defining the SLURM parameters. He we explicity load it again:
 
 ```
-module load openmpi/4.0.3
+module load openmpi/5.0.3
 ```
 
 Finally, run the relevant sbatch script, or manually call the MPI wrapper around the script you want to run:

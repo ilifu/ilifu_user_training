@@ -171,26 +171,28 @@ cat logs/8-cpus-2-nodes-*.out
 
 ---
 
-## Understanding the Results
+### Understanding the Results
 
-When you run each demo, the output will show something like:
+To quickly compare execution times across all four simple_mpi demos:
+
+```bash
+grep "total time" logs/*-*-*.out
+```
+
+This will show something like:
 
 ```
-This process (rank 0) is running on host node01
-This process (rank 1) is running on host node02
-...
-Partial sum on process 0 is: 2500005000000.0
-Partial sum on process 1 is: 2500005000000.0
-...
-After Reduce, total sum on process 0 is: 10000005000000.0
-total time: 0.234 s
+logs/1-cpu-1-node-*.out:total time: 2.345 s
+logs/4-cpus-1-node-*.out:total time: 0.612 s
+logs/8-cpus-1-node-*.out:total time: 0.321 s
+logs/8-cpus-2-nodes-*.out:total time: 0.425 s
 ```
 
 **Compare the execution times across all four demos.** You should see:
-1. Demo 1: Baseline (slowest)
-2. Demo 2: Faster (4 cores, shared memory)
-3. Demo 3: Fastest (8 cores, shared memory)
-4. Demo 4: Slower than Demo 3 (network overhead kills the benefit)
+1. Demo 1: Baseline (slowest) - ~2.3s
+2. Demo 2: Faster (~4× speedup) - ~0.6s
+3. Demo 3: Fastest (~7× speedup) - ~0.3s
+4. Demo 4: Slower than Demo 3 (network overhead) - ~0.4s
 
 This is a real-world lesson in high-performance computing: **parallelism doesn't scale infinitely**. The type of interconnect and the amount of communication your code does matter greatly.
 
@@ -349,5 +351,86 @@ You should see output showing computation times for each process. Notice:
 - **Demo 5**: Slower due to network overhead between nodes
 
 The key insight: **On a single node**, you can choose between pure MPI, hybrid MPI+OpenMP, or pure threading—they'll all perform similarly. **Across nodes**, network latency dominates and kills performance.
+
+## Real world results and discussion
+
+### Python Scaling Results
+
+```bash
+$ grep "total time" logs/*-*-*.out
+logs/1-cpu-1-node-11782520.out:total time: 0.854665236 s
+logs/1-cpu-1-node-11782544.out:total time: 0.784402891 s
+logs/1-cpu-1-node-11782553.out:total time: 0.7282585349999999 s
+logs/1-cpu-1-node-11782562.out:total time: 0.743162718 s
+logs/1-cpu-1-node-11782571.out:total time: 0.72452584 s
+logs/4-cpus-1-node-11782521.out:total time: 0.240675235 s
+logs/4-cpus-1-node-11782545.out:total time: 0.250779262 s
+logs/4-cpus-1-node-11782554.out:total time: 0.22841073700000003 s
+logs/4-cpus-1-node-11782563.out:total time: 0.28881356 s
+logs/4-cpus-1-node-11782572.out:total time: 0.236492038 s
+logs/8-cpus-1-node-11782522.out:total time: 0.153521193 s
+logs/8-cpus-1-node-11782546.out:total time: 0.161418649 s
+logs/8-cpus-1-node-11782555.out:total time: 0.150885582 s
+logs/8-cpus-1-node-11782564.out:total time: 0.15295338 s
+logs/8-cpus-1-node-11782573.out:total time: 0.157965705 s
+logs/8-cpus-2-nodes-11782523.out:total time: 0.181922794 s
+logs/8-cpus-2-nodes-11782547.out:total time: 0.17717996 s
+logs/8-cpus-2-nodes-11782556.out:total time: 0.170670935 s
+logs/8-cpus-2-nodes-11782565.out:total time: 0.164204518 s
+logs/8-cpus-2-nodes-11782574.out:total time: 0.171879482 s
+```
+
+**Analysis:**
+- **1 CPU baseline**: Average ~0.76 seconds
+- **4 CPUs (1 node)**: Average ~0.25 seconds (**~3× speedup**)
+- **8 CPUs (1 node)**: Average ~0.155 seconds (**~5× speedup**)
+- **8 CPUs (2 nodes)**: Average ~0.173 seconds (**slower than single-node 8-CPU!**)
+
+The key observation: adding a second node actually makes the job **slower**. The 8-core, 2-node version takes ~0.173s vs ~0.155s for 8 cores on a single node. This is because the network communication overhead between nodes exceeds any benefit from having physically separate processors. This perfectly demonstrates the lesson: **network latency kills multi-node performance without high-speed interconnects like InfiniBand.**
+
+### C++ Scaling Results
+
+```bash
+$ grep "compute sum\|Total execution time" logs/hybrid-sum-*.out
+logs/hybrid-sum-1-core-11782524.out:Total execution time: 0.030 s
+logs/hybrid-sum-1-core-11782548.out:Total execution time: 0.030 s
+logs/hybrid-sum-1-core-11782557.out:Total execution time: 0.030 s
+logs/hybrid-sum-1-core-11782566.out:Total execution time: 0.030 s
+logs/hybrid-sum-1-core-11782575.out:Total execution time: 0.030 s
+logs/hybrid-sum-1mpi-8threads-11782525.out:Total execution time: 0.032 s
+logs/hybrid-sum-1mpi-8threads-11782549.out:Total execution time: 0.031 s
+logs/hybrid-sum-1mpi-8threads-11782558.out:Total execution time: 0.030 s
+logs/hybrid-sum-1mpi-8threads-11782567.out:Total execution time: 0.031 s
+logs/hybrid-sum-1mpi-8threads-11782576.out:Total execution time: 0.031 s
+logs/hybrid-sum-2nodes-1mpi-4threads-11782528.out:Total execution time: 0.036 s
+logs/hybrid-sum-2nodes-1mpi-4threads-11782552.out:Total execution time: 0.035 s
+logs/hybrid-sum-2nodes-1mpi-4threads-11782561.out:Total execution time: 0.036 s
+logs/hybrid-sum-2nodes-1mpi-4threads-11782570.out:Total execution time: 0.036 s
+logs/hybrid-sum-2nodes-1mpi-4threads-11782579.out:Total execution time: 0.026 s
+logs/hybrid-sum-4mpi-2threads-11782526.out:Total execution time: 0.008 s
+logs/hybrid-sum-4mpi-2threads-11782550.out:Total execution time: 0.008 s
+logs/hybrid-sum-4mpi-2threads-11782559.out:Total execution time: 0.010 s
+logs/hybrid-sum-4mpi-2threads-11782568.out:Total execution time: 0.008 s
+logs/hybrid-sum-4mpi-2threads-11782577.out:Total execution time: 0.008 s
+logs/hybrid-sum-8mpi-1thread-11782527.out:Total execution time: 0.010 s
+logs/hybrid-sum-8mpi-1thread-11782551.out:Total execution time: 0.004 s
+logs/hybrid-sum-8mpi-1thread-11782560.out:Total execution time: 0.004 s
+logs/hybrid-sum-8mpi-1thread-11782569.out:Total execution time: 0.004 s
+logs/hybrid-sum-8mpi-1thread-11782578.out:Total execution time: 0.005 s
+```
+
+**Analysis:**
+- **1 core baseline**: Average ~0.030 seconds
+- **8 threads (1 MPI)**: Average ~0.031 seconds (**no speedup!**)
+- **4 MPI + 2 threads**: Average ~0.009 seconds (**~3.3× speedup**)
+- **8 MPI + 1 thread**: Average ~0.006 seconds (**~5× speedup**)
+- **2 nodes (1 MPI per node, 4 threads)**: Average ~0.034 seconds (**slower than single-node**)
+
+Interesting patterns emerge:
+- **Single MPI process with 8 threads (0.031s)**: No speedup! This suggests that OpenMP threading doesn't help much for this particular loop structure, possibly due to overhead or memory contention.
+- **Pure MPI approaches scale better**: 8 MPI processes (0.006s) is faster than 4 MPI + 2 threads (0.009s), despite using the same 8 cores. This shows MPI is more efficient for simple loop-based parallelism than OpenMP threading in this case.
+- **Multi-node penalty (0.034s)**: Again, the 2-node version is roughly 4-5× slower than single-node approaches, confirming the network latency lesson.
+
+**Comparison with Python:** The C++ version shows much tighter, faster execution times (30ms vs 750ms baseline), but teaches the same fundamental lesson: **network communication across nodes kills performance, and the choice of parallelism strategy (MPI vs threading) matters for performance.**
 
 

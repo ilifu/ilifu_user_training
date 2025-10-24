@@ -1,9 +1,8 @@
+#!/usr/bin/env python3
 from socket import gethostname
 
 import numpy as np
 from mpi4py import MPI
-
-
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()

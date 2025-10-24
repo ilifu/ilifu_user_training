@@ -37,9 +37,13 @@ Create a logs directory before running any jobs:
 mkdir -p logs
 ```
 
-### Setup: Using a Virtual Environment and OpenMPI
+### Setup: Using uv and OpenMPI
 
-Load your desired OpenMPI version. Check available versions with:
+This project uses **uv** for Python package management. Dependencies are listed in `pyproject.toml`.
+
+**Step 1: Load OpenMPI**
+
+Check available versions with:
 
 ```bash
 module avail
@@ -51,15 +55,22 @@ Load OpenMPI (example version):
 module load openmpi/5.0.3
 ```
 
-Create and activate a virtual environment with `uv`:
+**Step 2: Create and activate a virtual environment**
 
 ```bash
 uv venv .venv
 source .venv/bin/activate
-uv pip install -r requirements.txt
 ```
 
-When running any sbatch script, the same OpenMPI module will be loaded automatically (see the `module load` line in each script).
+**Step 3: Install dependencies**
+
+```bash
+uv sync
+```
+
+This will install all dependencies listed in `pyproject.toml` (mpi4py, numpy).
+
+**Note:** When running sbatch scripts, the OpenMPI module is loaded automatically in each script (see the `module load` line). You just need to make sure your `.venv` virtual environment is set up before submitting jobs.
 
 ## The Scaling Demo: Running the Tutorials
 
@@ -182,3 +193,161 @@ total time: 0.234 s
 4. Demo 4: Slower than Demo 3 (network overhead kills the benefit)
 
 This is a real-world lesson in high-performance computing: **parallelism doesn't scale infinitely**. The type of interconnect and the amount of communication your code does matter greatly.
+
+---
+
+## Advanced Demo: C++ with Explicit OpenMP Parallelism
+
+For a better demonstration of how OpenMP threading helps with scaling, we provide a **C++ version** (`hybrid_sum.cpp`) with an **explicit inner loop** that benefits from parallelization. This makes the scaling much more visible than library-based operations like Polars.
+
+### The Example: `hybrid_sum.cpp`
+
+This C++ program sums all numbers from 1 to 100 million (10× larger than the original Python example). Here's how it works:
+
+- **Rank 0** divides the range among all processes
+- **Each process** sums its assigned numbers using `#pragma omp parallel for`
+- **OpenMP parallelizes the inner loop** across all available threads
+- **Rank 0** collects all partial sums using `MPI_Reduce`
+
+The key difference from the Python version: the inner loop is **explicitly parallelizable by OpenMP**, so adding threads actually helps!
+
+### Compiling the C++ Program
+
+Before running the sbatch files, you need to compile the program:
+
+```bash
+module load openmpi/5.0.3
+mpicc -fopenmp -O3 hybrid_sum.cpp -o hybrid_sum
+```
+
+This creates an executable `hybrid_sum` that you can run.
+
+### C++ Demo 1: Single Core (Baseline)
+
+**What it does:** Runs on 1 core with 1 MPI process and 1 thread.
+
+```bash
+sbatch hybrid_sum_1_cpu_1_core.sbatch
+```
+
+Check the output:
+
+```bash
+cat logs/hybrid-sum-1-core-*.out
+```
+
+**What to look for:**
+- 1 MPI process (rank 0)
+- 1 OpenMP thread
+- Execution time is the slowest (baseline for comparison)
+
+---
+
+### C++ Demo 2: 8 Cores, Pure MPI (8 Processes, 1 Thread Each)
+
+**What it does:** Distributes work across 8 MPI processes, each with 1 thread.
+
+```bash
+sbatch hybrid_sum_1_node_8_cores_8mpi.sbatch
+```
+
+Check the output:
+
+```bash
+cat logs/hybrid-sum-8mpi-1thread-*.out
+```
+
+**What to look for:**
+- 8 MPI processes (Rank 0 through 7)
+- 1 OpenMP thread per process
+- Execution time roughly 8× faster than Demo 1
+- Pure MPI parallelism
+
+---
+
+### C++ Demo 3: 8 Cores, Hybrid (4 Processes, 2 Threads Each)
+
+**What it does:** Uses 4 MPI processes, each with 2 OpenMP threads.
+
+```bash
+sbatch hybrid_sum_1_node_8_cores_4mpi.sbatch
+```
+
+Check the output:
+
+```bash
+cat logs/hybrid-sum-4mpi-2threads-*.out
+```
+
+**What to look for:**
+- 4 MPI processes (Rank 0 through 3)
+- 2 OpenMP threads per process (working on the inner loop in parallel)
+- Execution time **comparable to or slightly better than Demo 2** (also uses 8 cores)
+- Fewer MPI processes = less communication overhead
+
+**Key lesson:** Both Demo 2 and Demo 3 use 8 cores total, but you can achieve similar performance with fewer MPI processes by using OpenMP threading. This shows how hybrid parallelism can be more efficient than pure MPI when communication is expensive.
+
+### C++ Demo 4: 8 Cores, Maximum Threading (1 Process, 8 Threads)
+
+**What it does:** All work in a single MPI process with 8 OpenMP threads.
+
+```bash
+sbatch hybrid_sum_1_node_8_cores_1mpi.sbatch
+```
+
+Check the output:
+
+```bash
+cat logs/hybrid-sum-1mpi-8threads-*.out
+```
+
+**What to look for:**
+- 1 MPI process (rank 0)
+- 8 OpenMP threads working in parallel
+- Execution time **likely similar to Demo 2 and Demo 3** (also uses 8 cores)
+- No inter-process communication overhead at all
+
+**Key lesson:** With only 1 MPI process, there's no communication cost. OpenMP threads do all the parallelism internally. This is the most efficient approach *on a single node* because there's no messaging overhead.
+
+---
+
+### C++ Demo 5: 8 Cores Across 2 Nodes (1 Process Per Node, 4 Threads Each)
+
+**What it does:** 2 MPI processes (1 per node), each with 4 OpenMP threads.
+
+```bash
+sbatch hybrid_sum_2_nodes_4_cores_1mpi.sbatch
+```
+
+Check the output:
+
+```bash
+cat logs/hybrid-sum-2nodes-1mpi-4threads-*.out
+```
+
+**What to look for:**
+- 2 MPI processes (one on each node)
+- 4 OpenMP threads per process
+- Execution time **slower than Demo 2/3/4** (network latency between nodes)
+- Each process sums 50 million numbers
+
+**Key lesson:** Just like in the simple_mpi examples, adding a second node with network communication overhead slows things down. Threading can't overcome network latency.
+
+---
+
+### Comparing All Results
+
+To compare all five runs:
+
+```bash
+grep "compute sum\|Total execution time" logs/hybrid-sum-*.out
+```
+
+You should see output showing computation times for each process. Notice:
+- **Demo 1 (baseline)**: Slowest (single core, single thread)
+- **Demos 2, 3, 4**: All much faster (use 8 cores), similar performance
+- **Demo 5**: Slower due to network overhead between nodes
+
+The key insight: **On a single node**, you can choose between pure MPI, hybrid MPI+OpenMP, or pure threading—they'll all perform similarly. **Across nodes**, network latency dominates and kills performance.
+
+

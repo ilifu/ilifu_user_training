@@ -219,7 +219,7 @@ Before running the sbatch files, you need to compile the program:
 
 ```bash
 module load openmpi/5.0.3
-mpicc -fopenmp -O3 hybrid_sum.cpp -o hybrid_sum
+mpic++ -fopenmp -O3 hybrid_sum.cpp -o hybrid_sum
 ```
 
 This creates an executable `hybrid_sum` that you can run.

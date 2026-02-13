@@ -1,0 +1,23 @@
+name: Deploy Tutorial to Main Site
+on:
+  push:
+    branches: [ main ] # Triggers when you merge to main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Repo
+        uses: actions/checkout@v4
+
+      - name: Deploy to Hosting Repo
+        uses: dmnemec/copy_file_to_another_repo_action@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.DEPLOY_TOKEN }}
+        with:
+          source_file: 'session1/tutorial2/presentation/' # Folder to copy
+          destination_repo: 'kennedydane/ilifu'
+          destination_folder: 'training/session1/tutorial2' # Where it lands in the site
+          user_email: 'kennedy.dane@gmail.com'
+          user_name: 'kennedydane'
+          commit_message: 'Update tutorial 2 presentation'

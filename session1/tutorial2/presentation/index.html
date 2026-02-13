@@ -1,0 +1,780 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to Slurm — ilifu Online Training Session 1</title>
+    <meta name="description"
+        content="Slurm job submission tutorial for ilifu HPC cluster users. Session 1, Tutorial 2.">
+
+    <!-- Reveal.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/white.min.css" id="theme">
+
+    <!-- Highlight.js for code -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/highlight/monokai.min.css">
+
+    <!-- Asciinema Player -->
+
+    <link rel="stylesheet" type="text/css" href="resources/asciinema-player.css" />
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --brand-blue: #2b579a;
+            --brand-blue-light: #3a7bd5;
+            --brand-blue-dark: #1e3a6e;
+            --brand-text: #2d3748;
+            --brand-subtle: #718096;
+            --brand-light: #f7fafc;
+            --brand-border: #e2e8f0;
+            --brand-link: #3a7bd5;
+            --brand-rule: #2b579a;
+        }
+
+        .reveal {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--brand-text);
+        }
+
+        .reveal h1,
+        .reveal h2,
+        .reveal h3,
+        .reveal h4 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            color: var(--brand-blue);
+            text-transform: none;
+            letter-spacing: -0.02em;
+        }
+
+        .reveal h1 {
+            font-size: 2em;
+        }
+
+        .reveal h2 {
+            font-size: 1.35em;
+            margin-bottom: 0.3em;
+        }
+
+        .reveal h3 {
+            font-size: 1em;
+            margin-bottom: 0.2em;
+        }
+
+        .reveal p,
+        .reveal li {
+            font-size: 0.65em;
+            line-height: 1.45;
+            color: var(--brand-text);
+        }
+
+        .reveal p {
+            margin-top: 0.2em;
+            margin-bottom: 0.2em;
+        }
+
+        .reveal a {
+            color: var(--brand-link);
+        }
+
+        .reveal ul {
+            list-style: disc;
+            padding-left: 1.4em;
+        }
+
+        .reveal ul li {
+            margin-bottom: 0.2em;
+        }
+
+        .reveal ul ul {
+            margin-top: 0.3em;
+            list-style: circle;
+        }
+
+        .reveal ul ul li {
+            font-size: 0.92em;
+        }
+
+        /* ========================================
+           SLIDE LAYOUT: header bar + right logos
+           ======================================== */
+
+        /* Wrapper for each slide's content (sits inside <section>) */
+        .slide-content {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        /* Top header with Slurm + ilifu logos + blue rule */
+        .slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 0 0.3em 0;
+            border-bottom: 3px solid var(--brand-rule);
+            margin-bottom: 0.4em;
+        }
+
+        .slide-header img {
+            height: 36px;
+            object-fit: contain;
+        }
+
+        /* Bottom footer bar — pushed to bottom via flexbox */
+        .slide-footer {
+            margin-top: auto;
+            padding: 0.3em 0 0 0;
+            border-top: 2px solid var(--brand-rule);
+            font-size: 0.5em;
+            color: var(--brand-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Right-side logo column — fixed position */
+        .logo-sidebar {
+            position: fixed;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            z-index: 100;
+            padding: 8px 6px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+        }
+
+        .logo-sidebar img {
+            width: 85px;
+            height: auto;
+            object-fit: contain;
+            opacity: 0.85;
+            transition: opacity 0.3s;
+        }
+
+        .logo-sidebar img:hover {
+            opacity: 1;
+        }
+
+        /* Title slide — special layout, no header */
+        .title-slide h1 {
+            font-size: 2.4em;
+            margin-bottom: 0.1em;
+            color: var(--brand-blue);
+        }
+
+        .title-slide .subtitle {
+            font-size: 1.1em;
+            color: var(--brand-subtle);
+            font-weight: 400;
+            margin-bottom: 1.5em;
+        }
+
+        .title-slide .meta {
+            font-size: 0.65em;
+            color: var(--brand-subtle);
+            border-top: 3px solid var(--brand-blue);
+            padding-top: 1em;
+            display: inline-block;
+        }
+
+        .title-slide .meta strong {
+            color: var(--brand-blue-dark);
+        }
+
+        /* Section title accent */
+        .section-title h2 {
+            border-left: 5px solid var(--brand-blue);
+            padding-left: 0.6em;
+        }
+
+        /* Code blocks */
+        .reveal pre {
+            width: 100%;
+            margin: 0.3em 0;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 6px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .reveal pre code {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.5em;
+            line-height: 1.4;
+            padding: 0.6em 0.8em;
+            border-radius: 6px;
+            max-height: 400px;
+        }
+
+        .reveal code:not(pre code) {
+            font-family: 'Fira Code', monospace;
+            background: #eef2f7;
+            padding: 0.12em 0.35em;
+            border-radius: 3px;
+            font-size: 0.85em;
+            color: var(--brand-blue-dark);
+            border: 1px solid var(--brand-border);
+        }
+
+        /* Tables */
+        .reveal table {
+            font-size: 0.52em;
+            border-collapse: collapse;
+            margin: 0.3em auto;
+            width: 95%;
+        }
+
+        .reveal table th {
+            background: var(--brand-blue);
+            color: white;
+            font-weight: 600;
+            padding: 0.35em 0.6em;
+        }
+
+        .reveal table td {
+            padding: 0.3em 0.6em;
+            border-bottom: 1px solid var(--brand-border);
+        }
+
+        .reveal table tr:nth-child(even) td {
+            background: var(--brand-light);
+        }
+
+        /* Info boxes */
+        .info-box {
+            background: #eef2f7;
+            border-left: 4px solid var(--brand-blue);
+            padding: 0.35em 0.8em;
+            border-radius: 0 5px 5px 0;
+            margin: 0.3em 0;
+            text-align: left;
+            font-size: 0.62em;
+        }
+
+        .info-box.tip {
+            border-left-color: #38a169;
+            background: #f0fff4;
+        }
+
+        /* Two-column layout */
+        .columns {
+            display: flex;
+            gap: 1.2em;
+            align-items: flex-start;
+        }
+
+        .columns .col {
+            flex: 1;
+            text-align: left;
+        }
+
+        /* Architecture diagram */
+        .arch-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8em;
+            margin: 0.8em 0;
+        }
+
+        .arch-box {
+            background: var(--brand-light);
+            border: 2px solid var(--brand-border);
+            border-radius: 8px;
+            padding: 0.6em 1em;
+            font-size: 0.62em;
+            text-align: center;
+            min-width: 130px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .arch-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        }
+
+        .arch-box.login {
+            border-color: var(--brand-blue);
+        }
+
+        .arch-box.compute {
+            border-color: #3182ce;
+        }
+
+        .arch-box.scheduler {
+            border-color: #38a169;
+        }
+
+        .arch-box .box-title {
+            font-weight: 700;
+            margin-bottom: 0.2em;
+            font-size: 1.05em;
+        }
+
+        .arch-arrow {
+            font-size: 1.6em;
+            color: var(--brand-subtle);
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 0.12em 0.45em;
+            border-radius: 20px;
+            font-size: 0.7em;
+            font-weight: 600;
+        }
+
+        .badge-red {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .badge-green {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .badge-blue {
+            background: #bee3f8;
+            color: #2a4365;
+        }
+
+        .badge-gray {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        /* Slide number */
+        .reveal .slide-number {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.6em;
+            color: var(--brand-subtle);
+        }
+
+        /* Progress bar */
+        .reveal .progress {
+            height: 3px;
+        }
+
+        .reveal .progress span {
+            background: var(--brand-blue);
+        }
+
+        /* Controls */
+        .reveal .controls-arrow {
+            color: var(--brand-blue) !important;
+        }
+
+        /* Asciinema container */
+        .asciinema-container {
+            margin: 0.6em auto;
+            max-width: 780px;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 3px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Demo slide */
+        .demo-title {
+            font-size: 2.8em !important;
+            color: var(--brand-blue) !important;
+        }
+
+        /* Best practices columns */
+        .do-dont {
+            display: flex;
+            gap: 0.8em;
+            margin-top: 0.2em;
+        }
+
+        .do-col,
+        .dont-col {
+            flex: 1;
+            padding: 0.35em 0.5em;
+            border-radius: 6px;
+            text-align: left;
+        }
+
+        .do-col li,
+        .dont-col li {
+            font-size: 0.6em;
+            margin-bottom: 0.1em;
+        }
+
+        .do-col {
+            background: #f0fff4;
+            border: 2px solid #38a169;
+        }
+
+        .dont-col {
+            background: #fff5f5;
+            border: 2px solid #e53e3e;
+        }
+
+        .do-col h3 {
+            color: #38a169 !important;
+        }
+
+        .dont-col h3 {
+            color: #e53e3e !important;
+        }
+
+        /* Full-page slides with header pinned at top */
+        .reveal .slides>section,
+        .reveal .slides>section>section {
+            display: flex !important;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: flex-start;
+            height: 100%;
+            box-sizing: border-box;
+            padding: 0.6em 1.2em !important;
+            padding-right: 90px !important;
+            /* room for logo sidebar */
+            text-align: left;
+        }
+
+        /* Title slides stay centered */
+        .reveal .slides>section.title-slide {
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Right-side sponsor/funder logos (persistent across all slides) -->
+    <div class="logo-sidebar">
+        <img src="assets/cbio_logo.png" alt="CBIO" title="CBIO — Computational Biology, UCT"
+            onerror="this.outerHTML='<div style=&quot;width:60px;height:40px;background:#eef2f7;border:1px solid #ccc;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#2b579a&quot;>CBIO</div>'">
+        <img src="assets/idia_logo.png" alt="IDIA" title="IDIA — Institute for Data Intensive Astronomy"
+            onerror="this.outerHTML='<div style=&quot;width:60px;height:40px;background:#eef2f7;border:1px solid #ccc;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#2b579a&quot;>IDIA</div>'">
+        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7c/University_of_Cape_Town_logo.svg/200px-University_of_Cape_Town_logo.svg.png"
+            alt="UCT" title="University of Cape Town"
+            onerror="this.outerHTML='<div style=&quot;width:60px;height:40px;background:#eef2f7;border:1px solid #ccc;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#2b579a&quot;>UCT</div>'">
+    </div>
+
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- <section>
+                <div class="slide-header">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
+                        alt="Slurm"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm Workload Manager</span>'">
+                    <h3>Title</h3>
+                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
+                        alt="ilifu"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
+                </div>
+
+                <p>Content</p>
+            </section> -->
+
+            <!-- =============================== -->
+            <!-- SLIDE 1: Title                   -->
+            <!-- =============================== -->
+            <section class="title-slide">
+                <h1>ilifu Online Training</h1>
+                <h1 class="subtitle">Session 1: Introduction to Slurm</h1>
+                <h1 class="subtitle"><small>24 February 2026</small></h1>
+                <h2 class="meta">
+                    <small>Dane Kennedy · ilifu Bioinformatics Support<br>
+                        University of Cape Town
+                    </small>
+                </h2>
+                <aside class="notes">
+                    Welcome to Session 1 of ilifu online training. Today we'll cover Slurm job submission —
+                    from your first "Hello World" to advanced batch scripts with containers.
+                </aside>
+            </section>
+
+            <section>
+                <div class="slide-header">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
+                        alt="Slurm"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm Workload Manager</span>'">
+                    <h3>What is Slurm?</h3>
+                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
+                        alt="ilifu"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
+                </div>
+
+                <h4>Job Scheduling & Cluster Management Tool</h4>
+                <div class="info-box">
+                    An open-source <strong>job scheduling &amp; cluster management tool</strong>. You submit work from
+                    the login
+                    node; Slurm allocates compute resources and runs your jobs when they're available.
+                </div>
+                <div class="arch-diagram">
+                    <div class="arch-box login">
+                        <div class="box-title">🖥️ Login Node</div>
+                        <div>SSH access<br><code>slurm.ilifu.ac.za</code><br>Submit jobs &amp; manage files</div>
+                    </div>
+                    <div class="arch-arrow">→</div>
+                    <div class="arch-box scheduler">
+                        <div class="box-title">⚙️ Scheduler</div>
+                        <div>Queue management<br>Resource allocation<br>Accounting</div>
+                    </div>
+                    <div class="arch-arrow">→</div>
+                    <div class="arch-box compute">
+                        <div class="box-title">🔧 Compute Nodes</div>
+                        <div>Run analysis/simulation<br>Containers &amp; modules<br>Where your jobs execute</div>
+                    </div>
+                </div>
+                <ul>
+                    <li class="fragment">Login Node
+                        <ul>
+                            <li>Accessed via ssh (<code>$ ssh &lt;username&gt;@slurm.ilifu.ac.za</code>)</li>
+                            <li>Submit jobs and basic file management</li>
+                        </ul>
+                    </li>
+                    <li class="fragment">Scheduler and Accounting Database
+                        <ul>
+                            <li>Manage jobs, Partitions and Nodes</li>
+                            <li>Accounting</li>
+                        </ul>
+                    </li>
+                    <li class="fragment">Compute Nodes
+                        <ul>
+                            <li>Where your analysis / simulation runs (inside of a slurm job)</li>
+                            <li>Software available via singularity containers or modules</li>
+                        </ul>
+                    </li>
+
+                </ul>
+
+                <div class="slide-footer">
+                    <a href="https://slurm.schedmd.com/overview.html">Slurm Overview</a>
+                    <a href="https://docs.ilifu.ac.za/#/">ilifu documentation</a>
+                    <a href="https://docs.ilifu.ac.za/#/getting_started/submit_job_slurm">Submit a Slurm Job</a>
+                </div>
+                <aside class="notes">
+                    What is slurm? Slurm is an open-source workload manager or scheduler.<br />
+
+                    What it is does is allow you to submit computing tasks (or jobs) to a computing cluster. A computing
+                    cluster is a collection of computers / servers (which we usually call “nodes”) together with some
+                    storage all linked together with a fast network. The workload manager figures out when and where
+                    those jobs can run; and keeps a record of their resource usage for accounting purposes.<br />
+
+                    From a user’s perspective there are three main components that you should be aware of:<br />
+
+                    Firstly there is the login node — apart from Jupyter, this is usually your first point of contact
+                    with the cluster and the place where you will do most of your interactions. It is not a server to
+                    use for big computing tasks; but rather it’s a place for administrative tasks such as submitting
+                    jobs, editing scripts and light management of data. The login node is shared with all the users of
+                    the cluster — so any misuse impacts others negatively — so we monitor it closely and are quite
+                    strict about how it’s used.<br />
+
+                    Secondly there is slurm itself which has 3 key functions:<br />s
+                    <ul>
+                        <li>Slurm Allocates access to resources for users. In other words this is reserving memory and
+                            CPU
+                            resources on the compute nodes for specific jobs.</li>
+                        <li>Slurm Provides a framework for starting, executing, and monitoring work or jobs. These are
+                            the
+                            commands I will cover a little bit later.</li>
+                        <li>Managing a queue for pending work. So when you submit a job, it first sits in a queue and
+                            waits for
+                            its turn to run. In slurm these queues are called partitions and there are several different
+                            ones
+                            you can choose from. And I’ll cover that in the next slide.</li>
+                    </ul>
+
+                    Finally there are the compute nodes — these are bigger servers and the place where computing jobs
+                    are run. Once you’re running something on a node, the resources you’ve requested are allocated to
+                    you. This means that nobody else can interfere with the running of your software, but the flip side
+                    of that is that you should be as accurate as possible when specifying those resources. This is
+                    covered in more detail in Session 2.<br />
+
+                </aside>
+            </section>
+
+            <section>
+                <div class="slide-header">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
+                        alt="Slurm"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm Workload Manager</span>'">
+                    <h3>Specific node / partition use cases</h3>
+                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
+                        alt="ilifu"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Node / Partition</th>
+                            <th>Use Case</th>
+                            <th>Resources</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>slurm.ilifu.ac.za</code>
+                                <!-- / <span class="badge badge-gray">Login</span> -->
+                            </td>
+                            <td>SLURM &amp; bash commands (<code>cd</code>, <code>mkdir</code>, <code>sbatch</code>)
+                            </td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td><code>compute-001</code> / <span class="badge badge-blue">Devel</span></td>
+                            <td>Development, debugging, testing, interactive jobs</td>
+                            <td>1 × (32 cores, ~232 GiB)</td>
+                        </tr>
+                        <tr>
+                            <td><code>jupyter-0[01-14]</code> / <span class="badge badge-blue">Jupyter</span></td>
+                            <td>JupyterLab — interactive development/analysis</td>
+                            <td>14 × (32 cores, ~232 GiB)</td>
+                        </tr>
+                        <tr>
+                            <td><code>compute-0[02-86]</code> / <span class="badge badge-green">Main</span></td>
+                            <td>Stable, heavy computation</td>
+                            <td>85 × (32 cores, ~232 GiB)</td>
+                        </tr>
+                        <tr>
+                            <td><code>highmem-00[1-8]</code> / <span class="badge badge-red">HighMem</span></td>
+                            <td>High memory jobs</td>
+                            <td>6 × (32 cores, 500 GiB) + 1 × (32 cores, 1 TiB) + 1 × (96 cores, 1.5 TiB)</td>
+                        </tr>
+                        <tr>
+                            <td><code>gpu-00[1-7]</code> / <span class="badge badge-red">GPU</span></td>
+                            <td>GPU-accelerated workloads</td>
+                            <td>7 × (32 cores, ~232 GiB + NVIDIA GPUs)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="slide-footer">
+                    <a href="https://docs.ilifu.ac.za/#/tech_docs/running_jobs?id=available-resources">Available
+                        Resources</a>
+                </div>
+                <aside class="notes">
+                    This table shows a summary of the available partitions and the resources available on each
+                    partition.
+
+                    Starting with the login node, as mentioned earlier, this is where you'll perform basic
+                    administrative tasks, such as running bash and Slurm commands.
+
+                    Jupyter and Development Partition: Think of this as a development space for testing new software,
+                    plotting results, building workflows, and debugging.
+
+                    Main Partition: This is where most stable and computationally intensive jobs are executed. (By
+                    stable I mean the code isn’t changing — it is an established process that only differs in input and
+                    output). Parallelism may be possible, or jobs may be split into smaller tasks.
+
+                    HighMem and GPU Partition: Although not covered in this presentation, the HighMem partition is
+                    designed for single, high-memory jobs that can't be split up. We'll dive deeper into this topic in a
+                    later Session.
+
+                    While many users use Jupyter as their primary interface with the compute resources we do, as a
+                    general rule, prefer it if users use one of the Main, Highmem or GPU nodes as this tends to result
+                    in more efficient use of resources. This is because interactive jobs such as jupyter tend to have
+                    longer periods where resources are idle.
+
+                    When running jobs on the cluster, the default partition is “Main” and unless you explicitly need
+                    something else, this is probably the one you’ll want to use. The nodes here have 32 CPUs or cores
+                    and about 232GiB of available memory. We also have 3 HighMem nodes, 2 of which have 32 cores but
+                    503GiB of RAM and one very large node with about 1½TiB RAM and 96 cores. We also have 7 GPU nodes
+                    which are similar to the nodes in Main, but have up to two GPUs available. The we have the Devel
+                    partition which you can use for interactive jobs (which are explained later) and then there’s the
+                    Jupyter partition, which you only ever implicitly use if you’re using Jupyter.
+
+
+                </aside>
+            </section>
+
+            <section>
+                <div class="slide-header">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
+                        alt="Slurm"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm Workload Manager</span>'">
+                    <h3>Interacting with the Slurm Cluster</h3>
+                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
+                        alt="ilifu"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
+                </div>
+
+                <div class="columns">
+                    <div class="col">
+                        <h3>🌐 Web Access</h3>
+                        <p><a href="https://jupyter.ilifu.ac.za" target="_blank">https://jupyter.ilifu.ac.za</a></p>
+                        <video controls muted poster="demos/jupyter.png">
+                            <source src="demos/jupyter.mp4" type="video/mp4">
+                        </video>
+                        <div class="info-box tip" style="margin-top: 0.8em;">
+                            <strong>💡 Remember to end your session:</strong> File → Hub Control Panel → Stop My
+                            Server.
+                        </div>
+                    </div>
+                    <div class="col">
+                        <h3>💻 CLI Access</h3>
+                        <pre><code class="language-bash">ssh &lt;username&gt;@slurm.ilifu.ac.za</code></pre>
+                        <div id="demo-login">
+                        </div>
+                        <div class="info-box tip" style="margin-top: 0.8em;">
+                            <strong>💡 Manage your ssh keys here:</strong> <a
+                                href="https://usage.ilifu.ac.za/ssh_keys">https://usage.ilifu.ac.za/ssh_keys</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div><!-- /.slides -->
+    </div><!-- /.reveal -->
+
+    <!-- Reveal.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/highlight/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/notes/notes.min.js"></script>
+
+    <!-- Asciinema Player -->
+    <script src="resources/asciinema-player.min.js"></script>
+
+    <script>
+        // Initialize Reveal.js
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            transition: 'slide',
+            transitionSpeed: 'default',
+            controlsTutorial: true,
+            progress: true,
+            center: false,
+            width: 1920,
+            height: 1080,
+            margin: 0,
+            plugins: [RevealHighlight, RevealNotes]
+        });
+
+        AsciinemaPlayer.create('demos/login.cast', document.getElementById('demo-login'), {
+            autoPlay: false,
+            loop: false,
+            controls: true,
+            // theme: 'monokai',
+            speed: 1.5,
+            poster: 'npt:0:6',
+            autoplay: 1,
+        });
+    </script>
+
+</body>
+
+</html>

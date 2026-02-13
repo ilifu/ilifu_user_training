@@ -146,7 +146,7 @@
         }
 
         .logo-sidebar img {
-            width: 50px;
+            width: 85px;
             height: auto;
             object-fit: contain;
             opacity: 0.85;
@@ -421,9 +421,24 @@
             color: #e53e3e !important;
         }
 
-        /* Adjust slide content to leave room for right sidebar */
-        .reveal .slides section {
-            padding-right: 90px;
+        /* Full-page slides with header pinned at top */
+        .reveal .slides>section,
+        .reveal .slides>section>section {
+            display: flex !important;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: flex-start;
+            height: 100%;
+            box-sizing: border-box;
+            padding: 0.6em 1.2em !important;
+            padding-right: 90px !important;
+            /* room for logo sidebar */
+        }
+
+        /* Title slides stay centered */
+        .reveal .slides>section.title-slide {
+            justify-content: center;
+            align-items: center;
         }
     </style>
 </head>
@@ -448,12 +463,13 @@
             <!-- SLIDE 1: Title                   -->
             <!-- =============================== -->
             <section class="title-slide">
-                <h1>Introduction to Slurm</h1>
-                <p class="subtitle">Job Scheduling on ilifu HPC</p>
+                <h1>ilifu Online Training</h1>
+                <p class="subtitle">Session 1: Introduction to Slurm<br>
+                    <small>24 February 2026</small>
+                </p>
                 <p class="meta">
-                    <strong>ilifu Online Training</strong> — Session 1, Tutorial 2<br>
-                    Dane Kennedy · ilifu Bioinformatics Support<br>
-                    University of Cape Town · February 2026
+                    <small>Dane Kennedy · ilifu Bioinformatics Support</small><br>
+                    <small>University of Cape Town</small>
                 </p>
                 <aside class="notes">
                     Welcome to Session 1 of ilifu online training. Today we'll cover Slurm job submission —
@@ -469,11 +485,12 @@
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
                         alt="Slurm"
                         onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm Workload Manager</span>'">
+                    <h3>What is Slurm?</h3>
                     <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
                         alt="ilifu"
                         onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
                 </div>
-                <h2>What is Slurm?</h2>
+
                 <div class="arch-diagram">
                     <div class="arch-box login">
                         <div class="box-title">🖥️ Login Node</div>
@@ -513,11 +530,12 @@
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
                         alt="Slurm"
                         onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm</span>'">
+                    <h3>Nodes &amp; Partitions</h3>
                     <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
                         alt="ilifu"
                         onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
                 </div>
-                <h2>Nodes &amp; Partitions</h2>
+
                 <table>
                     <thead>
                         <tr>
@@ -573,11 +591,12 @@
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
                         alt="Slurm"
                         onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm</span>'">
+                    <h3>Accessing the Cluster</h3>
                     <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
                         alt="ilifu"
                         onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
                 </div>
-                <h2>Accessing the Cluster</h2>
+
                 <div class="columns">
                     <div class="col">
                         <h3>🌐 Web Access</h3>
@@ -608,11 +627,12 @@
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
                         alt="Slurm"
                         onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm</span>'">
+                    <h3>Essential CLI Commands</h3>
                     <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
                         alt="ilifu"
                         onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
                 </div>
-                <h2>Essential CLI Commands</h2>
+
                 <table>
                     <thead>
                         <tr>
@@ -664,11 +684,12 @@
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
                         alt="Slurm"
                         onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm</span>'">
+                    <h3>Your First Job: <code>minimal.sbatch</code></h3>
                     <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
                         alt="ilifu"
                         onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
                 </div>
-                <h2>Your First Job: <code>minimal.sbatch</code></h2>
+
                 <pre><code class="language-bash">#!/bin/bash
 
 echo "Hello World!"</code></pre>
@@ -703,11 +724,12 @@ Submitted batch job 12345</code></pre>
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
                         alt="Slurm"
                         onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm</span>'">
+                    <h3>Default Job Parameters</h3>
                     <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
                         alt="ilifu"
                         onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
                 </div>
-                <h2>Default Job Parameters</h2>
+
                 <p style="font-size: 0.68em;">When you don't specify options, Slurm uses these defaults:</p>
                 <table>
                     <thead>
@@ -769,11 +791,12 @@ Submitted batch job 12345</code></pre>
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
                         alt="Slurm"
                         onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm</span>'">
+                    <h3>Capturing Output</h3>
                     <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
                         alt="ilifu"
                         onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
                 </div>
-                <h2>Capturing Output</h2>
+
                 <p style="font-size: 0.68em;">By default, job output goes nowhere. Capture it with directives:</p>
                 <pre><code class="language-bash">#SBATCH --output=logs/demo-job-%j.out
 #SBATCH --error=logs/demo-job-%j.err</code></pre>
@@ -946,11 +969,12 @@ python hello_world.py</code></pre>
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
                         alt="Slurm"
                         onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm</span>'">
+                    <h3>Complete Example: <code>maximal.sbatch</code></h3>
                     <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
                         alt="ilifu"
                         onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
                 </div>
-                <h2>Complete Example: <code>maximal.sbatch</code></h2>
+
                 <pre><code class="language-bash">#!/bin/bash
 #SBATCH --job-name=tutorial2_R_container
 #SBATCH --time=00-00:01:00
@@ -977,11 +1001,12 @@ singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rsc
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
                         alt="Slurm"
                         onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm</span>'">
+                    <h3>Resource Limits per Partition</h3>
                     <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
                         alt="ilifu"
                         onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
                 </div>
-                <h2>Resource Limits per Partition</h2>
+
                 <table>
                     <thead>
                         <tr>
@@ -1055,11 +1080,12 @@ singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rsc
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
                         alt="Slurm"
                         onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm</span>'">
+                    <h3>Best Practices</h3>
                     <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
                         alt="ilifu"
                         onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
                 </div>
-                <h2>Best Practices</h2>
+
                 <div class="do-dont">
                     <div class="do-col">
                         <h3>✅ Do</h3>
@@ -1129,10 +1155,10 @@ singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rsc
             transitionSpeed: 'default',
             controlsTutorial: true,
             progress: true,
-            center: true,
-            width: 1080,
-            height: 700,
-            margin: 0.06,
+            center: false,
+            width: 1920,
+            height: 1080,
+            margin: 0,
             plugins: [RevealHighlight, RevealNotes]
         });
 

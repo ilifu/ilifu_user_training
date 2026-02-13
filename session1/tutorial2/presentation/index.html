@@ -17,7 +17,8 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/highlight/monokai.min.css">
 
     <!-- Asciinema Player -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/asciinema-player@3.8.0/dist/bundle/asciinema-player.css">
+
+    <link rel="stylesheet" type="text/css" href="resources/asciinema-player.css" />
 
     <!-- Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -127,6 +128,18 @@
         .slide-header img {
             height: 36px;
             object-fit: contain;
+        }
+
+        /* Bottom footer bar — pushed to bottom via flexbox */
+        .slide-footer {
+            margin-top: auto;
+            padding: 0.3em 0 0 0;
+            border-top: 2px solid var(--brand-rule);
+            font-size: 0.5em;
+            color: var(--brand-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         /* Right-side logo column — fixed position */
@@ -433,6 +446,7 @@
             padding: 0.6em 1.2em !important;
             padding-right: 90px !important;
             /* room for logo sidebar */
+            text-align: left;
         }
 
         /* Title slides stay centered */
@@ -459,27 +473,38 @@
     <div class="reveal">
         <div class="slides">
 
+            <!-- <section>
+                <div class="slide-header">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
+                        alt="Slurm"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm Workload Manager</span>'">
+                    <h3>Title</h3>
+                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
+                        alt="ilifu"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
+                </div>
+
+                <p>Content</p>
+            </section> -->
+
             <!-- =============================== -->
             <!-- SLIDE 1: Title                   -->
             <!-- =============================== -->
             <section class="title-slide">
                 <h1>ilifu Online Training</h1>
-                <p class="subtitle">Session 1: Introduction to Slurm<br>
-                    <small>24 February 2026</small>
-                </p>
-                <p class="meta">
-                    <small>Dane Kennedy · ilifu Bioinformatics Support</small><br>
-                    <small>University of Cape Town</small>
-                </p>
+                <h1 class="subtitle">Session 1: Introduction to Slurm</h1>
+                <h1 class="subtitle"><small>24 February 2026</small></h1>
+                <h2 class="meta">
+                    <small>Dane Kennedy · ilifu Bioinformatics Support<br>
+                        University of Cape Town
+                    </small>
+                </h2>
                 <aside class="notes">
                     Welcome to Session 1 of ilifu online training. Today we'll cover Slurm job submission —
                     from your first "Hello World" to advanced batch scripts with containers.
                 </aside>
             </section>
 
-            <!-- =============================== -->
-            <!-- SLIDE 2: What is Slurm?          -->
-            <!-- =============================== -->
             <section>
                 <div class="slide-header">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
@@ -491,6 +516,12 @@
                         onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
                 </div>
 
+                <h4>Job Scheduling & Cluster Management Tool</h4>
+                <div class="info-box">
+                    An open-source <strong>job scheduling &amp; cluster management tool</strong>. You submit work from
+                    the login
+                    node; Slurm allocates compute resources and runs your jobs when they're available.
+                </div>
                 <div class="arch-diagram">
                     <div class="arch-box login">
                         <div class="box-title">🖥️ Login Node</div>
@@ -507,30 +538,80 @@
                         <div>Run analysis/simulation<br>Containers &amp; modules<br>Where your jobs execute</div>
                     </div>
                 </div>
-                <div class="info-box">
-                    A <strong>job scheduling &amp; cluster management tool</strong>. You submit work from the login
-                    node;
-                    Slurm allocates compute resources and runs your jobs when they're available.
+                <ul>
+                    <li class="fragment">Login Node
+                        <ul>
+                            <li>Accessed via ssh (<code>$ ssh &lt;username&gt;@slurm.ilifu.ac.za</code>)</li>
+                            <li>Submit jobs and basic file management</li>
+                        </ul>
+                    </li>
+                    <li class="fragment">Scheduler and Accounting Database
+                        <ul>
+                            <li>Manage jobs, Partitions and Nodes</li>
+                            <li>Accounting</li>
+                        </ul>
+                    </li>
+                    <li class="fragment">Compute Nodes
+                        <ul>
+                            <li>Where your analysis / simulation runs (inside of a slurm job)</li>
+                            <li>Software available via singularity containers or modules</li>
+                        </ul>
+                    </li>
+
+                </ul>
+
+                <div class="slide-footer">
+                    <a href="https://slurm.schedmd.com/overview.html">Slurm Overview</a>
+                    <a href="https://docs.ilifu.ac.za/#/">ilifu documentation</a>
+                    <a href="https://docs.ilifu.ac.za/#/getting_started/submit_job_slurm">Submit a Slurm Job</a>
                 </div>
-                <p style="font-size:0.5em; color: var(--brand-subtle);">
-                    📖 <a href="https://docs.ilifu.ac.za/#/getting_started/submit_job_slurm"
-                        target="_blank">docs.ilifu.ac.za — Getting Started</a>
-                </p>
                 <aside class="notes">
-                    Slurm consists of a login node (where users interact) and many compute nodes (where jobs run).
-                    The scheduler sits in between, managing queues, partitions, and accounting.
+                    What is slurm? Slurm is an open-source workload manager or scheduler.<br />
+
+                    What it is does is allow you to submit computing tasks (or jobs) to a computing cluster. A computing
+                    cluster is a collection of computers / servers (which we usually call “nodes”) together with some
+                    storage all linked together with a fast network. The workload manager figures out when and where
+                    those jobs can run; and keeps a record of their resource usage for accounting purposes.<br />
+
+                    From a user’s perspective there are three main components that you should be aware of:<br />
+
+                    Firstly there is the login node — apart from Jupyter, this is usually your first point of contact
+                    with the cluster and the place where you will do most of your interactions. It is not a server to
+                    use for big computing tasks; but rather it’s a place for administrative tasks such as submitting
+                    jobs, editing scripts and light management of data. The login node is shared with all the users of
+                    the cluster — so any misuse impacts others negatively — so we monitor it closely and are quite
+                    strict about how it’s used.<br />
+
+                    Secondly there is slurm itself which has 3 key functions:<br />s
+                    <ul>
+                        <li>Slurm Allocates access to resources for users. In other words this is reserving memory and
+                            CPU
+                            resources on the compute nodes for specific jobs.</li>
+                        <li>Slurm Provides a framework for starting, executing, and monitoring work or jobs. These are
+                            the
+                            commands I will cover a little bit later.</li>
+                        <li>Managing a queue for pending work. So when you submit a job, it first sits in a queue and
+                            waits for
+                            its turn to run. In slurm these queues are called partitions and there are several different
+                            ones
+                            you can choose from. And I’ll cover that in the next slide.</li>
+                    </ul>
+
+                    Finally there are the compute nodes — these are bigger servers and the place where computing jobs
+                    are run. Once you’re running something on a node, the resources you’ve requested are allocated to
+                    you. This means that nobody else can interfere with the running of your software, but the flip side
+                    of that is that you should be as accurate as possible when specifying those resources. This is
+                    covered in more detail in Session 2.<br />
+
                 </aside>
             </section>
 
-            <!-- =============================== -->
-            <!-- SLIDE 3: Node/Partition Use Cases -->
-            <!-- =============================== -->
             <section>
                 <div class="slide-header">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
                         alt="Slurm"
-                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm</span>'">
-                    <h3>Nodes &amp; Partitions</h3>
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm Workload Manager</span>'">
+                    <h3>Specific node / partition use cases</h3>
                     <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
                         alt="ilifu"
                         onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
@@ -539,59 +620,93 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Partition</th>
+                            <th>Node / Partition</th>
                             <th>Use Case</th>
                             <th>Resources</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><span class="badge badge-gray">Login</span></td>
+                            <td><code>slurm.ilifu.ac.za</code>
+                                <!-- / <span class="badge badge-gray">Login</span> -->
+                            </td>
                             <td>SLURM &amp; bash commands (<code>cd</code>, <code>mkdir</code>, <code>sbatch</code>)
                             </td>
                             <td>—</td>
                         </tr>
                         <tr>
-                            <td><span class="badge badge-blue">Jupyter / Devel</span></td>
-                            <td>Development, debugging, testing</td>
-                            <td>32 cores, ~232 GiB, 12h max</td>
+                            <td><code>compute-001</code> / <span class="badge badge-blue">Devel</span></td>
+                            <td>Development, debugging, testing, interactive jobs</td>
+                            <td>1 × (32 cores, ~232 GiB)</td>
                         </tr>
                         <tr>
-                            <td><span class="badge badge-green">Main</span></td>
+                            <td><code>jupyter-0[01-14]</code> / <span class="badge badge-blue">Jupyter</span></td>
+                            <td>JupyterLab — interactive development/analysis</td>
+                            <td>14 × (32 cores, ~232 GiB)</td>
+                        </tr>
+                        <tr>
+                            <td><code>compute-0[02-86]</code> / <span class="badge badge-green">Main</span></td>
                             <td>Stable, heavy computation</td>
-                            <td>32 cores, ~232 GiB, 14d max</td>
+                            <td>85 × (32 cores, ~232 GiB)</td>
                         </tr>
                         <tr>
-                            <td><span class="badge badge-red">HighMem</span></td>
-                            <td>Single high-memory or MPI jobs</td>
-                            <td>Up to 96 cores, 1.5 TiB</td>
+                            <td><code>highmem-00[1-8]</code> / <span class="badge badge-red">HighMem</span></td>
+                            <td>High memory jobs</td>
+                            <td>6 × (32 cores, 500 GiB) + 1 × (32 cores, 1 TiB) + 1 × (96 cores, 1.5 TiB)</td>
                         </tr>
                         <tr>
-                            <td><span class="badge badge-red">GPU</span></td>
+                            <td><code>gpu-00[1-7]</code> / <span class="badge badge-red">GPU</span></td>
                             <td>GPU-accelerated workloads</td>
-                            <td>32 cores, ~232 GiB + NVIDIA GPUs</td>
+                            <td>7 × (32 cores, ~232 GiB + NVIDIA GPUs)</td>
                         </tr>
                     </tbody>
                 </table>
-                <p style="font-size:0.5em; color: var(--brand-subtle);">
-                    📖 <a href="https://docs.ilifu.ac.za/#/tech_docs/running_jobs?id=available-resources"
-                        target="_blank">Available Resources</a>
-                </p>
+
+                <div class="slide-footer">
+                    <a href="https://docs.ilifu.ac.za/#/tech_docs/running_jobs?id=available-resources">Available
+                        Resources</a>
+                </div>
                 <aside class="notes">
-                    Don't run heavy processes on the login node. Use Jupyter/Devel for testing,
-                    Main for production workloads, and HighMem/GPU for specialized needs.
+                    This table shows a summary of the available partitions and the resources available on each
+                    partition.
+
+                    Starting with the login node, as mentioned earlier, this is where you'll perform basic
+                    administrative tasks, such as running bash and Slurm commands.
+
+                    Jupyter and Development Partition: Think of this as a development space for testing new software,
+                    plotting results, building workflows, and debugging.
+
+                    Main Partition: This is where most stable and computationally intensive jobs are executed. (By
+                    stable I mean the code isn’t changing — it is an established process that only differs in input and
+                    output). Parallelism may be possible, or jobs may be split into smaller tasks.
+
+                    HighMem and GPU Partition: Although not covered in this presentation, the HighMem partition is
+                    designed for single, high-memory jobs that can't be split up. We'll dive deeper into this topic in a
+                    later Session.
+
+                    While many users use Jupyter as their primary interface with the compute resources we do, as a
+                    general rule, prefer it if users use one of the Main, Highmem or GPU nodes as this tends to result
+                    in more efficient use of resources. This is because interactive jobs such as jupyter tend to have
+                    longer periods where resources are idle.
+
+                    When running jobs on the cluster, the default partition is “Main” and unless you explicitly need
+                    something else, this is probably the one you’ll want to use. The nodes here have 32 CPUs or cores
+                    and about 232GiB of available memory. We also have 3 HighMem nodes, 2 of which have 32 cores but
+                    503GiB of RAM and one very large node with about 1½TiB RAM and 96 cores. We also have 7 GPU nodes
+                    which are similar to the nodes in Main, but have up to two GPUs available. The we have the Devel
+                    partition which you can use for interactive jobs (which are explained later) and then there’s the
+                    Jupyter partition, which you only ever implicitly use if you’re using Jupyter.
+
+
                 </aside>
             </section>
 
-            <!-- =============================== -->
-            <!-- SLIDE 4: Interacting with Slurm  -->
-            <!-- =============================== -->
             <section>
                 <div class="slide-header">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
                         alt="Slurm"
-                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm</span>'">
-                    <h3>Accessing the Cluster</h3>
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm Workload Manager</span>'">
+                    <h3>Interacting with the Slurm Cluster</h3>
                     <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
                         alt="ilifu"
                         onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
@@ -600,539 +715,26 @@
                 <div class="columns">
                     <div class="col">
                         <h3>🌐 Web Access</h3>
-                        <p><a href="https://jupyter.ilifu.ac.za" target="_blank">jupyter.ilifu.ac.za</a></p>
-                        <p>→ JupyterHub → Compute nodes</p>
+                        <p><a href="https://jupyter.ilifu.ac.za" target="_blank">https://jupyter.ilifu.ac.za</a></p>
+                        <video controls muted poster="demos/jupyter.png">
+                            <source src="demos/jupyter.mp4" type="video/mp4">
+                        </video>
+                        <div class="info-box tip" style="margin-top: 0.8em;">
+                            <strong>💡 Remember to end your session:</strong> File → Hub Control Panel → Stop My
+                            Server.
+                        </div>
                     </div>
                     <div class="col">
                         <h3>💻 CLI Access</h3>
                         <pre><code class="language-bash">ssh &lt;username&gt;@slurm.ilifu.ac.za</code></pre>
-                        <p>→ Login node → Partitions → Compute</p>
-                    </div>
-                </div>
-                <div class="info-box tip" style="margin-top: 0.8em;">
-                    <strong>💡 Agent forwarding:</strong> Use <code>ssh -A</code> to hop from login to compute nodes
-                    without re-entering credentials (e.g., for <code>htop</code> monitoring).
-                </div>
-                <aside class="notes">
-                    Two ways in: JupyterHub for interactive web-based work, or SSH for CLI.
-                    Use -A flag for agent forwarding if you need to SSH to compute nodes directly.
-                </aside>
-            </section>
-
-            <!-- =============================== -->
-            <!-- SLIDE 5: CLI Commands            -->
-            <!-- =============================== -->
-            <section>
-                <div class="slide-header">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
-                        alt="Slurm"
-                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm</span>'">
-                    <h3>Essential CLI Commands</h3>
-                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
-                        alt="ilifu"
-                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
-                </div>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Command</th>
-                            <th>Purpose</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>ssh &lt;un&gt;@slurm.ilifu.ac.za</code></td>
-                            <td>Connect to login node</td>
-                        </tr>
-                        <tr>
-                            <td><code>sinfo</code></td>
-                            <td>Show partitions &amp; resources</td>
-                        </tr>
-                        <tr>
-                            <td><code>squeue -u $USER</code></td>
-                            <td>Show your queued/running jobs</td>
-                        </tr>
-                        <tr>
-                            <td><code>sbatch script.sh</code></td>
-                            <td>Submit a batch job</td>
-                        </tr>
-                        <tr>
-                            <td><code>scancel &lt;jobid&gt;</code></td>
-                            <td>Cancel a running/pending job</td>
-                        </tr>
-                        <tr>
-                            <td><code>sacct</code></td>
-                            <td>View past job history</td>
-                        </tr>
-                        <tr>
-                            <td><code>sbatch --help</code></td>
-                            <td>Show all submission parameters</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <p style="font-size:0.5em; color: var(--brand-subtle);">
-                    📖 <a href="https://slurm.schedmd.com/quickstart.html" target="_blank">Slurm Quickstart Guide</a>
-                </p>
-            </section>
-
-            <!-- =============================== -->
-            <!-- SLIDE 6: First Job (minimal)     -->
-            <!-- =============================== -->
-            <section>
-                <div class="slide-header">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
-                        alt="Slurm"
-                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm</span>'">
-                    <h3>Your First Job: <code>minimal.sbatch</code></h3>
-                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
-                        alt="ilifu"
-                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
-                </div>
-
-                <pre><code class="language-bash">#!/bin/bash
-
-echo "Hello World!"</code></pre>
-                <div class="columns" style="margin-top: 0.6em;">
-                    <div class="col">
-                        <h3>Submit it</h3>
-                        <pre><code class="language-bash">$ sbatch minimal.sbatch
-Submitted batch job 12345</code></pre>
-                    </div>
-                    <div class="col">
-                        <h3>Check status</h3>
-                        <pre><code class="language-bash">$ squeue -u $USER
-  JOBID  PARTITION  NAME   STATE
-  12345  Main       bash  RUNNING</code></pre>
-                    </div>
-                </div>
-                <div class="info-box">
-                    That's it! The simplest possible Slurm job is just a bash script.
-                    Slurm queues it and runs it on a compute node when resources are available.
-                </div>
-                <aside class="notes">
-                    This is the absolute minimum. Just a bash script with a shebang line.
-                    Slurm will use all default parameters - 3 hours, 3 GiB RAM, Main partition.
-                </aside>
-            </section>
-
-            <!-- =============================== -->
-            <!-- SLIDE 7: Default Parameters      -->
-            <!-- =============================== -->
-            <section>
-                <div class="slide-header">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
-                        alt="Slurm"
-                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm</span>'">
-                    <h3>Default Job Parameters</h3>
-                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
-                        alt="ilifu"
-                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
-                </div>
-
-                <p style="font-size: 0.68em;">When you don't specify options, Slurm uses these defaults:</p>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Parameter</th>
-                            <th>Default</th>
-                            <th>What it controls</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>--time</code></td>
-                            <td>0-03:00:00</td>
-                            <td>Wall-clock time limit (3 hours)</td>
-                        </tr>
-                        <tr>
-                            <td><code>--mem</code></td>
-                            <td>3G</td>
-                            <td>Memory allocation</td>
-                        </tr>
-                        <tr>
-                            <td><code>--ntasks</code></td>
-                            <td>1</td>
-                            <td>Number of tasks</td>
-                        </tr>
-                        <tr>
-                            <td><code>--nodes</code></td>
-                            <td>1</td>
-                            <td>Number of nodes</td>
-                        </tr>
-                        <tr>
-                            <td><code>--partition</code></td>
-                            <td>Main</td>
-                            <td>Which partition to use</td>
-                        </tr>
-                        <tr>
-                            <td><code>--account</code></td>
-                            <td><em>your default</em></td>
-                            <td>Billing account</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="info-box tip">
-                    <strong>💡 Tip:</strong> Set limits slightly above your expected needs.
-                    Too little → job killed. Too much → wasted resources &amp; slower scheduling.
-                </div>
-                <p style="font-size:0.5em; color: var(--brand-subtle);">
-                    📖 <a
-                        href="https://docs.ilifu.ac.za/#/tech_docs/running_jobs?id=customising-your-job-using-sbatchrun-parameters"
-                        target="_blank">Customising Your Job</a>
-                </p>
-            </section>
-
-            <!-- =============================== -->
-            <!-- SLIDE 8: Output Capture          -->
-            <!-- =============================== -->
-            <section>
-                <div class="slide-header">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
-                        alt="Slurm"
-                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm</span>'">
-                    <h3>Capturing Output</h3>
-                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
-                        alt="ilifu"
-                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
-                </div>
-
-                <p style="font-size: 0.68em;">By default, job output goes nowhere. Capture it with directives:</p>
-                <pre><code class="language-bash">#SBATCH --output=logs/demo-job-%j.out
-#SBATCH --error=logs/demo-job-%j.err</code></pre>
-                <div class="columns" style="margin-top: 0.5em;">
-                    <div class="col">
-                        <h3>What <code>%j</code> does</h3>
-                        <ul>
-                            <li>Replaced with the <strong>Job ID</strong></li>
-                            <li>Each run gets unique log files</li>
-                            <li>No accidental overwrites</li>
-                        </ul>
-                    </div>
-                    <div class="col">
-                        <h3>Don't forget!</h3>
-                        <pre><code class="language-bash"># Create the logs directory first
-mkdir -p logs</code></pre>
-                        <p style="font-size:0.82em;">Slurm won't create directories for you — the job will fail
-                            silently.</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- =============================== -->
-            <!-- SLIDE 9: Building Features       -->
-            <!-- (Vertical slide stack)           -->
-            <!-- =============================== -->
-            <section>
-                <!-- 9a: Intro -->
-                <section class="section-title">
-                    <div class="slide-header">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
-                            alt="Slurm"
-                            onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm</span>'">
-                        <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
-                            alt="ilifu"
-                            onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
-                    </div>
-                    <h2>Building a Job Script</h2>
-                    <p style="font-size: 0.8em;">Step by step, from minimal to full-featured</p>
-                    <p style="font-size: 0.6em; color: var(--brand-subtle);">↓ Navigate down through each step</p>
-                </section>
-
-                <!-- 9b: Job Naming -->
-                <section>
-                    <h3>Step 1: Job Naming</h3>
-                    <pre><code class="language-bash">#SBATCH --job-name=tutorial2_R_container</code></pre>
-                    <ul>
-                        <li>Makes jobs easier to identify in <code>squeue</code> output</li>
-                        <li>Also visible in <code>sacct</code> for reviewing past jobs</li>
-                        <li>Without this, you'll see generic names or numbers</li>
-                    </ul>
-                </section>
-
-                <!-- 9c: Time & Memory -->
-                <section>
-                    <h3>Step 2: Time &amp; Memory Limits</h3>
-                    <pre><code class="language-bash">#SBATCH --time=00-00:01:00
-#SBATCH --mem=4G</code></pre>
-                    <div class="columns">
-                        <div class="col">
-                            <p><strong>Time format:</strong> <code>DD-HH:MM:SS</code></p>
-                            <ul>
-                                <li>Here: 0 days, 0 hours, 1 minute</li>
-                                <li>Jobs exceeding this are <strong>killed</strong></li>
-                                <li>Set slightly higher than expected</li>
-                            </ul>
+                        <div id="demo-login">
                         </div>
-                        <div class="col">
-                            <p><strong>Memory:</strong></p>
-                            <ul>
-                                <li>Too little → out-of-memory errors</li>
-                                <li>Too much → slower scheduling</li>
-                                <li>Match to your application's needs</li>
-                            </ul>
+                        <div class="info-box tip" style="margin-top: 0.8em;">
+                            <strong>💡 Manage your ssh keys here:</strong> <a
+                                href="https://usage.ilifu.ac.za/ssh_keys">https://usage.ilifu.ac.za/ssh_keys</a>
                         </div>
                     </div>
-                </section>
-
-                <!-- 9d: Output Files -->
-                <section>
-                    <h3>Step 3: Output Files</h3>
-                    <pre><code class="language-bash">#SBATCH --output=R_container-%j.stdout
-#SBATCH --error=R_container-%j.stderr</code></pre>
-                    <ul>
-                        <li>Separate files for <strong>stdout</strong> and <strong>stderr</strong></li>
-                        <li><code>%j</code> is replaced with your unique Job ID</li>
-                        <li>Makes debugging much easier</li>
-                    </ul>
-                </section>
-
-                <!-- 9e: Email -->
-                <section>
-                    <h3>Step 4: Email Notifications</h3>
-                    <pre><code class="language-bash">#SBATCH --mail-user=your@email_address
-#SBATCH --mail-type=BEGIN,END,FAIL,TIME_LIMIT_80</code></pre>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Event</th>
-                                <th>When</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><code>BEGIN</code></td>
-                                <td>Job starts running</td>
-                            </tr>
-                            <tr>
-                                <td><code>END</code></td>
-                                <td>Job completes successfully</td>
-                            </tr>
-                            <tr>
-                                <td><code>FAIL</code></td>
-                                <td>Job fails</td>
-                            </tr>
-                            <tr>
-                                <td><code>TIME_LIMIT_80</code></td>
-                                <td>80% of time used (⚠️ warning)</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="info-box tip">
-                        <strong>💡 Great for long jobs</strong> — no need to keep checking <code>squeue</code>
-                        repeatedly.
-                    </div>
-                </section>
-
-                <!-- 9f: Account -->
-                <section>
-                    <h3>Step 5: Billing Account</h3>
-                    <pre><code class="language-bash">#SBATCH --account=&lt;YOUR_ACCOUNT_NAME&gt;</code></pre>
-                    <ul>
-                        <li>Many clusters require jobs to be billed to a specific project</li>
-                        <li>Check with your cluster administrator for the correct name</li>
-                        <li>Example: <code>--account=b34-admins-ag</code></li>
-                    </ul>
-                </section>
-
-                <!-- 9g: Containers -->
-                <section>
-                    <h3>Step 6: Running Software</h3>
-                    <div class="columns">
-                        <div class="col">
-                            <h3 style="color: #38a169 !important;">Singularity Container</h3>
-                            <pre><code class="language-bash">singularity exec \
-  /software/common/containers/\
-  RStudio2023.06.1-524-R4.3.1.sif \
-  Rscript hello_world.R</code></pre>
-                            <p style="font-size:0.82em;">Bundled, reproducible environment</p>
-                        </div>
-                        <div class="col">
-                            <h3 style="color: #3182ce !important;">Environment Modules</h3>
-                            <pre><code class="language-bash">module add python/3.11.2
-python hello_world.py</code></pre>
-                            <p style="font-size:0.82em;">Pre-installed system software</p>
-                        </div>
-                    </div>
-                    <div class="info-box">
-                        <strong>Containers</strong> bundle everything for consistency across environments.
-                        <strong>Modules</strong> load pre-installed software. Choose based on availability and needs.
-                    </div>
-                </section>
-            </section>
-
-            <!-- =============================== -->
-            <!-- SLIDE 10: Complete Example       -->
-            <!-- =============================== -->
-            <section>
-                <div class="slide-header">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
-                        alt="Slurm"
-                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm</span>'">
-                    <h3>Complete Example: <code>maximal.sbatch</code></h3>
-                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
-                        alt="ilifu"
-                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
                 </div>
-
-                <pre><code class="language-bash">#!/bin/bash
-#SBATCH --job-name=tutorial2_R_container
-#SBATCH --time=00-00:01:00
-#SBATCH --mem=4G
-#SBATCH --partition=Main
-#SBATCH --output=R_container-%j.stdout
-#SBATCH --error=R_container-%j.stderr
-#SBATCH --mail-user=your@email_address
-#SBATCH --mail-type=BEGIN,END,FAIL,TIME_LIMIT_80
-#SBATCH --account=b34-admins-ag
-
-singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rscript hello_world.R</code></pre>
-                <div class="info-box">
-                    All the pieces together: naming, limits, output capture, notifications, billing, and a containerised
-                    command.
-                </div>
-            </section>
-
-            <!-- =============================== -->
-            <!-- SLIDE 11: Resource Limits        -->
-            <!-- =============================== -->
-            <section>
-                <div class="slide-header">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
-                        alt="Slurm"
-                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm</span>'">
-                    <h3>Resource Limits per Partition</h3>
-                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
-                        alt="ilifu"
-                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
-                </div>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Partition</th>
-                            <th>CPUs</th>
-                            <th>RAM</th>
-                            <th>Max Wall-time</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><span class="badge badge-green">Main</span></td>
-                            <td>1 – 48</td>
-                            <td>3 – 232 GiB</td>
-                            <td>14 days</td>
-                        </tr>
-                        <tr>
-                            <td><span class="badge badge-red">HighMem</span></td>
-                            <td>1 – 96</td>
-                            <td>15 – 1508 GiB</td>
-                            <td>14 days</td>
-                        </tr>
-                        <tr>
-                            <td><span class="badge badge-red">GPU</span></td>
-                            <td>1 – 48</td>
-                            <td>7 – 354 GiB</td>
-                            <td>14 days</td>
-                        </tr>
-                        <tr>
-                            <td><span class="badge badge-blue">Devel</span></td>
-                            <td>1 – 32</td>
-                            <td>—</td>
-                            <td>12 hours</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="info-box">
-                    Request only what you need. Over-requesting delays scheduling and wastes shared resources.
-                </div>
-                <p style="font-size:0.5em; color: var(--brand-subtle);">
-                    📖 <a href="https://docs.ilifu.ac.za/#/tech_docs/resource_allocation?id=maximum-allocation"
-                        target="_blank">Resource Allocation</a>
-                </p>
-            </section>
-
-            <!-- =============================== -->
-            <!-- SLIDE 12: Demo Time              -->
-            <!-- =============================== -->
-            <section>
-                <h2 class="demo-title">🎬 Demo Time!</h2>
-
-                <div class="asciinema-container" id="demo-basic"></div>
-
-                <p style="font-size: 0.6em; color: var(--brand-subtle); margin-top: 0.5em;">
-                    Submitting and monitoring a basic Slurm job on ilifu
-                </p>
-                <p style="font-size:0.5em;">
-                    📖 <a href="https://github.com/ilifu/ilifu_user_training/tree/main/session1/tutorial2"
-                        target="_blank">Tutorial repository on GitHub</a>
-                </p>
-                <aside class="notes">
-                    Live demo: SSH in, view our batch scripts, submit a job, check squeue, view output.
-                </aside>
-            </section>
-
-            <!-- =============================== -->
-            <!-- SLIDE 13: Best Practices         -->
-            <!-- =============================== -->
-            <section>
-                <div class="slide-header">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
-                        alt="Slurm"
-                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm</span>'">
-                    <h3>Best Practices</h3>
-                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
-                        alt="ilifu"
-                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
-                </div>
-
-                <div class="do-dont">
-                    <div class="do-col">
-                        <h3>✅ Do</h3>
-                        <ul>
-                            <li>Use <code>sbatch</code> for production work</li>
-                            <li>Identify resource requirements first</li>
-                            <li>Clean up temp files (e.g., <code>/scratch3</code>)</li>
-                            <li>Use Singularity containers for software</li>
-                            <li>Use <code>transfer.ilifu.ac.za</code> for data transfers</li>
-                        </ul>
-                    </div>
-                    <div class="dont-col">
-                        <h3>❌ Don't</h3>
-                        <ul>
-                            <li>Run heavy processes on the login node</li>
-                            <li>Place large files in <code>/users</code> (home dir)</li>
-                            <li>Use <code>scp</code>/<code>rsync</code> on login node</li>
-                            <li>Request way more resources than needed</li>
-                        </ul>
-                    </div>
-                </div>
-                <p style="font-size:0.5em; color: var(--brand-subtle); margin-top: 0.6em;">
-                    📖 <a href="https://docs.ilifu.ac.za/#/getting_started/best_practices" target="_blank">Best
-                        Practices Guide</a>
-                </p>
-            </section>
-
-            <!-- =============================== -->
-            <!-- SLIDE 14: Summary                -->
-            <!-- =============================== -->
-            <section class="title-slide">
-                <h1>Start Simple, Build Up</h1>
-                <ol style="font-size: 0.68em; text-align: left; display: inline-block;">
-                    <li>Basic job → add output capture</li>
-                    <li>Add time/memory limits to prevent runaway jobs</li>
-                    <li>Add email notifications for long jobs</li>
-                    <li>Use containers for reproducible environments</li>
-                    <li>Specify billing accounts as required</li>
-                </ol>
-                <div class="info-box" style="margin-top: 0.8em;">
-                    <strong>Next steps:</strong> Explore <code>man sbatch</code>, job arrays, dependencies, and
-                    multi-node MPI jobs.
-                </div>
-                <p class="meta" style="margin-top: 0.8em;">
-                    <strong>Questions?</strong><br>
-                    📧 support@ilifu.ac.za · 📖 docs.ilifu.ac.za
-                </p>
             </section>
 
         </div><!-- /.slides -->
@@ -1144,7 +746,7 @@ singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rsc
     <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/notes/notes.min.js"></script>
 
     <!-- Asciinema Player -->
-    <script src="https://cdn.jsdelivr.net/npm/asciinema-player@3.8.0/dist/bundle/asciinema-player.min.js"></script>
+    <script src="resources/asciinema-player.min.js"></script>
 
     <script>
         // Initialize Reveal.js
@@ -1162,29 +764,14 @@ singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rsc
             plugins: [RevealHighlight, RevealNotes]
         });
 
-        // Initialize Asciinema player on Demo slide
-        Reveal.on('slidechanged', function (event) {
-            const demoContainer = event.currentSlide.querySelector('#demo-basic');
-            if (demoContainer && !demoContainer.hasChildNodes()) {
-                try {
-                    AsciinemaPlayer.create(
-                        'demos/demo_basic.cast',
-                        demoContainer,
-                        {
-                            theme: 'monokai',
-                            cols: 100,
-                            rows: 24,
-                            autoPlay: true,
-                            loop: true,
-                            speed: 1.5,
-                            fit: 'width',
-                            terminalFontFamily: "'Fira Code', monospace"
-                        }
-                    );
-                } catch (e) {
-                    demoContainer.innerHTML = '<p style="color: var(--brand-subtle); font-size: 0.7em;">⚠️ Demo recording not found. See <code>demos/</code> directory for recording instructions.</p>';
-                }
-            }
+        AsciinemaPlayer.create('demos/login.cast', document.getElementById('demo-login'), {
+            autoPlay: false,
+            loop: false,
+            controls: true,
+            // theme: 'monokai',
+            speed: 1.5,
+            poster: 'npt:0:6',
+            autoplay: 1,
         });
     </script>
 

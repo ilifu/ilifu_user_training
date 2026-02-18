@@ -27,434 +27,7 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
         rel="stylesheet">
 
-    <style>
-        :root {
-            --brand-blue: #2b579a;
-            --brand-blue-light: #3a7bd5;
-            --brand-blue-dark: #1e3a6e;
-            --brand-text: #2d3748;
-            --brand-subtle: #718096;
-            --brand-light: #f7fafc;
-            --brand-border: #e2e8f0;
-            --brand-link: #3a7bd5;
-            --brand-rule: #2b579a;
-        }
-
-        .reveal {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            color: var(--brand-text);
-        }
-
-        .reveal h1,
-        .reveal h2,
-        .reveal h3,
-        .reveal h4 {
-            font-family: 'Inter', sans-serif;
-            font-weight: 700;
-            color: var(--brand-blue);
-            text-transform: none;
-            letter-spacing: -0.02em;
-        }
-
-        .reveal h1 {
-            font-size: 2em;
-        }
-
-        .reveal h2 {
-            font-size: 1.35em;
-            margin-bottom: 0.3em;
-        }
-
-        .reveal h3 {
-            font-size: 1em;
-            margin-bottom: 0.2em;
-        }
-
-        .reveal p,
-        .reveal li {
-            font-size: 0.65em;
-            line-height: 1.45;
-            color: var(--brand-text);
-        }
-
-        .reveal p {
-            margin-top: 0.2em;
-            margin-bottom: 0.2em;
-        }
-
-        .reveal a {
-            color: var(--brand-link);
-        }
-
-        .reveal ul {
-            list-style: disc;
-            padding-left: 1.4em;
-        }
-
-        .reveal ul li {
-            margin-bottom: 0.2em;
-        }
-
-        .reveal ul ul {
-            margin-top: 0.3em;
-            list-style: circle;
-        }
-
-        .reveal ul ul li {
-            font-size: 0.92em;
-        }
-
-        /* ========================================
-           SLIDE LAYOUT: header bar + right logos
-           ======================================== */
-
-        /* Wrapper for each slide's content (sits inside <section>) */
-        .slide-content {
-            width: 100%;
-            height: 100%;
-            position: relative;
-        }
-
-        /* Top header with Slurm + ilifu logos + blue rule */
-        .slide-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 0 0.3em 0;
-            border-bottom: 3px solid var(--brand-rule);
-            margin-bottom: 0.4em;
-        }
-
-        .slide-header img {
-            height: 36px;
-            object-fit: contain;
-        }
-
-        /* Bottom footer bar — pushed to bottom via flexbox */
-        .slide-footer {
-            margin-top: auto;
-            padding: 0.3em 0 0 0;
-            border-top: 2px solid var(--brand-rule);
-            font-size: 0.5em;
-            color: var(--brand-subtle);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* Right-side logo column — fixed position */
-        .logo-sidebar {
-            position: fixed;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            z-index: 100;
-            padding: 8px 6px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 8px;
-        }
-
-        .logo-sidebar img {
-            width: 85px;
-            height: auto;
-            object-fit: contain;
-            opacity: 0.85;
-            transition: opacity 0.3s;
-        }
-
-        .logo-sidebar img:hover {
-            opacity: 1;
-        }
-
-        /* Title slide — special layout, no header */
-        .title-slide h1 {
-            font-size: 2.4em;
-            margin-bottom: 0.1em;
-            color: var(--brand-blue);
-        }
-
-        .title-slide .subtitle {
-            font-size: 1.1em;
-            color: var(--brand-subtle);
-            font-weight: 400;
-            margin-bottom: 1.5em;
-        }
-
-        .title-slide .meta {
-            font-size: 0.65em;
-            color: var(--brand-subtle);
-            border-top: 3px solid var(--brand-blue);
-            padding-top: 1em;
-            display: inline-block;
-        }
-
-        .title-slide .meta strong {
-            color: var(--brand-blue-dark);
-        }
-
-        /* Section title accent */
-        .section-title h2 {
-            border-left: 5px solid var(--brand-blue);
-            padding-left: 0.6em;
-        }
-
-        /* Code blocks */
-        .reveal pre {
-            width: 100%;
-            margin: 0.3em 0;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-            border-radius: 6px;
-            border: 1px solid rgba(0, 0, 0, 0.08);
-        }
-
-        .reveal pre code {
-            font-family: 'Fira Code', monospace;
-            font-size: 0.5em;
-            line-height: 1.4;
-            padding: 0.6em 0.8em;
-            border-radius: 6px;
-            max-height: 400px;
-        }
-
-        .reveal code:not(pre code) {
-            font-family: 'Fira Code', monospace;
-            background: #eef2f7;
-            padding: 0.12em 0.35em;
-            border-radius: 3px;
-            font-size: 0.85em;
-            color: var(--brand-blue-dark);
-            border: 1px solid var(--brand-border);
-        }
-
-        /* Tables */
-        .reveal table {
-            font-size: 0.52em;
-            border-collapse: collapse;
-            margin: 0.3em auto;
-            width: 95%;
-        }
-
-        .reveal table th {
-            background: var(--brand-blue);
-            color: white;
-            font-weight: 600;
-            padding: 0.35em 0.6em;
-        }
-
-        .reveal table td {
-            padding: 0.3em 0.6em;
-            border-bottom: 1px solid var(--brand-border);
-        }
-
-        .reveal table tr:nth-child(even) td {
-            background: var(--brand-light);
-        }
-
-        /* Info boxes */
-        .info-box {
-            background: #eef2f7;
-            border-left: 4px solid var(--brand-blue);
-            padding: 0.35em 0.8em;
-            border-radius: 0 5px 5px 0;
-            margin: 0.3em 0;
-            text-align: left;
-            font-size: 0.62em;
-        }
-
-        .info-box.tip {
-            border-left-color: #38a169;
-            background: #f0fff4;
-        }
-
-        /* Two-column layout */
-        .columns {
-            display: flex;
-            gap: 1.2em;
-            align-items: flex-start;
-        }
-
-        .columns .col {
-            flex: 1;
-            text-align: left;
-        }
-
-        /* Architecture diagram */
-        .arch-diagram {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.8em;
-            margin: 0.8em 0;
-        }
-
-        .arch-box {
-            background: var(--brand-light);
-            border: 2px solid var(--brand-border);
-            border-radius: 8px;
-            padding: 0.6em 1em;
-            font-size: 0.62em;
-            text-align: center;
-            min-width: 130px;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .arch-box:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-        }
-
-        .arch-box.login {
-            border-color: var(--brand-blue);
-        }
-
-        .arch-box.compute {
-            border-color: #3182ce;
-        }
-
-        .arch-box.scheduler {
-            border-color: #38a169;
-        }
-
-        .arch-box .box-title {
-            font-weight: 700;
-            margin-bottom: 0.2em;
-            font-size: 1.05em;
-        }
-
-        .arch-arrow {
-            font-size: 1.6em;
-            color: var(--brand-subtle);
-        }
-
-        /* Badge */
-        .badge {
-            display: inline-block;
-            padding: 0.12em 0.45em;
-            border-radius: 20px;
-            font-size: 0.7em;
-            font-weight: 600;
-        }
-
-        .badge-red {
-            background: #fed7d7;
-            color: #c53030;
-        }
-
-        .badge-green {
-            background: #c6f6d5;
-            color: #276749;
-        }
-
-        .badge-blue {
-            background: #bee3f8;
-            color: #2a4365;
-        }
-
-        .badge-gray {
-            background: #e2e8f0;
-            color: #4a5568;
-        }
-
-        /* Slide number */
-        .reveal .slide-number {
-            font-family: 'Inter', sans-serif;
-            font-size: 0.6em;
-            color: var(--brand-subtle);
-        }
-
-        /* Progress bar */
-        .reveal .progress {
-            height: 3px;
-        }
-
-        .reveal .progress span {
-            background: var(--brand-blue);
-        }
-
-        /* Controls */
-        .reveal .controls-arrow {
-            color: var(--brand-blue) !important;
-        }
-
-        /* Asciinema container */
-        .asciinema-container {
-            margin: 0.6em auto;
-            max-width: 780px;
-            border-radius: 6px;
-            overflow: hidden;
-            box-shadow: 0 3px 16px rgba(0, 0, 0, 0.15);
-        }
-
-        /* Demo slide */
-        .demo-title {
-            font-size: 2.8em !important;
-            color: var(--brand-blue) !important;
-        }
-
-        /* Best practices columns */
-        .do-dont {
-            display: flex;
-            gap: 0.8em;
-            margin-top: 0.2em;
-        }
-
-        .do-col,
-        .dont-col {
-            flex: 1;
-            padding: 0.35em 0.5em;
-            border-radius: 6px;
-            text-align: left;
-        }
-
-        .do-col li,
-        .dont-col li {
-            font-size: 0.6em;
-            margin-bottom: 0.1em;
-        }
-
-        .do-col {
-            background: #f0fff4;
-            border: 2px solid #38a169;
-        }
-
-        .dont-col {
-            background: #fff5f5;
-            border: 2px solid #e53e3e;
-        }
-
-        .do-col h3 {
-            color: #38a169 !important;
-        }
-
-        .dont-col h3 {
-            color: #e53e3e !important;
-        }
-
-        /* Full-page slides with header pinned at top */
-        .reveal .slides>section,
-        .reveal .slides>section>section {
-            display: flex !important;
-            flex-direction: column;
-            align-items: stretch;
-            justify-content: flex-start;
-            height: 100%;
-            box-sizing: border-box;
-            padding: 0.6em 1.2em !important;
-            padding-right: 90px !important;
-            /* room for logo sidebar */
-            text-align: left;
-        }
-
-        /* Title slides stay centered */
-        .reveal .slides>section.title-slide {
-            justify-content: center;
-            align-items: center;
-        }
-    </style>
+    <link rel="stylesheet" href="resources/theme.css">
 </head>
 
 <body>
@@ -485,6 +58,12 @@
                 </div>
 
                 <p>Content</p>
+
+                <div class="slide-footer">
+                </div>
+
+                <aside class="notes">
+                </aside>
             </section> -->
 
             <!-- =============================== -->
@@ -735,12 +314,467 @@
                         <pre><code class="language-bash">ssh &lt;username&gt;@slurm.ilifu.ac.za</code></pre>
                         <div id="demo-login">
                         </div>
-                        <div class="info-box tip" style="margin-top: 0.8em;">
-                            <strong>💡 Manage your ssh keys here:</strong> <a
-                                href="https://usage.ilifu.ac.za/ssh_keys">https://usage.ilifu.ac.za/ssh_keys</a>
-                        </div>
                     </div>
                 </div>
+                <div class="slide-footer">
+                    <a href="https://jupyter.ilifu.ac.za">https://jupyter.ilifu.ac.za</a>
+                    <a href="https://docs.ilifu.ac.za/#/getting_started/access_ilifu">Logging into ilifu</a>
+                    <a href="https://docs.ilifu.ac.za/#/getting_started/ssh">SSH Keys</a>
+                </div>
+                <aside class="notes">
+                    This slide shows the two primary ways one interacts with the cluster.<br /><br />
+
+                    On the left we see the jupyter interface that Jeremy showed you earlier. The thing I really just
+                    wanted to point out is that on the backend jupyter is actually running as a slurm job on a regular
+                    compute node. So we have JupyterHub running as a service on its own node, but it submits a job to
+                    slurm on your behalf and then acts as a proxy between your jupyter job and your browser.<br /><br />
+
+                    Then the image on the left illustrates more what I’ll be demonstrating shortly and that’s the shell
+                    or command line interface (CLI for short) and how one uses that to interact with the cluster.
+
+                </aside>
+            </section>
+            <section>
+                <div class="slide-header">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
+                        alt="Slurm"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm Workload Manager</span>'">
+                    <h3>CLI user commands</h3>
+                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
+                        alt="ilifu"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
+                </div>
+
+                <pre><code data-trim class="language-bash" data-line-numbers="1-8|2|3-4|5|6|7-8|1-8">
+ssh &lt;username&gt;@slurm.ilifu.ac.za  # connect to login node
+sinfo                             # show partition information
+squeue                            # show all job information
+squeue -u $USER                   # show only your jobs
+sbatch your_job_script.sh         # submit a job
+scancel                           # cancel a job
+man sbatch                        # show the manual page for a command
+sbatch --help                     # show the help page for a command
+                </code></pre>
+
+                <div id="demo-cli" style="flex: 1; min-height: 0; width: 100%;"></div>
+
+                <div class="slide-footer">
+                    <a href="https://slurm.schedmd.com/quickstart.html">Slurm Quick Start User Guide</a>
+                </div>
+
+                <aside class="notes">
+                    First off one has to connect to the login node and one generally uses the `ssh` command if you’re
+                    working on linux / Mac or some SSH client in Windows.<br /><br />
+
+                    Once you have landed on the login node, these are the basic slurm commands that are useful to get
+                    you
+                    going. These commands allow you to get submit/monitor jobs as well as get information about the
+                    state
+                    of the cluster. I’ll demo all of these commands later, but let me give you a quick
+                    rundown.<br /><br />
+
+                    Sinfo — this gives you information about the partitions (sometimes called queues). It shows you the
+                    number of nodes available and their state like: are they free, partially used or fully allocated to
+                    jobs.<br /><br />
+
+                    Squeue — this gives you information about all the jobs that have been submitted to the cluster and
+                    have not finished running yet. You can filter this information in various ways, for example one can
+                    filter by user — so if you wanted to show only your jobs you can add this “-u” parameter with your
+                    username.<br /><br />
+
+                    Sbatch is how you submit a regular job on the cluster. When you run it (and there are no problems in
+                    your script) it gives you a job ID.<br /><br />
+
+                    Scancel is to cancel a queued or running job.<br /><br />
+
+                    There are a handful of other ways to submit jobs but these will be covered later in one of the
+                    advanced training sessions.
+
+                </aside>
+            </section>
+            <section>
+                <div class="slide-header">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
+                        alt="Slurm"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm Workload Manager</span>'">
+                    <h3>Example bash script</h3>
+                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
+                        alt="ilifu"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
+                </div>
+
+                <pre><code data-trim class="language-bash" data-line-numbers="1-4|1|3|4|1-4">
+#!/bin/bash
+
+module add python/3.11.2
+python hello_world.py
+</code></pre>
+
+                <div class="slide-footer">
+                </div>
+
+                <aside class="notes">
+                    So what is a job script? A job script is (usually) a simple bash script that describes what
+                    resources your job requires and then the steps your job should do in order to process your
+                    data.<br /><br />
+
+                    This is (almost) the most simple script you could have. So the very first thing is this shebang line
+                    which tells slurm to interpret this script using the bash scripting language and unless you’re doing
+                    something pretty unusual all your scripts will have the same first line.<br /><br />
+
+                    The next lines are simply the commands that will be run. In this case we’re using the “module”
+                    system and we’re telling it to use python 3.11.2. In other words this makes python 3.11.2 available
+                    to use.And then to run the “hello_world.py” script using that python.<br /><br />
+
+                    And that’s it. We can submit this job, slurm will send it to a compute node and run the job. And
+                    I’ll demonstrate that shortly.<br /><br />
+
+                    But slurm is in charge of allocating resources and the question you might be asking is — how does it
+                    know which queue to run on? How many CPUs to use. How much memory should be allocated?<br /><br />
+
+                    Well, there are a bunch of defaults…
+                </aside>
+            </section>
+            <section>
+                <div class="slide-header">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
+                        alt="Slurm"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm Workload Manager</span>'">
+                    <h3>Default Job Parameters</h3>
+                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
+                        alt="ilifu"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
+                </div>
+
+                <pre><code data-trim class="language-plaintext" data-line-numbers="1-6|1|2|3-4|5|6|1-6">
+#SBATCH --time 0-03:00:00  # 0 days + 3 hours
+#SBATCH --mem 3G           # 3 GiB
+#SBATCH --ntasks 1         # one task
+#SBATCH --nodes 1          # one node
+#SBATCH --partition Main
+#SBATCH --account &lt;your default&gt;
+                </code></pre>
+
+                <div class="slide-footer">
+                    <a
+                        href="https://docs.ilifu.ac.za/#/tech_docs/running_jobs?id=customising-your-job-using-sbatchsrun-parameters">sbatch
+                        parameters</a>
+                </div>
+
+                <aside class="notes">
+                    And here they are.<br /><br />
+
+                    So by default, if not otherwise specified, a job has a time limit of 3 hours, is limited to using
+                    3GiB of RAM, and only uses 1 CPU on 1 node. It also runs on the Main partition against your default
+                    account.<br /><br />
+
+                    If you click this link it takes you to a page where we describe all the available parameters. Let’s
+                    take a very quick look at that.<br /><br />
+
+                    So let’s take a look at what a script with more slurm parameters set might look like.
+
+                </aside>
+            </section>
+            <section>
+                <div class="slide-header">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
+                        alt="Slurm"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm Workload Manager</span>'">
+                    <h3>Example Slurm Job Script</h3>
+                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
+                        alt="ilifu"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
+                </div>
+
+
+                <pre><code data-trim class="language-bash" data-name="R_container.sbatch" data-line-numbers="1-12|1|2|3|4|5|6-7|8-9|10|12|1-12">
+#!/bin/bash
+#SBATCH --job-name=tutorial2_R_container
+#SBATCH --time=00-00:01:00
+#SBATCH --mem=4G
+#SBATCH --partition=Main
+#SBATCH --output=R_container-%j.stdout
+#SBATCH --error=R_container-%j.stderr
+#SBATCH --mail-user=YOUR_EMAIL_ADDRESS
+#SBATCH --mail-type=BEGIN,END,FAIL,TIME_LIMIT_80
+#SBATCH --account=ACCOUNTING_GROUP
+
+singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rscript hello_world.R</code></pre>
+
+                <p>
+                    Submit the job:
+                </p>
+                <pre><code class="language-bash">sbatch R_container.sbatch</code></pre>
+
+                <div class="slide-footer">
+                    something
+                </div>
+
+                <aside class="notes">
+                    Now, let's learn how to write a job script for a specific use case that you can submit to
+                    Slurm.<br /><br />
+
+                    Again we have a bash script and you know that by the shebang at the top. The difference now is that
+                    we have a bunch of parameters that slurm will interpret and the lines all start with
+                    “#SBATCH”.<br />
+                    These #SBATCH lines explicitly declare some settings and override specific default
+                    parameters.<br /><br />
+
+                    Let’s briefly go through the parameters:<br /><br />
+
+                    job-name: Name your job.<br />
+                    expected time duration: Overestimate a bit to allow extra room.<br />
+                    partition: Select based on your use case.<br />
+                    output and error parameters: Where you should Log your results.<br />
+                    mail and mail-type: Receive notifications when your job starts, ends, fails, or times out.<br />
+                    TIME_LIMIT_80: Get notified when your job time reaches 80%, allowing you to request more time if
+                    needed by contacting the ilifu helpdesk.<br />
+                    account: Specify the account or user to be charged. Be cautious, as resources are not free.
+                    Emphasize choosing this.<br /><br />
+
+                    And then, we'll use a Singularity container with Python, as our example requires a Python
+                    package.<br /><br />
+
+                    Finally, 'sbatch' will submit your job to the compute nodes. Remember, jobs run on compute nodes,
+                    not the login node, so you can continue running other processes after submitting your job.
+                </aside>
+            </section>
+            <section>
+                <div class="slide-header">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
+                        alt="Slurm"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm Workload Manager</span>'">
+                    <h3>Defaults and maximums per partition</h3>
+                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
+                        alt="ilifu"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Partition</th>
+                            <th>Node names</th>
+                            <th>Default CPUs</th>
+                            <th>Max CPUs</th>
+                            <th>Default Memory (GiB)</th>
+                            <th>Max Memory (GiB)</th>
+                            <th>Default wall-time</th>
+                            <th>Max wall-time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Main</td>
+                            <td>compute-[002-021]</td>
+                            <td>1</td>
+                            <td>32</td>
+                            <td>3</td>
+                            <td>232</td>
+                            <td>3 hours</td>
+                            <td>14 days</td>
+                        </tr>
+                        <tr>
+                            <td>Main</td>
+                            <td>compute-[101-105]</td>
+                            <td>1</td>
+                            <td>48</td>
+                            <td>3</td>
+                            <td>232</td>
+                            <td>3 hours</td>
+                            <td>14 days</td>
+                        </tr>
+                        <tr>
+                            <td>Main</td>
+                            <td>compute-[201-260]</td>
+                            <td>1</td>
+                            <td>32</td>
+                            <td>3</td>
+                            <td>251</td>
+                            <td>3 hours</td>
+                            <td>14 days</td>
+                        </tr>
+                        <tr>
+                            <td>HighMem</td>
+                            <td>highmem-[001-002]</td>
+                            <td>1</td>
+                            <td>32</td>
+                            <td>15</td>
+                            <td>503</td>
+                            <td>3 hours</td>
+                            <td>14 days</td>
+                        </tr>
+                        <tr>
+                            <td>HighMem</td>
+                            <td>highmem-003</td>
+                            <td>1</td>
+                            <td>96</td>
+                            <td>15</td>
+                            <td>1508</td>
+                            <td>3 hours</td>
+                            <td>14 days</td>
+                        </tr>
+                        <tr>
+                            <td>HighMem</td>
+                            <td>highmem-[004-007]</td>
+                            <td>1</td>
+                            <td>32</td>
+                            <td>15</td>
+                            <td>503</td>
+                            <td>3 hours</td>
+                            <td>14 days</td>
+                        </tr>
+                        <tr>
+                            <td>HighMem</td>
+                            <td>highmem-008</td>
+                            <td>1</td>
+                            <td>32</td>
+                            <td>15</td>
+                            <td>1007</td>
+                            <td>3 hours</td>
+                            <td>14 days</td>
+                        </tr>
+                        <tr>
+                            <td>GPU</td>
+                            <td>gpu-[001-004]</td>
+                            <td>1</td>
+                            <td>32</td>
+                            <td>7</td>
+                            <td>232</td>
+                            <td>3 hours</td>
+                            <td>14 days</td>
+                        </tr>
+                        <tr>
+                            <td>GPU</td>
+                            <td>gpu-005</td>
+                            <td>1</td>
+                            <td>24</td>
+                            <td>7</td>
+                            <td>232</td>
+                            <td>3 hours</td>
+                            <td>14 days</td>
+                        </tr>
+                        <tr>
+                            <td>GPU</td>
+                            <td>gpu-006</td>
+                            <td>1</td>
+                            <td>48</td>
+                            <td>7</td>
+                            <td>354</td>
+                            <td>3 hours</td>
+                            <td>14 days</td>
+                        </tr>
+                        <tr>
+                            <td>GPU</td>
+                            <td>gpu-007</td>
+                            <td>1</td>
+                            <td>48</td>
+                            <td>7</td>
+                            <td>354</td>
+                            <td>3 hours</td>
+                            <td>14 days</td>
+                        </tr>
+                        <tr>
+                            <td>GPU</td>
+                            <td>highmem-008</td>
+                            <td>1</td>
+                            <td>32</td>
+                            <td>7</td>
+                            <td>1007</td>
+                            <td>3 hours</td>
+                            <td>14 days</td>
+                        </tr>
+                        <tr>
+                            <td>Devel</td>
+                            <td>compute-001</td>
+                            <td>1</td>
+                            <td>32</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>3 hours</td>
+                            <td>5 days</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="slide-footer">
+                </div>
+
+                <aside class="notes">
+                    Here is a table with some of the defaults and maximums for the different partitions.<br /><br />
+
+                    So we can see the 3 main partitions here: Main, HighMem, GPU as well as “Devel” (which we get to in
+                    the advanced training)<br /><br />
+
+                    Note the default number of cores is 1 for all the partitions.<br /><br />
+
+                    Then we have a range on the maximum cores per node, even within the Main partition. So at the lower
+                    end it’s 32, while at the top end we have a node with 96 cores.<br /><br />
+
+                    The default memory is about 3GiB per core on the Main Partition, 15 GiB per core on HighMem and 7
+                    GiB per core on the GPU nodes.<br /><br />
+
+                    The default memory is about 3GiB per core on the Main Partition, 15 GiB per core on HighMem and 7
+                    GiB per core on the GPU nodes.
+
+                </aside>
+            </section>
+            <section>
+                <div class="slide-header">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
+                        alt="Slurm"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm Workload Manager</span>'">
+                    <h3>Demo</h3>
+                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
+                        alt="ilifu"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
+                </div>
+
+                <p>Content</p>
+
+                <div class="slide-footer">
+                </div>
+
+                <aside class="notes">
+                </aside>
+            </section>
+            <section>
+                <div class="slide-header">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
+                        alt="Slurm"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm Workload Manager</span>'">
+                    <h3>Best practices</h3>
+                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
+                        alt="ilifu"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
+                </div>
+
+                <p>Content</p>
+
+                <div class="slide-footer">
+                </div>
+
+                <aside class="notes">
+                </aside>
+            </section>
+            <section>
+                <div class="slide-header">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
+                        alt="Slurm"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm Workload Manager</span>'">
+                    <h3>Thank you</h3>
+                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
+                        alt="ilifu"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
+                </div>
+
+                <p>Content</p>
+
+                <div class="slide-footer">
+                </div>
+
+                <aside class="notes">
+                </aside>
             </section>
 
         </div><!-- /.slides -->
@@ -770,6 +804,8 @@
             plugins: [RevealHighlight, RevealNotes]
         });
 
+        Reveal.configure({ pdfSeparateFragments: false });
+
         AsciinemaPlayer.create('demos/login.cast', document.getElementById('demo-login'), {
             autoPlay: false,
             loop: false,
@@ -778,6 +814,17 @@
             speed: 1.5,
             poster: 'npt:0:6',
             autoplay: 1,
+        });
+        AsciinemaPlayer.create('demos/cli.cast', document.getElementById('demo-cli'), {
+            autoPlay: false,
+            loop: false,
+            controls: true,
+            // theme: 'monokai',
+            speed: 1.5,
+            speed: 1.5,
+            poster: 'npt:0:5',
+            autoplay: 1,
+            fit: 'both'
         });
     </script>
 

@@ -58,6 +58,12 @@
                 </div>
 
                 <p>Content</p>
+
+                <div class="slide-footer">
+                </div>
+
+                <aside class="notes">
+                </aside>
             </section> -->
 
             <!-- =============================== -->
@@ -339,7 +345,7 @@
                         onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
                 </div>
 
-                <pre><code data-trim class="language-bash" data-line-numbers="1-8|2|3-4|5|6|7-8">
+                <pre><code data-trim class="language-bash" data-line-numbers="1-8|2|3-4|5|6|7-8|1-8">
 ssh &lt;username&gt;@slurm.ilifu.ac.za  # connect to login node
 sinfo                             # show partition information
 squeue                            # show all job information
@@ -385,8 +391,390 @@ sbatch --help                     # show the help page for a command
                     advanced training sessions.
 
                 </aside>
+            </section>
+            <section>
+                <div class="slide-header">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
+                        alt="Slurm"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm Workload Manager</span>'">
+                    <h3>Example bash script</h3>
+                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
+                        alt="ilifu"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
+                </div>
+
+                <pre><code data-trim class="language-bash" data-line-numbers="1-4|1|3|4|1-4">
+#!/bin/bash
+
+module add python/3.11.2
+python hello_world.py
+</code></pre>
+
+                <div class="slide-footer">
+                </div>
+
+                <aside class="notes">
+                    So what is a job script? A job script is (usually) a simple bash script that describes what
+                    resources your job requires and then the steps your job should do in order to process your
+                    data.<br /><br />
+
+                    This is (almost) the most simple script you could have. So the very first thing is this shebang line
+                    which tells slurm to interpret this script using the bash scripting language and unless you’re doing
+                    something pretty unusual all your scripts will have the same first line.<br /><br />
+
+                    The next lines are simply the commands that will be run. In this case we’re using the “module”
+                    system and we’re telling it to use python 3.11.2. In other words this makes python 3.11.2 available
+                    to use.And then to run the “hello_world.py” script using that python.<br /><br />
+
+                    And that’s it. We can submit this job, slurm will send it to a compute node and run the job. And
+                    I’ll demonstrate that shortly.<br /><br />
+
+                    But slurm is in charge of allocating resources and the question you might be asking is — how does it
+                    know which queue to run on? How many CPUs to use. How much memory should be allocated?<br /><br />
+
+                    Well, there are a bunch of defaults…
+                </aside>
+            </section>
+            <section>
+                <div class="slide-header">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
+                        alt="Slurm"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm Workload Manager</span>'">
+                    <h3>Default Job Parameters</h3>
+                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
+                        alt="ilifu"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
+                </div>
+
+                <pre><code data-trim class="language-plaintext" data-line-numbers="1-6|1|2|3-4|5|6|1-6">
+#SBATCH --time 0-03:00:00  # 0 days + 3 hours
+#SBATCH --mem 3G           # 3 GiB
+#SBATCH --ntasks 1         # one task
+#SBATCH --nodes 1          # one node
+#SBATCH --partition Main
+#SBATCH --account &lt;your default&gt;
+                </code></pre>
+
+                <div class="slide-footer">
+                    <a
+                        href="https://docs.ilifu.ac.za/#/tech_docs/running_jobs?id=customising-your-job-using-sbatchsrun-parameters">sbatch
+                        parameters</a>
+                </div>
+
+                <aside class="notes">
+                    And here they are.<br /><br />
+
+                    So by default, if not otherwise specified, a job has a time limit of 3 hours, is limited to using
+                    3GiB of RAM, and only uses 1 CPU on 1 node. It also runs on the Main partition against your default
+                    account.<br /><br />
+
+                    If you click this link it takes you to a page where we describe all the available parameters. Let’s
+                    take a very quick look at that.<br /><br />
+
+                    So let’s take a look at what a script with more slurm parameters set might look like.
+
+                </aside>
+            </section>
+            <section>
+                <div class="slide-header">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
+                        alt="Slurm"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm Workload Manager</span>'">
+                    <h3>Example Slurm Job Script</h3>
+                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
+                        alt="ilifu"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
+                </div>
 
 
+                <pre><code data-trim class="language-bash" data-name="R_container.sbatch" data-line-numbers="1-12|1|2|3|4|5|6-7|8-9|10|12|1-12">
+#!/bin/bash
+#SBATCH --job-name=tutorial2_R_container
+#SBATCH --time=00-00:01:00
+#SBATCH --mem=4G
+#SBATCH --partition=Main
+#SBATCH --output=R_container-%j.stdout
+#SBATCH --error=R_container-%j.stderr
+#SBATCH --mail-user=YOUR_EMAIL_ADDRESS
+#SBATCH --mail-type=BEGIN,END,FAIL,TIME_LIMIT_80
+#SBATCH --account=ACCOUNTING_GROUP
+
+singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rscript hello_world.R</code></pre>
+
+                <p>
+                    Submit the job:
+                </p>
+                <pre><code class="language-bash">sbatch R_container.sbatch</code></pre>
+
+                <div class="slide-footer">
+                    something
+                </div>
+
+                <aside class="notes">
+                    Now, let's learn how to write a job script for a specific use case that you can submit to
+                    Slurm.<br /><br />
+
+                    Again we have a bash script and you know that by the shebang at the top. The difference now is that
+                    we have a bunch of parameters that slurm will interpret and the lines all start with
+                    “#SBATCH”.<br />
+                    These #SBATCH lines explicitly declare some settings and override specific default
+                    parameters.<br /><br />
+
+                    Let’s briefly go through the parameters:<br /><br />
+
+                    job-name: Name your job.<br />
+                    expected time duration: Overestimate a bit to allow extra room.<br />
+                    partition: Select based on your use case.<br />
+                    output and error parameters: Where you should Log your results.<br />
+                    mail and mail-type: Receive notifications when your job starts, ends, fails, or times out.<br />
+                    TIME_LIMIT_80: Get notified when your job time reaches 80%, allowing you to request more time if
+                    needed by contacting the ilifu helpdesk.<br />
+                    account: Specify the account or user to be charged. Be cautious, as resources are not free.
+                    Emphasize choosing this.<br /><br />
+
+                    And then, we'll use a Singularity container with Python, as our example requires a Python
+                    package.<br /><br />
+
+                    Finally, 'sbatch' will submit your job to the compute nodes. Remember, jobs run on compute nodes,
+                    not the login node, so you can continue running other processes after submitting your job.
+                </aside>
+            </section>
+            <section>
+                <div class="slide-header">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
+                        alt="Slurm"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm Workload Manager</span>'">
+                    <h3>Defaults and maximums per partition</h3>
+                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
+                        alt="ilifu"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Partition</th>
+                            <th>Node names</th>
+                            <th>Default CPUs</th>
+                            <th>Max CPUs</th>
+                            <th>Default Memory (GiB)</th>
+                            <th>Max Memory (GiB)</th>
+                            <th>Default wall-time</th>
+                            <th>Max wall-time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Main</td>
+                            <td>compute-[002-021]</td>
+                            <td>1</td>
+                            <td>32</td>
+                            <td>3</td>
+                            <td>232</td>
+                            <td>3 hours</td>
+                            <td>14 days</td>
+                        </tr>
+                        <tr>
+                            <td>Main</td>
+                            <td>compute-[101-105]</td>
+                            <td>1</td>
+                            <td>48</td>
+                            <td>3</td>
+                            <td>232</td>
+                            <td>3 hours</td>
+                            <td>14 days</td>
+                        </tr>
+                        <tr>
+                            <td>Main</td>
+                            <td>compute-[201-260]</td>
+                            <td>1</td>
+                            <td>32</td>
+                            <td>3</td>
+                            <td>251</td>
+                            <td>3 hours</td>
+                            <td>14 days</td>
+                        </tr>
+                        <tr>
+                            <td>HighMem</td>
+                            <td>highmem-[001-002]</td>
+                            <td>1</td>
+                            <td>32</td>
+                            <td>15</td>
+                            <td>503</td>
+                            <td>3 hours</td>
+                            <td>14 days</td>
+                        </tr>
+                        <tr>
+                            <td>HighMem</td>
+                            <td>highmem-003</td>
+                            <td>1</td>
+                            <td>96</td>
+                            <td>15</td>
+                            <td>1508</td>
+                            <td>3 hours</td>
+                            <td>14 days</td>
+                        </tr>
+                        <tr>
+                            <td>HighMem</td>
+                            <td>highmem-[004-007]</td>
+                            <td>1</td>
+                            <td>32</td>
+                            <td>15</td>
+                            <td>503</td>
+                            <td>3 hours</td>
+                            <td>14 days</td>
+                        </tr>
+                        <tr>
+                            <td>HighMem</td>
+                            <td>highmem-008</td>
+                            <td>1</td>
+                            <td>32</td>
+                            <td>15</td>
+                            <td>1007</td>
+                            <td>3 hours</td>
+                            <td>14 days</td>
+                        </tr>
+                        <tr>
+                            <td>GPU</td>
+                            <td>gpu-[001-004]</td>
+                            <td>1</td>
+                            <td>32</td>
+                            <td>7</td>
+                            <td>232</td>
+                            <td>3 hours</td>
+                            <td>14 days</td>
+                        </tr>
+                        <tr>
+                            <td>GPU</td>
+                            <td>gpu-005</td>
+                            <td>1</td>
+                            <td>24</td>
+                            <td>7</td>
+                            <td>232</td>
+                            <td>3 hours</td>
+                            <td>14 days</td>
+                        </tr>
+                        <tr>
+                            <td>GPU</td>
+                            <td>gpu-006</td>
+                            <td>1</td>
+                            <td>48</td>
+                            <td>7</td>
+                            <td>354</td>
+                            <td>3 hours</td>
+                            <td>14 days</td>
+                        </tr>
+                        <tr>
+                            <td>GPU</td>
+                            <td>gpu-007</td>
+                            <td>1</td>
+                            <td>48</td>
+                            <td>7</td>
+                            <td>354</td>
+                            <td>3 hours</td>
+                            <td>14 days</td>
+                        </tr>
+                        <tr>
+                            <td>GPU</td>
+                            <td>highmem-008</td>
+                            <td>1</td>
+                            <td>32</td>
+                            <td>7</td>
+                            <td>1007</td>
+                            <td>3 hours</td>
+                            <td>14 days</td>
+                        </tr>
+                        <tr>
+                            <td>Devel</td>
+                            <td>compute-001</td>
+                            <td>1</td>
+                            <td>32</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>3 hours</td>
+                            <td>5 days</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="slide-footer">
+                </div>
+
+                <aside class="notes">
+                    Here is a table with some of the defaults and maximums for the different partitions.<br /><br />
+
+                    So we can see the 3 main partitions here: Main, HighMem, GPU as well as “Devel” (which we get to in
+                    the advanced training)<br /><br />
+
+                    Note the default number of cores is 1 for all the partitions.<br /><br />
+
+                    Then we have a range on the maximum cores per node, even within the Main partition. So at the lower
+                    end it’s 32, while at the top end we have a node with 96 cores.<br /><br />
+
+                    The default memory is about 3GiB per core on the Main Partition, 15 GiB per core on HighMem and 7
+                    GiB per core on the GPU nodes.<br /><br />
+
+                    The default memory is about 3GiB per core on the Main Partition, 15 GiB per core on HighMem and 7
+                    GiB per core on the GPU nodes.
+
+                </aside>
+            </section>
+            <section>
+                <div class="slide-header">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
+                        alt="Slurm"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm Workload Manager</span>'">
+                    <h3>Demo</h3>
+                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
+                        alt="ilifu"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
+                </div>
+
+                <p>Content</p>
+
+                <div class="slide-footer">
+                </div>
+
+                <aside class="notes">
+                </aside>
+            </section>
+            <section>
+                <div class="slide-header">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
+                        alt="Slurm"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm Workload Manager</span>'">
+                    <h3>Best practices</h3>
+                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
+                        alt="ilifu"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
+                </div>
+
+                <p>Content</p>
+
+                <div class="slide-footer">
+                </div>
+
+                <aside class="notes">
+                </aside>
+            </section>
+            <section>
+                <div class="slide-header">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
+                        alt="Slurm"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>Slurm Workload Manager</span>'">
+                    <h3>Thank you</h3>
+                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
+                        alt="ilifu"
+                        onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
+                </div>
+
+                <p>Content</p>
+
+                <div class="slide-footer">
+                </div>
+
+                <aside class="notes">
+                </aside>
             </section>
 
         </div><!-- /.slides -->
@@ -415,6 +803,8 @@ sbatch --help                     # show the help page for a command
             margin: 0,
             plugins: [RevealHighlight, RevealNotes]
         });
+
+        Reveal.configure({ pdfSeparateFragments: false });
 
         AsciinemaPlayer.create('demos/login.cast', document.getElementById('demo-login'), {
             autoPlay: false,

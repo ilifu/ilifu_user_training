@@ -179,15 +179,40 @@
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
     border-radius: 6px;
     border: 1px solid rgba(0, 0, 0, 0.08);
+    position: relative;
+    /* Ensure label is positioned relative to this */
 }
 
 .reveal pre code {
     font-family: 'Fira Code', monospace;
-    font-size: 0.9em;
-    line-height: 1.4;
-    padding: 0.6em 0.8em;
+    font-size: 1.0em;
+    /* line-height: 1.15; */
+    /* padding: 0.6em 0.8em; */
+    /* padding-top: 1.4em; */
+    /* Make room for the filename label */
     border-radius: 6px;
     max-height: 400px;
+    height: auto;
+    overflow-y: auto;
+}
+
+/* Filename label for code blocks */
+.reveal pre code[data-name]::before {
+    content: attr(data-name);
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #e2e8f0;
+    /* var(--brand-border) or slightly darker */
+    color: #4a5568;
+    /* var(--brand-subtle) but darker */
+    font-size: 0.45em;
+    /* relative to the code font size (0.9em), so this is roughly 0.4em of slide */
+    padding: 0.2em 0.6em;
+    border-bottom-left-radius: 6px;
+    border-top-right-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
 }
 
 .reveal code:not(pre code) {

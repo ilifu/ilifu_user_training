@@ -48,7 +48,7 @@
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
                         alt="Slurm">
                     <h3>Title</h3>
-                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
+                    <img src="assets/ilifu_logo.svg"
                         alt="ilifu">
                 </div>
 
@@ -77,8 +77,7 @@
                 <div class="slide-footer">
                     <a href="https://kennedydane.github.io/ilifu/training/session1/tutorial2/index.html">View on
                         github.io</a>
-                    <a href="https://kennedydane.github.io/ilifu/training/session1/tutorial2/index.html?pdf-print">printable
-                        version</a>
+                    <a href="index.html?print-pdf">printable version</a>
                 </div>
 
                 <aside class="notes">
@@ -92,8 +91,7 @@
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
                         alt="Slurm">
                     <h3>What is Slurm?</h3>
-                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
-                        alt="ilifu">
+                    <img src="assets/ilifu_logo.svg" alt="ilifu">
                 </div>
 
                 <h4>Job Scheduling & Cluster Management Tool</h4>
@@ -103,35 +101,35 @@
                     node; Slurm allocates compute resources and runs your jobs when they're available.
                 </div>
                 <div class="arch-diagram">
-                    <div class="arch-box login">
+                    <div class="arch-box login fragment" data-fragment-index="1">
                         <div class="box-title">🖥️ Login Node</div>
                         <div>SSH access<br><code>slurm.ilifu.ac.za</code><br>Submit jobs &amp; manage files</div>
                     </div>
-                    <div class="arch-arrow">→</div>
-                    <div class="arch-box scheduler">
+                    <div class="arch-arrow fragment" data-fragment-index="2">→</div>
+                    <div class="arch-box scheduler fragment" data-fragment-index="2">
                         <div class="box-title">⚙️ Scheduler</div>
                         <div>Queue management<br>Resource allocation<br>Accounting</div>
                     </div>
-                    <div class="arch-arrow">→</div>
-                    <div class="arch-box compute">
+                    <div class="arch-arrow fragment" data-fragment-index="3">→</div>
+                    <div class="arch-box compute fragment" data-fragment-index="3">
                         <div class="box-title">🔧 Compute Nodes</div>
                         <div>Run analysis/simulation<br>Containers &amp; modules<br>Where your jobs execute</div>
                     </div>
                 </div>
                 <ul>
-                    <li class="fragment">Login Node
+                    <li class="fragment" data-fragment-index="1">Login Node
                         <ul>
                             <li>Accessed via ssh (<code>$ ssh &lt;username&gt;@slurm.ilifu.ac.za</code>)</li>
                             <li>Submit jobs and basic file management</li>
                         </ul>
                     </li>
-                    <li class="fragment">Scheduler and Accounting Database
+                    <li class="fragment" data-fragment-index="2">Scheduler and Accounting Database
                         <ul>
                             <li>Manage jobs, Partitions and Nodes</li>
                             <li>Accounting</li>
                         </ul>
                     </li>
-                    <li class="fragment">Compute Nodes
+                    <li class="fragment" data-fragment-index="3">Compute Nodes
                         <ul>
                             <li>Where your analysis / simulation runs (inside of a slurm job)</li>
                             <li>Software available via singularity containers or modules</li>
@@ -190,8 +188,7 @@
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
                         alt="Slurm">
                     <h3>Specific node / partition use cases</h3>
-                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
-                        alt="ilifu">
+                    <img src="assets/ilifu_logo.svg" alt="ilifu">
                 </div>
 
                 <table>
@@ -283,8 +280,7 @@
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
                         alt="Slurm">
                     <h3>Interacting with the Slurm Cluster</h3>
-                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
-                        alt="ilifu">
+                    <img src="assets/ilifu_logo.svg" alt="ilifu">
                 </div>
 
                 <div class="columns">
@@ -329,8 +325,7 @@
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
                         alt="Slurm">
                     <h3>CLI user commands</h3>
-                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
-                        alt="ilifu">
+                    <img src="assets/ilifu_logo.svg" alt="ilifu">
                 </div>
 
                 <pre><code data-trim class="language-bash" data-line-numbers="1-8|2|3-4|5|6|7-8|1-8">
@@ -385,8 +380,7 @@ sbatch --help                     # show the help page for a command
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
                         alt="Slurm">
                     <h3>Example bash script</h3>
-                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
-                        alt="ilifu">
+                    <img src="assets/ilifu_logo.svg" alt="ilifu">
                 </div>
 
                 <pre><code data-trim class="language-bash" data-line-numbers="1-4|1|3|4|1-4">
@@ -397,6 +391,7 @@ python hello_world.py
 </code></pre>
 
                 <div class="slide-footer">
+                    <a href="https://www.w3schools.com/bash/bash_script.php">Bash Scripting</a>
                 </div>
 
                 <aside class="notes">
@@ -426,8 +421,7 @@ python hello_world.py
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
                         alt="Slurm">
                     <h3>Default Job Parameters</h3>
-                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
-                        alt="ilifu">
+                    <img src="assets/ilifu_logo.svg" alt="ilifu">
                 </div>
 
                 <pre><code data-trim class="language-plaintext" data-line-numbers="1-6|1|2|3-4|5|6|1-6">
@@ -464,8 +458,7 @@ python hello_world.py
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
                         alt="Slurm">
                     <h3>Example Slurm Job Script</h3>
-                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
-                        alt="ilifu">
+                    <img src="assets/ilifu_logo.svg" alt="ilifu">
                 </div>
 
 
@@ -489,7 +482,7 @@ singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rsc
                 <pre><code class="language-bash">sbatch R_container.sbatch</code></pre>
 
                 <div class="slide-footer">
-                    something
+                    <a href="https://slurm.schedmd.com/sbatch.html">Slurm sbatch documentation</a>
                 </div>
 
                 <aside class="notes">
@@ -526,8 +519,7 @@ singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rsc
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
                         alt="Slurm">
                     <h3>Defaults and maximums per partition</h3>
-                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
-                        alt="ilifu">
+                    <img src="assets/ilifu_logo.svg" alt="ilifu">
                 </div>
 
                 <table>
@@ -678,6 +670,8 @@ singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rsc
                 </table>
 
                 <div class="slide-footer">
+                    <a href="https://docs.ilifu.ac.za/#/tech_docs/resource_allocation?id=maximum-allocation">Maximum
+                        Allocation</a>
                 </div>
 
                 <aside class="notes">
@@ -704,8 +698,7 @@ singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rsc
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
                         alt="Slurm">
                     <h3>Demo</h3>
-                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
-                        alt="ilifu">
+                    <img src="assets/ilifu_logo.svg" alt="ilifu">
                 </div>
 
                 <div id="demo-demo" style="flex: 1; min-height: 0; width: 100%;"></div>
@@ -727,12 +720,16 @@ singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rsc
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
                         alt="Slurm">
                     <h3>Best practices</h3>
-                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
-                        alt="ilifu">
+                    <img src="assets/ilifu_logo.svg" alt="ilifu">
+                </div>
+
+                <div class="info-box">
+                    Remember that the ilifu cluster is a shared resource with limited resources. It is important to be
+                    mindful of this when requesting resources.
                 </div>
 
                 <div class="do-dont">
-                    <div class="do-col">
+                    <div class="do-col fragment">
                         <h3>✅ Do</h3>
                         <ul>
                             <li>Use <code>sbatch</code> for production work</li>
@@ -749,7 +746,7 @@ singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rsc
                             <li>Use <code>transfer.ilifu.ac.za</code> for data transfers</li>
                         </ul>
                     </div>
-                    <div class="dont-col">
+                    <div class="dont-col fragment">
                         <h3>❌ Don't</h3>
                         <ul>
                             <li>Run heavy processes on the login node</li>
@@ -783,24 +780,38 @@ singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rsc
                     hassle-free experience.
                 </aside>
             </section>
-            <section>
-                <div class="slide-header">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
-                        alt="Slurm">
-                    <h3>Thank you</h3>
-                    <img src="https://www.ilifu.ac.za/wp-content/uploads/2023/03/ILIFU-LOGO-RGB-Landscape-1-768x327.png"
-                        alt="ilifu">
-                </div>
+            <section class="title-slide">
+                <h1 style="font-size: 2.8em; margin-bottom: 0.2em;">Thank you for your time!</h1>
+                <h2 class="subtitle" style="font-size: 1.1em; color: var(--brand-subtle); margin-bottom: 2em;">We hope
+                    this presentation was helpful.</h2>
 
-                <ul>
-                    <li><a href="https://docs.ilifu.ac.za">https://docs.ilifu.ac.za</a></li>
-                    <li><a href="mailto:support@ilifu.ac.za">support@ilifu.ac.za</a></li>
-                </ul>
+                <div class="thank-you-cards">
+                    <a href="mailto:support@ilifu.ac.za">
+                        <div class="support-card">
+                            <div style="font-size: 2.5em; margin-bottom: 0.2em;">✉️</div>
+                            <h3>Contact Support</h3>
+                            <span>support@ilifu.ac.za</span>
+                        </div>
+                    </a>
+
+                    <a href="https://docs.ilifu.ac.za" target="_blank">
+                        <div class="docs-card">
+                            <div style="font-size: 2.5em; margin-bottom: 0.2em;">📚</div>
+                            <h3>Documentation</h3>
+                            <span>docs.ilifu.ac.za</span>
+                        </div>
+                    </a>
+                </div>
 
                 <div class="slide-footer">
                 </div>
 
                 <aside class="notes">
+                    Thank you everyone for joining today's session.
+                    If you have any further questions or run into issues, please don't hesitate to reach out to our
+                    support team at support@ilifu.ac.za.
+                    Also, remember to consult the documentation at docs.ilifu.ac.za as it contains detailed guides on
+                    everything we've covered today.
                 </aside>
             </section>
 

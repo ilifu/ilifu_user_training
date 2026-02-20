@@ -102,6 +102,7 @@
 
 /* Bottom footer bar — pushed to bottom via flexbox */
 .slide-footer {
+    width: 100%;
     margin-top: auto;
     padding: 0.3em 0 0 0;
     border-top: 2px solid var(--brand-rule);

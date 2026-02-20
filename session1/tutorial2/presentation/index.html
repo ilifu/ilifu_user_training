@@ -730,9 +730,10 @@ singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rsc
                         onerror="this.outerHTML='<span style=&quot;font-weight:700;color:#2b579a;font-size:0.9em&quot;>ilifu</span>'">
                 </div>
 
-                <p>Content</p>
+                <div id="demo-demo" style="flex: 1; min-height: 0; width: 100%;"></div>
 
                 <div class="slide-footer">
+                    <a href="https://github.com/ilifu/ilifu_user_training/tree/main/session1/tutorial2">Demo scripts on Github</a>
                 </div>
 
                 <aside class="notes">
@@ -821,10 +822,20 @@ singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rsc
             controls: true,
             // theme: 'monokai',
             speed: 1.5,
-            speed: 1.5,
             poster: 'npt:0:5',
             autoplay: 1,
             fit: 'both'
+        });
+         AsciinemaPlayer.create('demos/demo.cast', document.getElementById('demo-demo'), {
+            autoPlay: false,
+            loop: false,
+            controls: true,
+            // theme: 'monokai',
+            speed: 2.0,
+            poster: 'npt:0:3',
+            autoplay: 1,
+            fit: 'both',
+            pauseOnMarkers: true
         });
     </script>
 

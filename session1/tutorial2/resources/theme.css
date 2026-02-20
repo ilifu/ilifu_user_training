@@ -451,9 +451,18 @@
 
 /* Title slides stay centered */
 .reveal .slides>section.title-slide,
-.reveal .pdf-page section.title-slide {
+.reveal .pdf-page section.title-slide,
+.pdf-page section.title-slide {
     justify-content: center;
     align-items: center;
+}
+
+/* Fix title slide header pushing to the left */
+.reveal .slides>section.title-slide .slide-header,
+.pdf-page section.title-slide .slide-header {
+    justify-content: center;
+    border-bottom: none;
+    /* Often title slides don't want the line */
 }
 
 /* Print mode fix for footer positioning */
@@ -463,12 +472,33 @@
         margin: 0;
     }
 
+    /* Force the printed section to expand to full page height */
+    .pdf-page section {
+        height: 100vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        box-sizing: border-box !important;
+    }
+
+    .pdf-page .slide-content {
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
     /* Reset from any weird absolute hacks, allowing the restored flexbox layout to do its job natively! */
-    .reveal .slide-footer {
+    .reveal .slide-footer,
+    .pdf-page .slide-footer {
         position: static !important;
         margin-top: auto !important;
         width: 100% !important;
         padding-bottom: 0 !important;
+    }
+
+    /* Hide the sidebar to prevent it from overlapping with standard A4 right-padding content */
+    .logo-sidebar {
+        display: none !important;
     }
 }
 

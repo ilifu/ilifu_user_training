@@ -81,7 +81,10 @@
 /* Wrapper for each slide's content (sits inside <section>) */
 .slide-content {
     width: 100%;
-    height: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
     position: relative;
 }
 
@@ -432,12 +435,13 @@
 
 /* Full-page slides with header pinned at top */
 .reveal .slides>section,
-.reveal .slides>section>section {
+.reveal .slides>section>section,
+.reveal .pdf-page section {
     display: flex !important;
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
-    height: 100%;
+    height: 100% !important;
     box-sizing: border-box;
     padding: 0.6em 1.2em !important;
     padding-right: 90px !important;
@@ -446,9 +450,26 @@
 }
 
 /* Title slides stay centered */
-.reveal .slides>section.title-slide {
+.reveal .slides>section.title-slide,
+.reveal .pdf-page section.title-slide {
     justify-content: center;
     align-items: center;
+}
+
+/* Print mode fix for footer positioning */
+@media print {
+    @page {
+        size: A4 landscape;
+        margin: 0;
+    }
+
+    /* Reset from any weird absolute hacks, allowing the restored flexbox layout to do its job natively! */
+    .reveal .slide-footer {
+        position: static !important;
+        margin-top: auto !important;
+        width: 100% !important;
+        padding-bottom: 0 !important;
+    }
 }
 
 /* Thank You Slide Cards */

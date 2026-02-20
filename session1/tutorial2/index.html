@@ -1,48 +1,43 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Introduction to Slurm — ilifu Online Training Session 1</title>
-    <meta name="description"
-        content="Slurm job submission tutorial for ilifu HPC cluster users. Session 1, Tutorial 2.">
-
+    <meta content="Slurm job submission tutorial for ilifu HPC cluster users. Session 1, Tutorial 2."
+        name="description" />
     <!-- Reveal.js -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/white.min.css" id="theme">
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/white.min.css" id="theme"
+        rel="stylesheet" />
     <!-- Highlight.js for code -->
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/highlight/monokai.min.css">
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/highlight/monokai.min.css"
+        rel="stylesheet" />
     <!-- Asciinema Player -->
-
-    <link rel="stylesheet" type="text/css" href="resources/asciinema-player.css" />
-
+    <link href="resources/asciinema-player.css" rel="stylesheet" type="text/css">
     <!-- Google Font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
-        rel="stylesheet">
-
-    <link rel="stylesheet" href="resources/theme.css">
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Fira+Code:wght@400;500&amp;display=swap"
+        rel="stylesheet" />
+    <link href="resources/theme.css" rel="stylesheet" />
+    </link>
 </head>
 
 <body>
-
     <!-- Right-side sponsor/funder logos (persistent across all slides) -->
     <div class="logo-sidebar">
-        <img src="assets/cbio_logo.png" alt="CBIO" title="CBIO — Computational Biology, UCT">
-        <img src="assets/idia_logo.png" alt="IDIA" title="IDIA — Institute for Data Intensive Astronomy">
-        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7c/University_of_Cape_Town_logo.svg/200px-University_of_Cape_Town_logo.svg.png"
-            alt="UCT" title="University of Cape Town">
+        <img alt="CBIO" src="assets/cbio_logo.png" title="CBIO — Computational Biology, UCT" />
+        <img alt="IDIA" src="assets/idia_logo.png" title="IDIA — Institute for Data Intensive Astronomy" />
+        <img alt="UCT"
+            src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7c/University_of_Cape_Town_logo.svg/200px-University_of_Cape_Town_logo.svg.png"
+            title="University of Cape Town" />
     </div>
-
     <div class="reveal">
         <div class="slides">
-
             <!-- <section>
                 <div class="slide-header">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
@@ -60,107 +55,109 @@
                 <aside class="notes">
                 </aside>
             </section> -->
-
             <!-- =============================== -->
             <!-- SLIDE 1: Title                   -->
             <!-- =============================== -->
             <section class="title-slide">
-                <h1>ilifu Online Training</h1>
-                <h1 class="subtitle">Session 1: Introduction to Slurm</h1>
-                <h1 class="subtitle"><small>24 February 2026</small></h1>
-                <h2 class="meta">
-                    <small>Dane Kennedy · ilifu Bioinformatics Support<br>
-                        University of Cape Town
-                    </small>
-                </h2>
-
+                <div class="slide-header">
+                    <h1>ilifu Online Training</h1>
+                </div>
+                <div class="slide-content">
+                    <h1 class="subtitle">Session 1: Introduction to Slurm</h1>
+                    <h1 class="subtitle"><small>24 February 2026</small></h1>
+                    <h2 class="meta">
+                        <small>Dane Kennedy · ilifu Bioinformatics Support<br />
+                            University of Cape Town
+                        </small>
+                    </h2>
+                </div>
                 <div class="slide-footer">
                     <a href="https://kennedydane.github.io/ilifu/user_training/session1/tutorial2/">View on
                         github.io</a>
                     <a href="index.html?print-pdf">printable version</a>
                 </div>
-
                 <aside class="notes">
                     Welcome to Session 1 of ilifu online training. Today we'll cover Slurm job submission —
                     from your first "Hello World" to advanced batch scripts with containers.
                 </aside>
             </section>
-
             <section>
                 <div class="slide-header">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
-                        alt="Slurm">
+                    <img alt="Slurm"
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png" />
                     <h3>What is Slurm?</h3>
-                    <img src="assets/ilifu_logo.svg" alt="ilifu">
+                    <img alt="ilifu" src="assets/ilifu_logo.svg" />
                 </div>
-
-                <h4>Job Scheduling & Cluster Management Tool</h4>
-                <div class="info-box">
-                    An open-source <strong>job scheduling &amp; cluster management tool</strong>. You submit work from
-                    the login
-                    node; Slurm allocates compute resources and runs your jobs when they're available.
+                <div class="slide-content">
+                    <h4>Job Scheduling &amp; Cluster Management Tool</h4>
+                    <div class="info-box">
+                        An open-source <strong>job scheduling &amp; cluster management tool</strong>. You submit work
+                        from
+                        the login
+                        node; Slurm allocates compute resources and runs your jobs when they're available.
+                    </div>
+                    <div class="arch-diagram">
+                        <div class="arch-box login fragment" data-fragment-index="1">
+                            <div class="box-title">🖥️ Login Node</div>
+                            <div>SSH access<br /><code>slurm.ilifu.ac.za</code><br />Submit jobs &amp; manage files
+                            </div>
+                        </div>
+                        <div class="arch-arrow fragment" data-fragment-index="2">→</div>
+                        <div class="arch-box scheduler fragment" data-fragment-index="2">
+                            <div class="box-title">⚙️ Scheduler</div>
+                            <div>Queue management<br />Resource allocation<br />Accounting</div>
+                        </div>
+                        <div class="arch-arrow fragment" data-fragment-index="3">→</div>
+                        <div class="arch-box compute fragment" data-fragment-index="3">
+                            <div class="box-title">🔧 Compute Nodes</div>
+                            <div>Run analysis/simulation<br />Containers &amp; modules<br />Where your jobs execute
+                            </div>
+                        </div>
+                    </div>
+                    <ul>
+                        <li class="fragment" data-fragment-index="1">Login Node
+                            <ul>
+                                <li>Accessed via ssh (<code>$ ssh &lt;username&gt;@slurm.ilifu.ac.za</code>)</li>
+                                <li>Submit jobs and basic file management</li>
+                            </ul>
+                        </li>
+                        <li class="fragment" data-fragment-index="2">Scheduler and Accounting Database
+                            <ul>
+                                <li>Manage jobs, Partitions and Nodes</li>
+                                <li>Accounting</li>
+                            </ul>
+                        </li>
+                        <li class="fragment" data-fragment-index="3">Compute Nodes
+                            <ul>
+                                <li>Where your analysis / simulation runs (inside of a slurm job)</li>
+                                <li>Software available via singularity containers or modules</li>
+                            </ul>
+                        </li>
+                    </ul>
                 </div>
-                <div class="arch-diagram">
-                    <div class="arch-box login fragment" data-fragment-index="1">
-                        <div class="box-title">🖥️ Login Node</div>
-                        <div>SSH access<br><code>slurm.ilifu.ac.za</code><br>Submit jobs &amp; manage files</div>
-                    </div>
-                    <div class="arch-arrow fragment" data-fragment-index="2">→</div>
-                    <div class="arch-box scheduler fragment" data-fragment-index="2">
-                        <div class="box-title">⚙️ Scheduler</div>
-                        <div>Queue management<br>Resource allocation<br>Accounting</div>
-                    </div>
-                    <div class="arch-arrow fragment" data-fragment-index="3">→</div>
-                    <div class="arch-box compute fragment" data-fragment-index="3">
-                        <div class="box-title">🔧 Compute Nodes</div>
-                        <div>Run analysis/simulation<br>Containers &amp; modules<br>Where your jobs execute</div>
-                    </div>
-                </div>
-                <ul>
-                    <li class="fragment" data-fragment-index="1">Login Node
-                        <ul>
-                            <li>Accessed via ssh (<code>$ ssh &lt;username&gt;@slurm.ilifu.ac.za</code>)</li>
-                            <li>Submit jobs and basic file management</li>
-                        </ul>
-                    </li>
-                    <li class="fragment" data-fragment-index="2">Scheduler and Accounting Database
-                        <ul>
-                            <li>Manage jobs, Partitions and Nodes</li>
-                            <li>Accounting</li>
-                        </ul>
-                    </li>
-                    <li class="fragment" data-fragment-index="3">Compute Nodes
-                        <ul>
-                            <li>Where your analysis / simulation runs (inside of a slurm job)</li>
-                            <li>Software available via singularity containers or modules</li>
-                        </ul>
-                    </li>
-
-                </ul>
-
                 <div class="slide-footer">
                     <a href="https://slurm.schedmd.com/overview.html">Slurm Overview</a>
                     <a href="https://docs.ilifu.ac.za/#/">ilifu documentation</a>
                     <a href="https://docs.ilifu.ac.za/#/getting_started/submit_job_slurm">Submit a Slurm Job</a>
                 </div>
                 <aside class="notes">
-                    What is slurm? Slurm is an open-source workload manager or scheduler.<br />
+                    What is slurm? Slurm is an open-source workload manager or scheduler.<br>
 
                     What it is does is allow you to submit computing tasks (or jobs) to a computing cluster. A computing
                     cluster is a collection of computers / servers (which we usually call “nodes”) together with some
                     storage all linked together with a fast network. The workload manager figures out when and where
-                    those jobs can run; and keeps a record of their resource usage for accounting purposes.<br />
+                    those jobs can run; and keeps a record of their resource usage for accounting purposes.<br>
 
-                    From a user’s perspective there are three main components that you should be aware of:<br />
+                    From a user’s perspective there are three main components that you should be aware of:<br>
 
                     Firstly there is the login node — apart from Jupyter, this is usually your first point of contact
                     with the cluster and the place where you will do most of your interactions. It is not a server to
                     use for big computing tasks; but rather it’s a place for administrative tasks such as submitting
                     jobs, editing scripts and light management of data. The login node is shared with all the users of
                     the cluster — so any misuse impacts others negatively — so we monitor it closely and are quite
-                    strict about how it’s used.<br />
+                    strict about how it’s used.<br>
 
-                    Secondly there is slurm itself which has 3 key functions:<br />s
+                    Secondly there is slurm itself which has 3 key functions:<br>s
                     <ul>
                         <li>Slurm Allocates access to resources for users. In other words this is reserving memory and
                             CPU
@@ -180,62 +177,62 @@
                     you. This means that nobody else can interfere with the running of your software, but the flip side
                     of that is that you should be as accurate as possible when specifying those resources. This is
                     covered in more detail in Session 2.
+                    </br></br></br></br></br>
                 </aside>
             </section>
-
             <section>
                 <div class="slide-header">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
-                        alt="Slurm">
+                    <img alt="Slurm"
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png" />
                     <h3>Specific node / partition use cases</h3>
-                    <img src="assets/ilifu_logo.svg" alt="ilifu">
+                    <img alt="ilifu" src="assets/ilifu_logo.svg" />
                 </div>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Node / Partition</th>
-                            <th>Use Case</th>
-                            <th>Resources</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>slurm.ilifu.ac.za</code>
-                                <!-- / <span class="badge badge-gray">Login</span> -->
-                            </td>
-                            <td>SLURM &amp; bash commands (<code>cd</code>, <code>mkdir</code>, <code>sbatch</code>)
-                            </td>
-                            <td>—</td>
-                        </tr>
-                        <tr>
-                            <td><code>compute-001</code> / <span class="badge badge-blue">Devel</span></td>
-                            <td>Development, debugging, testing, interactive jobs</td>
-                            <td>1 × (32 cores, ~232 GiB)</td>
-                        </tr>
-                        <tr>
-                            <td><code>jupyter-0[01-14]</code> / <span class="badge badge-blue">Jupyter</span></td>
-                            <td>JupyterLab — interactive development/analysis</td>
-                            <td>14 × (32 cores, ~232 GiB)</td>
-                        </tr>
-                        <tr>
-                            <td><code>compute-0[02-86]</code> / <span class="badge badge-green">Main</span></td>
-                            <td>Stable, heavy computation</td>
-                            <td>85 × (32 cores, ~232 GiB)</td>
-                        </tr>
-                        <tr>
-                            <td><code>highmem-00[1-8]</code> / <span class="badge badge-red">HighMem</span></td>
-                            <td>High memory jobs</td>
-                            <td>6 × (32 cores, 500 GiB) + 1 × (32 cores, 1 TiB) + 1 × (96 cores, 1.5 TiB)</td>
-                        </tr>
-                        <tr>
-                            <td><code>gpu-00[1-7]</code> / <span class="badge badge-red">GPU</span></td>
-                            <td>GPU-accelerated workloads</td>
-                            <td>7 × (32 cores, ~232 GiB + NVIDIA GPUs)</td>
-                        </tr>
-                    </tbody>
-                </table>
-
+                <div class="slide-content">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Node / Partition</th>
+                                <th>Use Case</th>
+                                <th>Resources</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>slurm.ilifu.ac.za</code>
+                                    <!-- / <span class="badge badge-gray">Login</span> -->
+                                </td>
+                                <td>SLURM &amp; bash commands (<code>cd</code>, <code>mkdir</code>, <code>sbatch</code>)
+                                </td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td><code>compute-001</code> / <span class="badge badge-blue">Devel</span></td>
+                                <td>Development, debugging, testing, interactive jobs</td>
+                                <td>1 × (32 cores, ~232 GiB)</td>
+                            </tr>
+                            <tr>
+                                <td><code>jupyter-0[01-14]</code> / <span class="badge badge-blue">Jupyter</span></td>
+                                <td>JupyterLab — interactive development/analysis</td>
+                                <td>14 × (32 cores, ~232 GiB)</td>
+                            </tr>
+                            <tr>
+                                <td><code>compute-0[02-86]</code> / <span class="badge badge-green">Main</span></td>
+                                <td>Stable, heavy computation</td>
+                                <td>85 × (32 cores, ~232 GiB)</td>
+                            </tr>
+                            <tr>
+                                <td><code>highmem-00[1-8]</code> / <span class="badge badge-red">HighMem</span></td>
+                                <td>High memory jobs</td>
+                                <td>6 × (32 cores, 500 GiB) + 1 × (32 cores, 1 TiB) + 1 × (96 cores, 1.5 TiB)</td>
+                            </tr>
+                            <tr>
+                                <td><code>gpu-00[1-7]</code> / <span class="badge badge-red">GPU</span></td>
+                                <td>GPU-accelerated workloads</td>
+                                <td>7 × (32 cores, ~232 GiB + NVIDIA GPUs)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <div class="slide-footer">
                     <a href="https://docs.ilifu.ac.za/#/tech_docs/running_jobs?id=available-resources">Available
                         Resources</a>
@@ -274,31 +271,31 @@
 
                 </aside>
             </section>
-
             <section>
                 <div class="slide-header">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
-                        alt="Slurm">
+                    <img alt="Slurm"
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png" />
                     <h3>Interacting with the Slurm Cluster</h3>
-                    <img src="assets/ilifu_logo.svg" alt="ilifu">
+                    <img alt="ilifu" src="assets/ilifu_logo.svg" />
                 </div>
-
-                <div class="columns">
-                    <div class="col">
-                        <h3>🌐 Web Access</h3>
-                        <p><a href="https://jupyter.ilifu.ac.za" target="_blank">https://jupyter.ilifu.ac.za</a></p>
-                        <video controls muted poster="demos/jupyter.png">
-                            <source src="demos/jupyter.mp4" type="video/mp4">
-                        </video>
-                        <div class="info-box tip" style="margin-top: 0.8em;">
-                            <strong>💡 Remember to end your session:</strong> File → Hub Control Panel → Stop My
-                            Server.
+                <div class="slide-content">
+                    <div class="columns">
+                        <div class="col">
+                            <h3>🌐 Web Access</h3>
+                            <p><a href="https://jupyter.ilifu.ac.za" target="_blank">https://jupyter.ilifu.ac.za</a></p>
+                            <video controls="" muted="" poster="demos/jupyter.png">
+                                <source src="demos/jupyter.mp4" type="video/mp4" />
+                            </video>
+                            <div class="info-box tip" style="margin-top: 0.8em;">
+                                <strong>💡 Remember to end your session:</strong> File → Hub Control Panel → Stop My
+                                Server.
+                            </div>
                         </div>
-                    </div>
-                    <div class="col">
-                        <h3>💻 CLI Access</h3>
-                        <pre><code class="language-bash">ssh &lt;username&gt;@slurm.ilifu.ac.za</code></pre>
-                        <div id="demo-login">
+                        <div class="col">
+                            <h3>💻 CLI Access</h3>
+                            <pre><code class="language-bash">ssh &lt;username&gt;@slurm.ilifu.ac.za</code></pre>
+                            <div id="demo-login">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -308,7 +305,7 @@
                     <a href="https://docs.ilifu.ac.za/#/getting_started/ssh">SSH Keys</a>
                 </div>
                 <aside class="notes">
-                    This slide shows the two primary ways one interacts with the cluster.<br /><br />
+                    This slide shows the two primary ways one interacts with the cluster.<br><br>
 
                     On the left we see the jupyter interface that Jeremy showed you earlier. The thing I really just
                     wanted to point out is that on the backend jupyter is actually running as a slurm job on a regular
@@ -318,17 +315,17 @@
                     Then the image on the left illustrates more what I’ll be demonstrating shortly and that’s the shell
                     or command line interface (CLI for short) and how one uses that to interact with the cluster.
 
-                </aside>
+                    </br></br></aside>
             </section>
             <section>
                 <div class="slide-header">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
-                        alt="Slurm">
+                    <img alt="Slurm"
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png" />
                     <h3>CLI user commands</h3>
-                    <img src="assets/ilifu_logo.svg" alt="ilifu">
+                    <img alt="ilifu" src="assets/ilifu_logo.svg" />
                 </div>
-
-                <pre><code data-trim class="language-bash" data-line-numbers="1-8|2|3-4|5|6|7-8|1-8">
+                <div class="slide-content">
+                    <pre><code class="language-bash" data-line-numbers="1-8|2|3-4|5|6|7-8|1-8" data-trim="">
 ssh &lt;username&gt;@slurm.ilifu.ac.za  # connect to login node
 sinfo                             # show partition information
 squeue                            # show all job information
@@ -338,13 +335,11 @@ scancel                           # cancel a job
 man sbatch                        # show the manual page for a command
 sbatch --help                     # show the help page for a command
                 </code></pre>
-
-                <div id="demo-cli" style="flex: 1; min-height: 0; width: 100%;"></div>
-
+                    <div id="demo-cli" style="flex: 1; min-height: 0; width: 100%;"></div>
+                </div>
                 <div class="slide-footer">
                     <a href="https://slurm.schedmd.com/quickstart.html">Slurm Quick Start User Guide</a>
                 </div>
-
                 <aside class="notes">
                     First off one has to connect to the login node and one generally uses the `ssh` command if you’re
                     working on linux / Mac or some SSH client in Windows.<br /><br />
@@ -377,23 +372,22 @@ sbatch --help                     # show the help page for a command
             </section>
             <section>
                 <div class="slide-header">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
-                        alt="Slurm">
+                    <img alt="Slurm"
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png" />
                     <h3>Example bash script</h3>
-                    <img src="assets/ilifu_logo.svg" alt="ilifu">
+                    <img alt="ilifu" src="assets/ilifu_logo.svg" />
                 </div>
-
-                <pre><code data-trim class="language-bash" data-line-numbers="1-4|1|3|4|1-4">
+                <div class="slide-content">
+                    <pre><code class="language-bash" data-line-numbers="1-4|1|3|4|1-4" data-trim="">
 #!/bin/bash
 
 module add python/3.11.2
 python hello_world.py
 </code></pre>
-
+                </div>
                 <div class="slide-footer">
                     <a href="https://www.w3schools.com/bash/bash_script.php">Bash Scripting</a>
                 </div>
-
                 <aside class="notes">
                     So what is a job script? A job script is (usually) a simple bash script that describes what
                     resources your job requires and then the steps your job should do in order to process your
@@ -418,13 +412,13 @@ python hello_world.py
             </section>
             <section>
                 <div class="slide-header">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
-                        alt="Slurm">
+                    <img alt="Slurm"
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png" />
                     <h3>Default Job Parameters</h3>
-                    <img src="assets/ilifu_logo.svg" alt="ilifu">
+                    <img alt="ilifu" src="assets/ilifu_logo.svg" />
                 </div>
-
-                <pre><code data-trim class="language-plaintext" data-line-numbers="1-6|1|2|3-4|5|6|1-6">
+                <div class="slide-content">
+                    <pre><code class="language-plaintext" data-line-numbers="1-6|1|2|3-4|5|6|1-6" data-trim="">
 #SBATCH --time 0-03:00:00  # 0 days + 3 hours
 #SBATCH --mem 3G           # 3 GiB
 #SBATCH --ntasks 1         # one task
@@ -432,13 +426,12 @@ python hello_world.py
 #SBATCH --partition Main
 #SBATCH --account &lt;your default&gt;
                 </code></pre>
-
+                </div>
                 <div class="slide-footer">
                     <a
                         href="https://docs.ilifu.ac.za/#/tech_docs/running_jobs?id=customising-your-job-using-sbatchsrun-parameters">sbatch
                         parameters</a>
                 </div>
-
                 <aside class="notes">
                     And here they are.<br /><br />
 
@@ -455,14 +448,13 @@ python hello_world.py
             </section>
             <section>
                 <div class="slide-header">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
-                        alt="Slurm">
+                    <img alt="Slurm"
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png" />
                     <h3>Example Slurm Job Script</h3>
-                    <img src="assets/ilifu_logo.svg" alt="ilifu">
+                    <img alt="ilifu" src="assets/ilifu_logo.svg" />
                 </div>
-
-
-                <pre><code data-trim class="language-bash" data-name="R_container.sbatch" data-line-numbers="1-12|1|2|3|4|5|6-7|8-9|10|12|1-12">
+                <div class="slide-content">
+                    <pre><code class="language-bash" data-line-numbers="1-12|1|2|3|4|5|6-7|8-9|10|12|1-12" data-name="R_container.sbatch" data-trim="">
 #!/bin/bash
 #SBATCH --job-name=tutorial2_R_container
 #SBATCH --time=00-00:01:00
@@ -475,16 +467,14 @@ python hello_world.py
 #SBATCH --account=ACCOUNTING_GROUP
 
 singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rscript hello_world.R</code></pre>
-
-                <p>
-                    Submit the job:
-                </p>
-                <pre><code class="language-bash">sbatch R_container.sbatch</code></pre>
-
+                    <p>
+                        Submit the job:
+                    </p>
+                    <pre><code class="language-bash">sbatch R_container.sbatch</code></pre>
+                </div>
                 <div class="slide-footer">
                     <a href="https://slurm.schedmd.com/sbatch.html">Slurm sbatch documentation</a>
                 </div>
-
                 <aside class="notes">
                     Now, let's learn how to write a job script for a specific use case that you can submit to
                     Slurm.<br /><br />
@@ -516,164 +506,163 @@ singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rsc
             </section>
             <section>
                 <div class="slide-header">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
-                        alt="Slurm">
+                    <img alt="Slurm"
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png" />
                     <h3>Defaults and maximums per partition</h3>
-                    <img src="assets/ilifu_logo.svg" alt="ilifu">
+                    <img alt="ilifu" src="assets/ilifu_logo.svg" />
                 </div>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Partition</th>
-                            <th>Node names</th>
-                            <th>Default CPUs</th>
-                            <th>Max CPUs</th>
-                            <th>Default Memory (GiB)</th>
-                            <th>Max Memory (GiB)</th>
-                            <th>Default wall-time</th>
-                            <th>Max wall-time</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Main</td>
-                            <td>compute-[002-021]</td>
-                            <td>1</td>
-                            <td>32</td>
-                            <td>3</td>
-                            <td>232</td>
-                            <td>3 hours</td>
-                            <td>14 days</td>
-                        </tr>
-                        <tr>
-                            <td>Main</td>
-                            <td>compute-[101-105]</td>
-                            <td>1</td>
-                            <td>48</td>
-                            <td>3</td>
-                            <td>232</td>
-                            <td>3 hours</td>
-                            <td>14 days</td>
-                        </tr>
-                        <tr>
-                            <td>Main</td>
-                            <td>compute-[201-260]</td>
-                            <td>1</td>
-                            <td>32</td>
-                            <td>3</td>
-                            <td>251</td>
-                            <td>3 hours</td>
-                            <td>14 days</td>
-                        </tr>
-                        <tr>
-                            <td>HighMem</td>
-                            <td>highmem-[001-002]</td>
-                            <td>1</td>
-                            <td>32</td>
-                            <td>15</td>
-                            <td>503</td>
-                            <td>3 hours</td>
-                            <td>14 days</td>
-                        </tr>
-                        <tr>
-                            <td>HighMem</td>
-                            <td>highmem-003</td>
-                            <td>1</td>
-                            <td>96</td>
-                            <td>15</td>
-                            <td>1508</td>
-                            <td>3 hours</td>
-                            <td>14 days</td>
-                        </tr>
-                        <tr>
-                            <td>HighMem</td>
-                            <td>highmem-[004-007]</td>
-                            <td>1</td>
-                            <td>32</td>
-                            <td>15</td>
-                            <td>503</td>
-                            <td>3 hours</td>
-                            <td>14 days</td>
-                        </tr>
-                        <tr>
-                            <td>HighMem</td>
-                            <td>highmem-008</td>
-                            <td>1</td>
-                            <td>32</td>
-                            <td>15</td>
-                            <td>1007</td>
-                            <td>3 hours</td>
-                            <td>14 days</td>
-                        </tr>
-                        <tr>
-                            <td>GPU</td>
-                            <td>gpu-[001-004]</td>
-                            <td>1</td>
-                            <td>32</td>
-                            <td>7</td>
-                            <td>232</td>
-                            <td>3 hours</td>
-                            <td>14 days</td>
-                        </tr>
-                        <tr>
-                            <td>GPU</td>
-                            <td>gpu-005</td>
-                            <td>1</td>
-                            <td>24</td>
-                            <td>7</td>
-                            <td>232</td>
-                            <td>3 hours</td>
-                            <td>14 days</td>
-                        </tr>
-                        <tr>
-                            <td>GPU</td>
-                            <td>gpu-006</td>
-                            <td>1</td>
-                            <td>48</td>
-                            <td>7</td>
-                            <td>354</td>
-                            <td>3 hours</td>
-                            <td>14 days</td>
-                        </tr>
-                        <tr>
-                            <td>GPU</td>
-                            <td>gpu-007</td>
-                            <td>1</td>
-                            <td>48</td>
-                            <td>7</td>
-                            <td>354</td>
-                            <td>3 hours</td>
-                            <td>14 days</td>
-                        </tr>
-                        <tr>
-                            <td>GPU</td>
-                            <td>highmem-008</td>
-                            <td>1</td>
-                            <td>32</td>
-                            <td>7</td>
-                            <td>1007</td>
-                            <td>3 hours</td>
-                            <td>14 days</td>
-                        </tr>
-                        <tr>
-                            <td>Devel</td>
-                            <td>compute-001</td>
-                            <td>1</td>
-                            <td>32</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>3 hours</td>
-                            <td>5 days</td>
-                        </tr>
-                    </tbody>
-                </table>
-
+                <div class="slide-content">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Partition</th>
+                                <th>Node names</th>
+                                <th>Default CPUs</th>
+                                <th>Max CPUs</th>
+                                <th>Default Memory (GiB)</th>
+                                <th>Max Memory (GiB)</th>
+                                <th>Default wall-time</th>
+                                <th>Max wall-time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Main</td>
+                                <td>compute-[002-021]</td>
+                                <td>1</td>
+                                <td>32</td>
+                                <td>3</td>
+                                <td>232</td>
+                                <td>3 hours</td>
+                                <td>14 days</td>
+                            </tr>
+                            <tr>
+                                <td>Main</td>
+                                <td>compute-[101-105]</td>
+                                <td>1</td>
+                                <td>48</td>
+                                <td>3</td>
+                                <td>232</td>
+                                <td>3 hours</td>
+                                <td>14 days</td>
+                            </tr>
+                            <tr>
+                                <td>Main</td>
+                                <td>compute-[201-260]</td>
+                                <td>1</td>
+                                <td>32</td>
+                                <td>3</td>
+                                <td>251</td>
+                                <td>3 hours</td>
+                                <td>14 days</td>
+                            </tr>
+                            <tr>
+                                <td>HighMem</td>
+                                <td>highmem-[001-002]</td>
+                                <td>1</td>
+                                <td>32</td>
+                                <td>15</td>
+                                <td>503</td>
+                                <td>3 hours</td>
+                                <td>14 days</td>
+                            </tr>
+                            <tr>
+                                <td>HighMem</td>
+                                <td>highmem-003</td>
+                                <td>1</td>
+                                <td>96</td>
+                                <td>15</td>
+                                <td>1508</td>
+                                <td>3 hours</td>
+                                <td>14 days</td>
+                            </tr>
+                            <tr>
+                                <td>HighMem</td>
+                                <td>highmem-[004-007]</td>
+                                <td>1</td>
+                                <td>32</td>
+                                <td>15</td>
+                                <td>503</td>
+                                <td>3 hours</td>
+                                <td>14 days</td>
+                            </tr>
+                            <tr>
+                                <td>HighMem</td>
+                                <td>highmem-008</td>
+                                <td>1</td>
+                                <td>32</td>
+                                <td>15</td>
+                                <td>1007</td>
+                                <td>3 hours</td>
+                                <td>14 days</td>
+                            </tr>
+                            <tr>
+                                <td>GPU</td>
+                                <td>gpu-[001-004]</td>
+                                <td>1</td>
+                                <td>32</td>
+                                <td>7</td>
+                                <td>232</td>
+                                <td>3 hours</td>
+                                <td>14 days</td>
+                            </tr>
+                            <tr>
+                                <td>GPU</td>
+                                <td>gpu-005</td>
+                                <td>1</td>
+                                <td>24</td>
+                                <td>7</td>
+                                <td>232</td>
+                                <td>3 hours</td>
+                                <td>14 days</td>
+                            </tr>
+                            <tr>
+                                <td>GPU</td>
+                                <td>gpu-006</td>
+                                <td>1</td>
+                                <td>48</td>
+                                <td>7</td>
+                                <td>354</td>
+                                <td>3 hours</td>
+                                <td>14 days</td>
+                            </tr>
+                            <tr>
+                                <td>GPU</td>
+                                <td>gpu-007</td>
+                                <td>1</td>
+                                <td>48</td>
+                                <td>7</td>
+                                <td>354</td>
+                                <td>3 hours</td>
+                                <td>14 days</td>
+                            </tr>
+                            <tr>
+                                <td>GPU</td>
+                                <td>highmem-008</td>
+                                <td>1</td>
+                                <td>32</td>
+                                <td>7</td>
+                                <td>1007</td>
+                                <td>3 hours</td>
+                                <td>14 days</td>
+                            </tr>
+                            <tr>
+                                <td>Devel</td>
+                                <td>compute-001</td>
+                                <td>1</td>
+                                <td>32</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>3 hours</td>
+                                <td>5 days</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <div class="slide-footer">
                     <a href="https://docs.ilifu.ac.za/#/tech_docs/resource_allocation?id=maximum-allocation">Maximum
                         Allocation</a>
                 </div>
-
                 <aside class="notes">
                     Here is a table with some of the defaults and maximums for the different partitions.<br /><br />
 
@@ -695,14 +684,14 @@ singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rsc
             </section>
             <section>
                 <div class="slide-header">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
-                        alt="Slurm">
+                    <img alt="Slurm"
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png" />
                     <h3>Demo</h3>
-                    <img src="assets/ilifu_logo.svg" alt="ilifu">
+                    <img alt="ilifu" src="assets/ilifu_logo.svg" />
                 </div>
-
-                <div id="demo-demo" style="flex: 1; min-height: 0; width: 100%;"></div>
-
+                <div class="slide-content">
+                    <div id="demo-demo" style="flex: 1; min-height: 0; width: 100%;"></div>
+                </div>
                 <div class="slide-footer">
                     <!--                    <a href="https://github.com/ilifu/ilifu_user_training/tree/main/session1/tutorial2">Demo scripts on Github</a>-->
                     <a href="minimal.sbatch">minimal.sbatch</a>
@@ -711,56 +700,54 @@ singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rsc
                     <a href="maximal_R.sbatch">maximal_R.sbatch</a>
                     <a href="hello_world.R">hello_world.R</a>
                 </div>
-
                 <aside class="notes">
                 </aside>
             </section>
             <section>
                 <div class="slide-header">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png"
-                        alt="Slurm">
+                    <img alt="Slurm"
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Slurm_logo.svg/200px-Slurm_logo.svg.png" />
                     <h3>Best practices</h3>
-                    <img src="assets/ilifu_logo.svg" alt="ilifu">
+                    <img alt="ilifu" src="assets/ilifu_logo.svg" />
                 </div>
-
-                <div class="info-box">
-                    Remember that the ilifu cluster is a shared resource with limited resources. It is important to be
-                    mindful of this when requesting resources.
-                </div>
-
-                <div class="do-dont">
-                    <div class="do-col fragment">
-                        <h3>✅ Do</h3>
-                        <ul>
-                            <li>Use <code>sbatch</code> for production work</li>
-                            <li>Identify resource requirements first:
-                                <ul>
-                                    <li>Number of nodes</li>
-                                    <li>Cores per node</li>
-                                    <li>Ram per core/node</li>
-                                    <li>Expected runtime</li>
-                                </ul>
-                            </li>
-                            <li>Clean up temp files (e.g., <code>/scratch3</code>)</li>
-                            <li>Use Singularity containers for software</li>
-                            <li>Use <code>transfer.ilifu.ac.za</code> for data transfers</li>
-                        </ul>
+                <div class="slide-content">
+                    <div class="info-box">
+                        Remember that the ilifu cluster is a shared resource with limited resources. It is important to
+                        be
+                        mindful of this when requesting resources.
                     </div>
-                    <div class="dont-col fragment">
-                        <h3>❌ Don't</h3>
-                        <ul>
-                            <li>Run heavy processes on the login node</li>
-                            <li>Place large files in <code>/users</code> (home dir)</li>
-                            <li>Use <code>scp</code>/<code>rsync</code> on login node</li>
-                            <li>Request way more resources than needed</li>
-                        </ul>
+                    <div class="do-dont">
+                        <div class="do-col fragment">
+                            <h3>✅ Do</h3>
+                            <ul>
+                                <li>Use <code>sbatch</code> for production work</li>
+                                <li>Identify resource requirements first:
+                                    <ul>
+                                        <li>Number of nodes</li>
+                                        <li>Cores per node</li>
+                                        <li>Ram per core/node</li>
+                                        <li>Expected runtime</li>
+                                    </ul>
+                                </li>
+                                <li>Clean up temp files (e.g., <code>/scratch3</code>)</li>
+                                <li>Use Singularity containers for software</li>
+                                <li>Use <code>transfer.ilifu.ac.za</code> for data transfers</li>
+                            </ul>
+                        </div>
+                        <div class="dont-col fragment">
+                            <h3>❌ Don't</h3>
+                            <ul>
+                                <li>Run heavy processes on the login node</li>
+                                <li>Place large files in <code>/users</code> (home dir)</li>
+                                <li>Use <code>scp</code>/<code>rsync</code> on login node</li>
+                                <li>Request way more resources than needed</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-
                 <div class="slide-footer">
                     <a href="https://docs.ilifu.ac.za/#/getting_started/best_practices">Best Practices</a>
                 </div>
-
                 <aside class="notes">
                     As we conclude, here are the main points to remember and some things to avoid: <br /><br />
 
@@ -784,7 +771,6 @@ singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rsc
                 <h1 style="font-size: 2.8em; margin-bottom: 0.2em;">Thank you for your time!</h1>
                 <h2 class="subtitle" style="font-size: 1.1em; color: var(--brand-subtle); margin-bottom: 2em;">We hope
                     this presentation was helpful.</h2>
-
                 <div class="thank-you-cards">
                     <a href="mailto:support@ilifu.ac.za">
                         <div class="support-card">
@@ -793,7 +779,6 @@ singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rsc
                             <span>support@ilifu.ac.za</span>
                         </div>
                     </a>
-
                     <a href="https://docs.ilifu.ac.za" target="_blank">
                         <div class="docs-card">
                             <div style="font-size: 2.5em; margin-bottom: 0.2em;">📚</div>
@@ -802,10 +787,8 @@ singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rsc
                         </div>
                     </a>
                 </div>
-
                 <div class="slide-footer">
                 </div>
-
                 <aside class="notes">
                     Thank you everyone for joining today's session.
                     If you have any further questions or run into issues, please don't hesitate to reach out to our
@@ -814,18 +797,14 @@ singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rsc
                     everything we've covered today.
                 </aside>
             </section>
-
         </div><!-- /.slides -->
     </div><!-- /.reveal -->
-
     <!-- Reveal.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/highlight/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/notes/notes.min.js"></script>
-
     <!-- Asciinema Player -->
     <script src="resources/asciinema-player.min.js"></script>
-
     <script>
         // Initialize Reveal.js
         Reveal.initialize({
@@ -875,7 +854,6 @@ singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rsc
             pauseOnMarkers: true
         });
     </script>
-
 </body>
 
 </html>

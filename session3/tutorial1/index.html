@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Tutorial 1: MPI Scaling Demo — Session 3 | ilifu User Training</title>
+    <meta content="Parallel computing with MPI and OpenMP on the ilifu SLURM cluster. Scaling demos and real results." name="description" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/white.min.css" id="theme" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/highlight/monokai.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="../../resources/theme.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="logo-sidebar">
+        <img alt="CBIO" src="../../assets/cbio_logo.png" title="CBIO — Computational Biology, UCT" />
+        <img alt="IDIA" src="../../assets/idia_logo.png" title="IDIA — Institute for Data Intensive Astronomy" />
+        <img alt="UCT"
+            src="https://upload.wikimedia.org/wikipedia/en/thumb/9/9d/UCT_coat_of_arms.svg/120px-UCT_coat_of_arms.svg.png"
+            title="University of Cape Town" />
+    </div>
+
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- SLIDE 1: Title -->
+            <section class="title-slide">
+                <div class="slide-header" style="justify-content:center; border-bottom:none; margin-bottom:0.8em;">
+                    <img src="../../assets/ilifu_logo.svg" alt="ilifu" style="height:60px;" />
+                </div>
+                <h1>Session 3, Tutorial 1</h1>
+                <p class="subtitle">SLURM MPI Scaling Demo</p>
+                <div class="meta">
+                    <strong>Session 3</strong> — Parallel Computing with MPI &nbsp;|&nbsp;
+                    <a href="../">← Session 3</a>
+                    <br/>Thanks to Robin Hall for creating this tutorial.
+                </div>
+            </section>
+
+            <!-- SLIDE 2: What is MPI? -->
+            <section>
+                <div class="slide-content">
+                    <div class="slide-header">
+                        <span style="font-weight:700; font-size:0.75em; color:var(--brand-blue);">Session 3, Tutorial 1 — MPI Scaling Demo</span>
+                        <img src="../../assets/ilifu_logo.svg" alt="ilifu" />
+                    </div>
+                    <h2>What is MPI?</h2>
+                    <div class="columns">
+                        <div class="col">
+                            <p><strong>MPI (Message Passing Interface)</strong> lets multiple processes
+                            run in parallel — on the same node or across different nodes — and
+                            communicate with each other by passing messages.</p>
+                            <h3 style="margin-top:0.6em;">Key MPI concepts used in this tutorial</h3>
+                            <ul>
+                                <li><strong>Rank:</strong> Each process gets a unique ID (rank 0, 1, 2, …)</li>
+                                <li><strong>Scatterv:</strong> Rank 0 distributes chunks of work to all ranks</li>
+                                <li><strong>Reduce:</strong> All ranks send their partial results back to rank 0 to be combined</li>
+                            </ul>
+                            <h3 style="margin-top:0.6em;">The example task</h3>
+                            <p>Sum all numbers from 1 to 10,000,000.
+                            Split across N processes — each process sums its chunk, then results are combined.</p>
+                        </div>
+                        <div class="col">
+                            <div class="arch-diagram" style="flex-direction:column; gap:0.4em;">
+                                <div class="arch-box login">
+                                    <div class="box-title">Rank 0 (Leader)</div>
+                                    <div>Create list, Scatterv chunks, collect Reduce</div>
+                                </div>
+                                <div class="arch-arrow">Scatterv ↓ &nbsp; ↑ Reduce</div>
+                                <div style="display:flex; gap:0.4em; justify-content:center;">
+                                    <div class="arch-box compute" style="min-width:100px; font-size:0.55em;">
+                                        <div class="box-title">Rank 1</div>
+                                        <div>Sum chunk 1</div>
+                                    </div>
+                                    <div class="arch-box compute" style="min-width:100px; font-size:0.55em;">
+                                        <div class="box-title">Rank 2</div>
+                                        <div>Sum chunk 2</div>
+                                    </div>
+                                    <div class="arch-box compute" style="min-width:100px; font-size:0.55em;">
+                                        <div class="box-title">Rank N</div>
+                                        <div>Sum chunk N</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span><a href="../">← Session 3</a></span>
+                        <span>Session 3, Tutorial 1</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 3: Setup -->
+            <section>
+                <div class="slide-content">
+                    <div class="slide-header">
+                        <span style="font-weight:700; font-size:0.75em; color:var(--brand-blue);">Session 3, Tutorial 1 — MPI Scaling Demo</span>
+                        <img src="../../assets/ilifu_logo.svg" alt="ilifu" />
+                    </div>
+                    <h2>Setup — OpenMPI &amp; Python Environment</h2>
+                    <h3>Step 1 — Create the logs directory</h3>
+                    <pre><code class="language-bash">cd session3/tutorial1
+mkdir -p logs</code></pre>
+                    <h3>Step 2 — Check available OpenMPI versions</h3>
+                    <pre><code class="language-bash">module avail
+# Look for openmpi/... entries</code></pre>
+                    <h3>Step 3 — Load OpenMPI</h3>
+                    <pre><code class="language-bash">module load openmpi/5.0.3</code></pre>
+                    <h3>Step 4 — Create &amp; activate Python virtual environment</h3>
+                    <pre><code class="language-bash">uv venv .venv
+source .venv/bin/activate</code></pre>
+                    <h3>Step 5 — Install dependencies (mpi4py, numpy)</h3>
+                    <pre><code class="language-bash">uv sync</code></pre>
+                    <div class="info-box tip" style="margin-top:0.3em;">
+                        <strong>Note:</strong> Each sbatch script loads <code>openmpi/5.0.3</code> automatically.
+                        You only need to set up the <code>.venv</code> once before submitting jobs.
+                    </div>
+                    <div class="slide-footer">
+                        <span><a href="../">← Session 3</a></span>
+                        <span>Session 3, Tutorial 1</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 4: Python Demo 1 - Baseline -->
+            <section>
+                <div class="slide-content">
+                    <div class="slide-header">
+                        <span style="font-weight:700; font-size:0.75em; color:var(--brand-blue);">Session 3, Tutorial 1 — MPI Scaling Demo</span>
+                        <img src="../../assets/ilifu_logo.svg" alt="ilifu" />
+                    </div>
+                    <h2>Python Demos: 1 → 4 → 8 CPUs</h2>
+                    <div class="columns">
+                        <div class="col">
+                            <h3>Demo 1 — 1 CPU, 1 Node (Baseline)</h3>
+                            <pre><code class="language-bash">sbatch 1_cpu_1_node.sbatch
+cat logs/1-cpu-1-node-*.out</code></pre>
+                            <ul>
+                                <li>Single process (Rank 0 only)</li>
+                                <li>All 10M numbers summed by one core</li>
+                                <li><strong>Result: ~0.76 s</strong> (our baseline)</li>
+                            </ul>
+                            <h3 style="margin-top:0.6em;">Demo 2 — 4 CPUs, 1 Node</h3>
+                            <pre><code class="language-bash">sbatch 4_cpus_1_node.sbatch
+cat logs/4-cpus-1-node-*.out</code></pre>
+                            <ul>
+                                <li>4 processes on the same machine</li>
+                                <li>Each process sums ≈2.5M numbers</li>
+                                <li><strong>Result: ~0.25 s (~3× speedup)</strong></li>
+                            </ul>
+                        </div>
+                        <div class="col">
+                            <h3>Demo 3 — 8 CPUs, 1 Node (Best single-node)</h3>
+                            <pre><code class="language-bash">sbatch 8_cpus_1_node.sbatch
+cat logs/8-cpus-1-node-*.out</code></pre>
+                            <ul>
+                                <li>8 processes on the same machine</li>
+                                <li>Each process sums ≈1.25M numbers</li>
+                                <li><strong>Result: ~0.155 s (~5× speedup)</strong></li>
+                            </ul>
+                            <h3 style="margin-top:0.6em;">Compare all three</h3>
+                            <pre><code class="language-bash">grep "total time" logs/*-*-*.out</code></pre>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span><a href="../">← Session 3</a></span>
+                        <span>Session 3, Tutorial 1</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 5: Demo 4 - Multi-node -->
+            <section>
+                <div class="slide-content">
+                    <div class="slide-header">
+                        <span style="font-weight:700; font-size:0.75em; color:var(--brand-blue);">Session 3, Tutorial 1 — MPI Scaling Demo</span>
+                        <img src="../../assets/ilifu_logo.svg" alt="ilifu" />
+                    </div>
+                    <h2>Demo 4 — 8 CPUs, 2 Nodes: The Surprise</h2>
+                    <pre><code class="language-bash">sbatch 8_cpus_2_nodes.sbatch
+cat logs/8-cpus-2-nodes-*.out</code></pre>
+                    <div class="columns" style="margin-top:0.3em;">
+                        <div class="col">
+                            <h3>What to expect</h3>
+                            <ul>
+                                <li>8 processes — 4 on node A, 4 on node B</li>
+                                <li>Processes run on two different hostnames</li>
+                                <li>In theory: same 8 cores, should be as fast as Demo 3</li>
+                            </ul>
+                            <h3 style="margin-top:0.6em;">What actually happens</h3>
+                            <ul>
+                                <li><strong>Result: ~0.173 s — SLOWER than Demo 3 (~0.155 s)!</strong></li>
+                                <li>Processes must communicate across the network</li>
+                                <li>ilifu uses Gigabit Ethernet between nodes, not InfiniBand</li>
+                                <li>Network latency exceeds any benefit from the second node</li>
+                            </ul>
+                        </div>
+                        <div class="col">
+                            <table>
+                                <thead>
+                                    <tr><th>Demo</th><th>CPUs</th><th>Nodes</th><th>Time</th><th>Speedup</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>1</td><td>1</td><td>1</td><td>~0.76 s</td><td>1×</td></tr>
+                                    <tr><td>2</td><td>4</td><td>1</td><td>~0.25 s</td><td>~3×</td></tr>
+                                    <tr><td>3</td><td>8</td><td>1</td><td>~0.155 s</td><td>~5×</td></tr>
+                                    <tr style="background:#fff5f5;"><td>4</td><td>8</td><td>2</td><td>~0.173 s</td><td>~4.4× ⚠</td></tr>
+                                </tbody>
+                            </table>
+                            <div class="info-box" style="margin-top:0.5em;">
+                                <strong>Key lesson:</strong> More nodes ≠ more speed.
+                                Network latency dominates without high-speed interconnects.
+                                <strong>Keep jobs on a single node whenever possible on ilifu.</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span><a href="../">← Session 3</a></span>
+                        <span>Session 3, Tutorial 1</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 6: C++ hybrid intro -->
+            <section>
+                <div class="slide-content">
+                    <div class="slide-header">
+                        <span style="font-weight:700; font-size:0.75em; color:var(--brand-blue);">Session 3, Tutorial 1 — MPI Scaling Demo</span>
+                        <img src="../../assets/ilifu_logo.svg" alt="ilifu" />
+                    </div>
+                    <h2>Advanced: C++ with Hybrid MPI + OpenMP</h2>
+                    <div class="columns">
+                        <div class="col">
+                            <p>The C++ version (<code>hybrid_sum.cpp</code>) sums 100 million numbers
+                            (10× larger than Python) using explicit <code>#pragma omp parallel for</code>
+                            inside each MPI process.</p>
+                            <h3>Compile first</h3>
+                            <pre><code class="language-bash">module load openmpi/5.0.3
+mpic++ -fopenmp -O3 hybrid_sum.cpp -o hybrid_sum</code></pre>
+                            <h3>C++ demos available</h3>
+                            <ul>
+                                <li><strong>1 core, 1 MPI, 1 thread</strong> — baseline</li>
+                                <li><strong>8 cores, pure MPI</strong> — 8 processes, 1 thread each</li>
+                                <li><strong>8 cores, hybrid</strong> — 4 MPI × 2 threads</li>
+                                <li><strong>8 cores, pure threading</strong> — 1 MPI × 8 threads</li>
+                                <li><strong>2 nodes</strong> — cross-node penalty test</li>
+                            </ul>
+                        </div>
+                        <div class="col">
+                            <table>
+                                <thead>
+                                    <tr><th>Config</th><th>Time</th><th>Speedup</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>1 core baseline</td><td>~0.030 s</td><td>1×</td></tr>
+                                    <tr><td>1 MPI, 8 threads</td><td>~0.031 s</td><td>~1× ⚠</td></tr>
+                                    <tr><td>4 MPI, 2 threads</td><td>~0.009 s</td><td>~3.3×</td></tr>
+                                    <tr><td>8 MPI, 1 thread</td><td>~0.006 s</td><td>~5×</td></tr>
+                                    <tr style="background:#fff5f5;"><td>2 nodes</td><td>~0.034 s</td><td>&lt;1× ⚠</td></tr>
+                                </tbody>
+                            </table>
+                            <div class="info-box tip" style="margin-top:0.4em;">
+                                <strong>Insight:</strong> For this loop, pure MPI (8 processes)
+                                outperforms hybrid (4 MPI + 2 threads) because the inner loop
+                                doesn't benefit much from OpenMP threading — but communication
+                                still adds overhead.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span><a href="../">← Session 3</a></span>
+                        <span>Session 3, Tutorial 1</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 7: Key lessons -->
+            <section>
+                <div class="slide-content">
+                    <div class="slide-header">
+                        <span style="font-weight:700; font-size:0.75em; color:var(--brand-blue);">Session 3, Tutorial 1 — MPI Scaling Demo</span>
+                        <img src="../../assets/ilifu_logo.svg" alt="ilifu" />
+                    </div>
+                    <h2>Key Lessons</h2>
+                    <div class="columns">
+                        <div class="col">
+                            <h3>1. Single-node scaling is good</h3>
+                            <p>MPI processes on the same node communicate via shared memory —
+                            very fast. Expect near-linear speedup for embarrassingly parallel work.</p>
+                            <h3 style="margin-top:0.5em;">2. Multi-node scaling is risky on ilifu</h3>
+                            <p>Network latency between nodes dominates small workloads.
+                            ilifu does not have InfiniBand.
+                            The 2-node demo was <em>slower</em> than 8 cores on 1 node.</p>
+                            <h3 style="margin-top:0.5em;">3. Parallelism strategy matters</h3>
+                            <p>For simple loops: pure MPI often beats hybrid MPI+OpenMP
+                            because fewer messages are sent. Choose based on your workload's communication pattern.</p>
+                        </div>
+                        <div class="col">
+                            <h3>4. Diminishing returns</h3>
+                            <p>Going from 1→4 CPUs gave ~3× speedup.
+                            Going from 4→8 CPUs only gave ~1.7× more speedup.
+                            Some overhead is unavoidable (coordination, synchronization).</p>
+                            <div class="info-box" style="margin-top:0.6em;">
+                                <strong>Rule of thumb:</strong> Always benchmark your specific workload.
+                                These lessons apply to this sum-of-numbers example — your scientific
+                                code may behave very differently.
+                            </div>
+                            <div class="thank-you-cards" style="margin-top:0.6em; gap:1em;">
+                                <a href="../tutorial2/" style="text-decoration:none;">
+                                    <div class="support-card">
+                                        <h3>Next: Tutorial 2</h3>
+                                        <p style="font-size:0.65em; margin-bottom:0.3em;">Resource Profiling</p>
+                                        <span>seff, sacct →</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span><a href="../">← Session 3</a></span>
+                        <span>Session 3, Tutorial 1</span>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/highlight/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/notes/notes.min.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            width: 1920,
+            height: 1080,
+            center: false,
+            plugins: [RevealHighlight, RevealNotes]
+        });
+    </script>
+</body>
+</html>

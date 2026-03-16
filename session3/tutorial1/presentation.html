@@ -23,6 +23,9 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Fira+Code:wght@400;500&amp;display=swap"
         rel="stylesheet" />
     <link href="../../resources/theme.css" rel="stylesheet" />
+    <style>
+        .no-line-numbers .hljs-ln-numbers { display: none; }
+    </style>
 </head>
 
 <body>
@@ -212,7 +215,7 @@ average = total / number_of_grades
 </code>
                             </pre>
                             <p>All instructions run sequentially on a single CPU.</p>
-                            <pre><code class="language-python" data-line-numbers="1-9|1|2|3|4|5|6|7|8|9|1-9" data-fragment-index="0" data-trim="">
+                            <pre class="no-line-numbers"><code class="language-python" data-line-numbers="1-9|1|2|3|4|5|6|7|8|9|1-9" data-fragment-index="0" data-trim="">
 grades = [50, 65, 82, 79, 48, 72]
 total = 0
 total = 0 + 50 = 50
@@ -226,28 +229,45 @@ average = 396 / 6 = 66
                         </div>
                         <div class="col">
                             <h3>Parallel: split → process → combine</h3>
-                            <pre><code class="language-python" data-trim=""># 1. Split: divide data across N workers
-grades_part = grades[rank::N]
-
-# 2. Process: each worker computes its average
+                            <pre>
+<code class="language-python" data-line-numbers="1-5|1|2-3|4|5|1-5" data-fragment-index="11" data-trim="">
+grades = [50, 65, 82, 79, 48, 72]
+chunk = len(grades) // N  # choose N=3
+grades_part = grades[rank*chunk:(rank+1)*chunk]
 average_part = sum(grades_part) / len(grades_part)
-
-# 3. Combine: rank 0 merges all averages
-average = sum(all_averages) / N</code></pre>
+average = sum(all_averages) / N
+</code>
+                            </pre>
+                            <p>All 3 workers process their chunk simultaneously.</p>
+                            <pre class="no-line-numbers">
+<code class="language-python" data-line-numbers="1-11|1|2-5|6-9|10-11|1-11" data-fragment-index="11" data-trim="">
+grades = [50, 65, 82, 79, 48, 72]
+# Split: each worker takes 2 consecutive grades
+W0: grades_part = [50, 65]
+W1: grades_part = [82, 79]
+W2: grades_part = [48, 72]
+# Process: all workers compute simultaneously
+W0: avg_part = 115/2 = 57.5
+W1: avg_part = 161/2 = 80.5
+W2: avg_part = 120/2 = 60.0
+# Combine (W0):
+average = (57.5+80.5+60.0)/3 = 66
+</code>
+                            </pre>
                         </div>
                     </div>
                     <div class="arch-diagram" style="margin-top:0.5em;">
-                        <div class="arch-box">
+                        <div class="arch-box fragment" data-fragment-index="12">
                             <div class="box-title">Split data</div>
                             <div>Divide into N chunks</div>
                         </div>
-                        <div class="arch-arrow">→</div>
-                        <div class="arch-box compute">
+                        <div class="arch-arrow fragment" data-fragment-index="13">→</div>
+                        <div class="arch-box compute fragment" data-fragment-index="13">
                             <div class="box-title">Process simultaneously</div>
                             <div>N workers in parallel</div>
                         </div>
-                        <div class="arch-arrow">→</div>
-                        <div class="arch-box login">
+                        <div class="arch-arrow fragment" data-fragment-index="14">→</div>
+                        <div class="arch-box login fragment" data-fragment-index="14">
                             <div class="box-title">Combine results</div>
                             <div>Reduce / gather</div>
                         </div>

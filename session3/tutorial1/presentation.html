@@ -91,19 +91,23 @@
                     <h2>ilifu Components (review)</h2>
                     <div class="columns">
                         <div class="col">
-                            <h3>Login node</h3>
-                            <ul>
-                                <li>Where you land when you log in (also known as "head node")</li>
-                                <li>Run SLURM commands / submit jobs, but <strong>not</strong> software or heavy processes</li>
-                            </ul>
-                            <h3 style="margin-top:0.5em;">Compute nodes</h3>
-                            <ul>
-                                <li>Where your processes run (also known as "worker nodes")</li>
-                                <li>Access software via modules / Singularity containers</li>
-                                <li>1 node = 32 CPUs, ~240 GiB RAM (Main partition)</li>
-                            </ul>
+                            <div class="fragment">
+                                <h3>Login node</h3>
+                                <ul>
+                                    <li>Where you land when you log in (also known as "head node")</li>
+                                    <li>Run SLURM commands / submit jobs, but <strong>not</strong> software or heavy processes</li>
+                                </ul>
+                            </div>
+                            <div class="fragment">
+                                <h3 style="margin-top:0.5em;">Compute nodes</h3>
+                                <ul>
+                                    <li>Where your processes run (also known as "worker nodes")</li>
+                                    <li>Access software via modules / Singularity containers</li>
+                                    <li>1 node = 32 CPUs, ~240 GiB RAM (Main partition)</li>
+                                </ul>
+                            </div>
                         </div>
-                        <div class="col">
+                        <div class="col fragment">
                             <h3>Partitions — check with <code>sinfo</code></h3>
                             <table>
                                 <thead>
@@ -198,23 +202,38 @@
                     <div class="columns">
                         <div class="col">
                             <h3>Serial: one step at a time</h3>
-                            <pre><code class="language-python" data-trim="">total = 0
+                            <pre>
+<code class="language-python" data-line-numbers="1-5|1|2|3-4|3-4|3-4|3-4|3-4|3-4|5|1-5" data-fragment-index="0" data-trim="">
+grades = [50, 65, 82, 79, 48, 72]
+total = 0
 for grade in grades:
     total = total + grade
 average = total / number_of_grades
-print(average)</code></pre>
+</code>
+                            </pre>
                             <p>All instructions run sequentially on a single CPU.</p>
+                            <pre><code class="language-python" data-line-numbers="1-9|1|2|3|4|5|6|7|8|9|1-9" data-fragment-index="0" data-trim="">
+grades = [50, 65, 82, 79, 48, 72]
+total = 0
+total = 0 + 50 = 50
+total = 50 + 65 = 115
+total = 115 + 82 = 197
+total = 197 + 79 = 276
+total = 276 + 48 = 324
+total = 324 + 72 = 396
+average = 396 / 6 = 66
+</code></pre>
                         </div>
                         <div class="col">
                             <h3>Parallel: split → process → combine</h3>
-                            <pre><code class="language-python" data-trim=""># Each process handles a partition:
-total_part = 0
-for grade in grades_part:
-    total_part = total_part + grade
-average_part = total_part / count_part
+                            <pre><code class="language-python" data-trim=""># 1. Split: divide data across N workers
+grades_part = grades[rank::N]
 
-# Rank 0 combines results:
-average = (avg_1 + … + avg_n) / n_parts</code></pre>
+# 2. Process: each worker computes its average
+average_part = sum(grades_part) / len(grades_part)
+
+# 3. Combine: rank 0 merges all averages
+average = sum(all_averages) / N</code></pre>
                         </div>
                     </div>
                     <div class="arch-diagram" style="margin-top:0.5em;">
@@ -680,7 +699,7 @@ mpirun python myscript.py</code></pre>
                         <img alt="ilifu" src="../../assets/ilifu_logo.svg" />
                     </div>
                     <h2>Best Practices</h2>
-                    <div class="do-dont">
+                    <div class="do-dont fragment">
                         <div class="dont-col">
                             <h3>✗ Don't</h3>
                             <ul>
@@ -691,7 +710,7 @@ mpirun python myscript.py</code></pre>
                                 <li>Store large files in your home directory (<code>/users</code>)</li>
                             </ul>
                         </div>
-                        <div class="do-col">
+                        <div class="do-col fragment">
                             <h3>✓ Do</h3>
                             <ul>
                                 <li>Use <code>sbatch</code> for all persistent job submission</li>

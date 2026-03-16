@@ -41,19 +41,34 @@
             <!-- SLIDE 1: Title                   -->
             <!-- =============================== -->
             <section class="title-slide">
-                <div class="slide-header" style="justify-content:center; border-bottom:none; margin-bottom:0.8em;">
-                    <img src="../../assets/ilifu_logo.svg" alt="ilifu" style="height:60px;" />
+<!--                <div class="slide-header">-->
+<!--                    <h1>ilifu Online Training</h1>-->
+<!--                </div>-->
+<!--                <div class="slide-content">-->
+<!--                    <h1 class="subtitle" style="text-align: center;">Session 1: Introduction to Slurm</h1>-->
+<!--                    <h1 class="subtitle" style="text-align: center;"><small>24 February 2026</small></h1>-->
+<!--                    <h2 class="meta" style="text-align: center;">-->
+<!--                        <small>Dane Kennedy · ilifu Bioinformatics Support<br />-->
+<!--                            University of Cape Town-->
+<!--                        </small>-->
+<!--                    </h2>-->
+<!--                </div>-->
+
+                <div class="slide-header">
+                    <h1><img src="../../assets/ilifu_logo.svg" alt="ilifu" style="height:80px;" /> Online Training</h1>
                 </div>
-                <h1>Session 3: Parallelism</h1>
-                <p class="subtitle">ilifu Online Training</p>
-                <div class="meta">
-                    <strong>Session 3</strong> — Parallel Computing on the ilifu Cluster &nbsp;|&nbsp;
-                    <a href="../">← Session 3</a>
-                    <br />Dane Kennedy · ilifu Bioinformatics Support · University of Cape Town
-                    <br />16 September 2025
+                <div class="slide-content">
+                    <h1 class="subtitle" style="text-align: center;">Session 3: Parallelism</h1>
+                    <h1 class="subtitle" style="text-align: center;"><small>17 March 2026</small></h1>
+                    <h2 class="meta" style="text-align: center;">
+                        <small>Dane Kennedy · ilifu Bioinformatics Support<br />
+                            University of Cape Town
+                        </small>
+                    </h2>
                 </div>
+
                 <div class="slide-footer">
-                    <span></span>
+                    <a href="https://ilifu.github.io/ilifu_user_training/session3/tutorial1/presentation.html">View on github.io</a>
                     <a href="presentation.html?print-pdf">printable version</a>
                 </div>
                 <aside class="notes">
@@ -104,8 +119,7 @@
                         </div>
                     </div>
                     <div class="slide-footer">
-                        <span><a href="../">← Session 3</a></span>
-                        <span>ilifu Components</span>
+
                     </div>
                 </div>
                 <aside class="notes">
@@ -150,7 +164,6 @@
                     </ul>
                     <div class="slide-footer">
                         <span><a href="https://en.wikipedia.org/wiki/Parallel_computing">Parallelism (Wikipedia)</a></span>
-                        <span>What is Parallelism?</span>
                     </div>
                 </div>
                 <aside class="notes">
@@ -222,7 +235,6 @@ average = (avg_1 + … + avg_n) / n_parts</code></pre>
                     </div>
                     <div class="slide-footer">
                         <span><a href="https://en.wikipedia.org/wiki/Divide-and-conquer_algorithm">Divide-and-conquer algorithm</a></span>
-                        <span>Serial vs Parallel</span>
                     </div>
                 </div>
                 <aside class="notes">
@@ -256,8 +268,6 @@ average = (avg_1 + … + avg_n) / n_parts</code></pre>
                         </li>
                     </ul>
                     <div class="slide-footer">
-                        <span><a href="../">← Session 3</a></span>
-                        <span>Parallelism Requirements</span>
                     </div>
                 </div>
                 <aside class="notes">
@@ -295,8 +305,7 @@ average = (avg_1 + … + avg_n) / n_parts</code></pre>
                         </li>
                     </ul>
                     <div class="slide-footer">
-                        <span><a href="../">← Session 3</a></span>
-                        <span>Parallelism on ilifu</span>
+
                     </div>
                 </div>
                 <aside class="notes">
@@ -363,8 +372,7 @@ average = (avg_1 + … + avg_n) / n_parts</code></pre>
                         </div>
                     </div>
                     <div class="slide-footer">
-                        <span><a href="../">← Session 3</a></span>
-                        <span>Single-node vs Multi-node</span>
+
                     </div>
                 </div>
                 <aside class="notes">
@@ -440,8 +448,7 @@ average = (avg_1 + … + avg_n) / n_parts</code></pre>
                         requires multi-node MPI. Single-node processes communicate via shared memory — no network latency.
                     </div>
                     <div class="slide-footer">
-                        <span><a href="../">← Session 3</a></span>
-                        <span>Parallelism in SLURM</span>
+
                     </div>
                 </div>
                 <aside class="notes">
@@ -489,7 +496,6 @@ average = (avg_1 + … + avg_n) / n_parts</code></pre>
                     </div>
                     <div class="slide-footer">
                         <span><a href="https://docs.ilifu.ac.za/#/getting_started/submit_job_slurm?id=customising-your-job-using-sbatchsrun-parameters">SLURM parameters docs</a></span>
-                        <span>SLURM Parameters</span>
                     </div>
                 </div>
                 <aside class="notes">
@@ -542,8 +548,7 @@ python myscript.py</code></pre>
                         </div>
                     </div>
                     <div class="slide-footer">
-                        <span><a href="../">← Session 3</a></span>
-                        <span>Serial and Multi-CPU Jobs</span>
+
                     </div>
                 </div>
                 <aside class="notes">
@@ -594,8 +599,7 @@ mpirun python myscript.py</code></pre>
                         </div>
                     </div>
                     <div class="slide-footer">
-                        <span><a href="../">← Session 3</a></span>
-                        <span>Multi-task (MPI) Jobs</span>
+
                     </div>
                 </div>
                 <aside class="notes">
@@ -638,8 +642,7 @@ mpirun python myscript.py</code></pre>
                         </div>
                     </div>
                     <div class="slide-footer">
-                        <span><a href="../">← Session 3</a></span>
-                        <span>Multi-node and Hybrid Jobs</span>
+
                     </div>
                 </div>
                 <aside class="notes">
@@ -659,7 +662,6 @@ mpirun python myscript.py</code></pre>
                     <h2 class="demo-title" style="text-align:center; margin-top:1.5em;">💻 Live Demo</h2>
                     <div class="slide-footer">
                         <span><a href="https://github.com/ilifu/ilifu_user_training/tree/main/session3/tutorial1">Demo Repository</a></span>
-                        <span>Live Demo</span>
                     </div>
                 </div>
                 <aside class="notes">
@@ -703,25 +705,12 @@ mpirun python myscript.py</code></pre>
                     </div>
                     <div class="slide-footer">
                         <span><a href="https://docs.ilifu.ac.za/#/getting_started/best_practices">Best Practices docs</a></span>
-                        <span>Best Practices</span>
                     </div>
                 </div>
                 <aside class="notes">
                 </aside>
             </section>
 
-            <!-- =============================== -->
-            <!-- SLIDE 15: Acknowledgements      -->
-            <!-- (was slide 17)                  -->
-            <!-- =============================== -->
-            <section class="title-slide">
-                <h1 style="font-size: 2.8em; margin-bottom: 0.2em;">Acknowledgements</h1>
-                <h2 class="subtitle" style="font-size: 1.1em; color: var(--brand-subtle); margin-bottom: 2em;">
-                    Dr Jordan Collier for the original slides.
-                </h2>
-                <aside class="notes">
-                </aside>
-            </section>
 
             <!-- =============================== -->
             <!-- SLIDE 16: Thank you             -->

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Tutorial 2: Resource Profiling — Session 3 | ilifu User Training</title>
+    <meta content="Profile SLURM jobs with sstat, sacct, seff, and htop on the ilifu cluster." name="description" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="../../resources/theme.css" rel="stylesheet" />
+    <link href="../../resources/page.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="logo-sidebar">
+        <img alt="CBIO" src="../../assets/cbio_logo.png" title="CBIO — Computational Biology, UCT" />
+        <img alt="IDIA" src="../../assets/idia_logo.png" title="IDIA — Institute for Data Intensive Astronomy" />
+        <img alt="UCT" src="../../assets/uct_logo.svg" title="University of Cape Town" />
+    </div>
+
+    <div class="page-wrapper">
+        <header class="page-header">
+            <img src="../../assets/ilifu_logo.svg" alt="ilifu" />
+            <div>
+                <h1>Session 3, Tutorial 2</h1>
+                <p class="page-intro">Resource Profiling — measure how much CPU and memory your jobs actually use, and tune your requests accordingly.</p>
+            </div>
+            <a href="../" class="btn-secondary">← Session 3</a>
+        </header>
+
+        <section class="tutorial-section">
+            <h2>Overview</h2>
+            <p>This tutorial briefly outlines how to profile running or previously run jobs, for the purpose of making efficient use of resources on the ilifu facility. It is based on the <a href="https://docs.ilifu.ac.za/#/tech_docs/resource_allocation">resource allocation guide</a>, where you can find much more information, in addition to the recordings and slides available on the <a href="https://www.ilifu.ac.za/latest-training">ilifu website</a>.</p>
+
+            <h3>Why profile your jobs?</h3>
+            <p>When you submit a SLURM job, you request resources upfront: CPUs, memory, and wall-time. But how much did you actually use?</p>
+            <ul>
+                <li>Over-requesting memory blocks those resources for others</li>
+                <li>Over-requesting wall-time lowers your priority in the queue</li>
+                <li>Under-requesting causes your job to fail mid-run</li>
+                <li>Resource waste is charged to your project's allocation</li>
+            </ul>
+            <p>The goal: request <em>slightly more</em> than you actually need — typically adding a 20–30% buffer on top of actual usage.</p>
+
+            <h3>Profiling tools covered</h3>
+            <table>
+                <thead>
+                    <tr><th>Tool</th><th>When to use</th><th>What it shows</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>sstat</code></td><td>While job is running</td><td>MaxRSS (current max memory usage)</td></tr>
+                    <tr><td><code>htop</code></td><td>While job is running</td><td>Live CPU and memory on the compute node</td></tr>
+                    <tr><td><code>sacct</code></td><td>After job completes</td><td>MaxRSS, elapsed time, time limit</td></tr>
+                    <tr><td><code>seff</code></td><td>After job completes</td><td>CPU efficiency %, memory efficiency %</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Submit Job</h2>
+            <p>After cloning this repo, create the logs directory (<code>mkdir logs</code>). Submit <code>initialise_array.sbatch</code> to the SLURM queue:</p>
+            <pre><code class="language-bash">sbatch initialise_array.sbatch</code></pre>
+            <p>Store the job ID that is output when you run the job (e.g. 2605138) as an environment variable:</p>
+            <pre><code class="language-bash">jobid=2605138</code></pre>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>View Memory Usage of Running Jobs</h2>
+
+            <h3>Using <code>sstat</code></h3>
+            <p>Once your job is running (check with <code>squeue -u $USER</code>), view the maximum memory usage of the job (MaxRSS):</p>
+            <pre><code class="language-bash">sstat -j $jobid -o MaxRSS</code></pre>
+            <p>This is given in units of kB. To calculate this in GB, divide the value by 1024². This should show ~50 GB maximum memory (~53,000,000 K).</p>
+
+            <h3>Using <code>htop</code> for Real-Time Monitoring</h3>
+            <p>SSH onto the node where the job is running (listed with <code>squeue -u $USER</code>). To SSH onto the node, you must have a job running on that node, and you must have enabled authentication forwarding when you first SSH onto the cluster using the <code>-A</code> parameter:</p>
+            <pre><code class="language-bash"># Connect with agent forwarding
+ssh -A &lt;username&gt;@slurm.ilifu.ac.za
+
+# Find which node your job is on:
+squeue -u $USER
+
+# SSH to that node:
+ssh compute-101
+
+# Then run htop filtered to your user:
+htop -u $USER</code></pre>
+            <p>This gives a real-time dashboard of computing resources for your different processes running on the node, and allows you to monitor how the resource usage of your job progresses in real time.</p>
+            <p>Within the first ~30 seconds of the job running, <code>htop</code> should show close to 100% CPU usage (all of a single core), and ~20% memory usage (corresponding to the ~50 GB maximum memory). If you weren't quick enough, run the job again and repeat this step — the node may be different. You will be logged out of the node automatically once your job has completed.</p>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>View Memory Usage of Previous Jobs</h2>
+
+            <h3>Using <code>sacct</code></h3>
+            <p>After the job has run, list the MaxRSS with:</p>
+            <pre><code class="language-bash">sacct -j $jobid --unit=G -o JobID,JobName,MaxRSS,ReqMem</code></pre>
+            <p>This will also list your requested memory (<code>ReqMem</code>) and the unit (e.g. <code>80 Gn</code> = 80 GB per node, or <code>7.25c</code> = 7.25 GB per core), for comparison to the used memory.</p>
+
+            <h3>Using <code>seff</code></h3>
+            <p>List the efficiency of your job's use of compute resources with:</p>
+            <pre><code class="language-bash">seff $jobid</code></pre>
+            <p>This should list a moderate to high memory efficiency (≥50%, depending on how close the maximum memory usage occurred to when SLURM samples it every 20 seconds), but low CPU efficiency, which is penalised due to our wall-time being longer than necessary (but useful for allowing time for live profiling).</p>
+            <p>To view the effect of the CPU efficiency decreasing, submit the job again and watch the output of <code>seff</code>:</p>
+            <pre><code class="language-bash">watch seff $jobid</code></pre>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>View Wall-Time Usage</h2>
+            <p>List the wall-time vs. the time allocated to the job:</p>
+            <pre><code class="language-bash">sacct -j $jobid -o jobID,jobName,Elapsed,TimeLimit</code></pre>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Find Historical Job ID for Profiling</h2>
+            <p>In order to profile your previous jobs when submitting a similar job, you may need to find the ID of a previous job to display the usage statistics. Search for a job ID within the time range that you submitted the job, using <code>sacct</code>:</p>
+            <pre><code class="language-bash">sacct -X --name=initialise_array --starttime=2022-01-01 --endtime=2022-04-12</code></pre>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Accounting Groups</h2>
+            <p>Each project supported on ilifu has a corresponding SLURM accounting group, against which resource usage is charged. If you are a member of multiple projects on the ilifu cluster, it is important to select the correct project accounting group when submitting a job.</p>
+
+            <h3>List your accounting groups</h3>
+            <pre><code class="language-bash">sacctmgr show user $USER cluster=ilifu-slurm2021 -s format=account%25</code></pre>
+
+            <h3>View your default account</h3>
+            <pre><code class="language-bash">sacctmgr show user $USER</code></pre>
+
+            <h3>Change your default account</h3>
+            <pre><code class="language-bash">sacctmgr modify user name=${USER} set DefaultAccount=&lt;account&gt;</code></pre>
+
+            <h3>Specify account when submitting a job</h3>
+            <p>Your account can be specified within the SLURM parameter <code>--account</code> (following <code>#SBATCH</code> within sbatch jobs):</p>
+            <pre><code class="language-bash">#SBATCH --account=b05-pipelines-ag</code></pre>
+
+            <h3>Next</h3>
+            <ul>
+                <li><a href="../tutorial3/">Tutorial 3</a> — High-throughput jobs: split large jobs and use <code>afterok</code> dependencies</li>
+                <li><a href="../">← Back to Session 3</a></li>
+            </ul>
+        </section>
+
+        <footer class="page-footer">
+            <div class="footer-logos">
+                <img src="../../assets/cbio_logo.png" alt="CBIO" />
+                <img src="../../assets/idia_logo.png" alt="IDIA" />
+                <img src="../../assets/uct_logo.svg" alt="UCT" />
+            </div>
+            <a href="../">← Back to Session 3</a>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

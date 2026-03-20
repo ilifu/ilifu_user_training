@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Tutorial 2: Interactive Job Demo — Session 2 | ilifu User Training</title>
+    <meta content="Run interactive SLURM jobs with sinteractive and srun on the ilifu cluster." name="description" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="../../resources/theme.css" rel="stylesheet" />
+    <link href="../../resources/page.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="logo-sidebar">
+        <img alt="CBIO" src="../../assets/cbio_logo.png" title="CBIO — Computational Biology, UCT" />
+        <img alt="IDIA" src="../../assets/idia_logo.png" title="IDIA — Institute for Data Intensive Astronomy" />
+        <img alt="UCT" src="../../assets/uct_logo.svg" title="University of Cape Town" />
+    </div>
+
+    <div class="page-wrapper">
+        <header class="page-header">
+            <img src="../../assets/ilifu_logo.svg" alt="ilifu" />
+            <div>
+                <h1>Session 2, Tutorial 2</h1>
+                <p class="page-intro">Interactive Job Demo — run three workflow scripts on a compute node using <code>sinteractive</code>.</p>
+            </div>
+            <a href="../" class="btn-secondary">← Session 2</a>
+        </header>
+
+        <section class="tutorial-section">
+            <h2>What Are Interactive Jobs?</h2>
+            <p>This demo shows an example where three dummy scripts are executed in order as part of a workflow that is run as interactive jobs.</p>
+            <p>Interactive jobs are jobs that require ongoing input or interaction from a user while they're running. They allocate compute resources and give you a live terminal session on the compute node — so you can run commands and see results in real time.</p>
+
+            <h3>When to use interactive jobs</h3>
+            <ul>
+                <li><strong>Debugging:</strong> Run scripts step by step and inspect output</li>
+                <li><strong>Exploration:</strong> Test code on real hardware before submitting batch jobs</li>
+                <li><strong>Interactive workflows:</strong> Scripts that need user input at runtime</li>
+                <li><strong>Development:</strong> Build and test before writing the final sbatch script</li>
+            </ul>
+
+            <div class="info-box">
+                <strong>Never run code on the login node!</strong> Always use <code>sinteractive</code> or <code>srun</code> to move to a compute node first.
+            </div>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Two Ways to Start an Interactive Session</h2>
+
+            <h3><code>sinteractive</code> — Development partition</h3>
+            <p>To run an interactive job on the development partition:</p>
+            <pre><code class="language-bash">sinteractive</code></pre>
+            <p>This is a wrapper for <code>srun</code> targeting the <code>Devel</code> partition. It's designed for short interactive sessions and quick allocation.</p>
+
+            <h3><code>srun --pty bash</code> — Main partition</h3>
+            <p>If you want to run an interactive job on the Main partition:</p>
+            <pre><code class="language-bash">srun --pty bash</code></pre>
+            <p>You can also specify more resources:</p>
+            <pre><code class="language-bash">srun --cpus-per-task=4 --mem=8G --time=1:00:00 --pty bash</code></pre>
+
+            <div class="info-box tip">
+                For this tutorial, use <code>sinteractive</code> — it's the quickest way to get a development session.
+            </div>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>The Three Scripts</h2>
+            <p>There are three scripts in this tutorial directory:</p>
+            <ul>
+                <li><code>script1_setup.sh</code> — Set up the environment</li>
+                <li><code>script2_calculate.sh</code> — Run a calculation (accepts an optional input parameter)</li>
+                <li><code>script3_summarise.sh</code> — Summarise results</li>
+            </ul>
+            <p>You can see all the scripts by listing the directory:</p>
+            <pre><code class="language-bash">ls</code></pre>
+
+            <h3>Why this matters</h3>
+            <p>Script 2 accepts an <strong>input parameter at runtime</strong>. In a batch job, you'd have to hard-code that parameter in the sbatch script before submission — no flexibility. With an interactive session, you can run script 1, inspect the output, decide what parameter to pass to script 2, and iterate until satisfied before writing the final sbatch script.</p>
+            <p>This is how interactive jobs are useful for <strong>debugging a workflow</strong>.</p>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Running the Scripts</h2>
+
+            <div class="step-block">
+                <h3>Step 1 — Navigate to the tutorial directory</h3>
+                <pre><code class="language-bash">cd session2/tutorial2
+ls
+# script1_setup.sh  script2_calculate.sh  script3_summarise.sh</code></pre>
+            </div>
+
+            <div class="step-block">
+                <h3>Step 2 — Start an interactive session</h3>
+                <pre><code class="language-bash">sinteractive</code></pre>
+                <p>Your prompt changes to show the compute node, e.g.: <code>USERNAME@compute-101 $</code></p>
+                <p>Don't run the scripts on the login node — always start an interactive session first.</p>
+            </div>
+
+            <div class="step-block">
+                <h3>Step 3 — Run the workflow scripts</h3>
+                <pre><code class="language-bash">./script1_setup.sh
+./script2_calculate.sh
+./script3_summarise.sh</code></pre>
+                <p>You will see that an input parameter can be given for the second script. This is why interactive scripts are useful for debugging a workflow — if this was an sbatch script you would have had to find a way to directly pass a parameter to this script before submission.</p>
+            </div>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Exiting the Interactive Session</h2>
+            <p>When you are done, exit the interactive session to release allocated resources back to the cluster.</p>
+            <pre><code class="language-bash">exit</code></pre>
+            <p>Alternatively, press <code>Ctrl+D</code>.</p>
+            <p>Both return you to the login node. Your prompt changes back to show the login node hostname.</p>
+
+            <div class="info-box">
+                <strong>Resource courtesy:</strong> Always exit your interactive session when done. Resources you hold are unavailable to other users.
+            </div>
+
+            <h3>Next</h3>
+            <ul>
+                <li><a href="../tutorial3/">Tutorial 3</a> — SLURM job arrays: submit 20 jobs with a single command</li>
+                <li><a href="../">← Back to Session 2</a></li>
+            </ul>
+        </section>
+
+        <footer class="page-footer">
+            <div class="footer-logos">
+                <img src="../../assets/cbio_logo.png" alt="CBIO" />
+                <img src="../../assets/idia_logo.png" alt="IDIA" />
+                <img src="../../assets/uct_logo.svg" alt="UCT" />
+            </div>
+            <a href="../">← Back to Session 2</a>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

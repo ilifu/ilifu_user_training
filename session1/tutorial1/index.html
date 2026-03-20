@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Tutorial 1: Jupyter Notebooks on ilifu — Session 1 | ilifu User Training</title>
+    <meta content="Introduction to using Jupyter notebooks on the ilifu HPC cluster via JupyterHub." name="description" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="../../resources/theme.css" rel="stylesheet" />
+    <link href="../../resources/page.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="logo-sidebar">
+        <img alt="CBIO" src="../../assets/cbio_logo.png" title="CBIO — Computational Biology, UCT" />
+        <img alt="IDIA" src="../../assets/idia_logo.png" title="IDIA — Institute for Data Intensive Astronomy" />
+        <img alt="UCT" src="../../assets/uct_logo.svg" title="University of Cape Town" />
+    </div>
+
+    <div class="page-wrapper">
+        <header class="page-header">
+            <img src="../../assets/ilifu_logo.svg" alt="ilifu" />
+            <div>
+                <h1>Session 1, Tutorial 1</h1>
+                <p class="page-intro">Jupyter Notebooks on ilifu — access the cluster through a familiar notebook interface via JupyterHub.</p>
+            </div>
+            <a href="../" class="btn-secondary">← Session 1</a>
+        </header>
+
+        <section class="tutorial-section">
+            <h2>What is Jupyter on ilifu?</h2>
+            <p>ilifu provides <strong>JupyterHub</strong> — a multi-user Jupyter environment that runs your notebooks directly on the HPC cluster. You access it through your browser; the notebook kernel runs on a compute node allocated by SLURM.</p>
+            <ul>
+                <li>Access via the <strong>ilifu portal</strong> — no local installation needed</li>
+                <li>Your notebook runs on a <strong>compute node</strong> allocated by SLURM</li>
+                <li>Full access to cluster storage, modules, and compute resources</li>
+                <li>Supports Python, R, and custom virtual environment kernels</li>
+            </ul>
+            <div class="info-box tip">
+                <strong>Why use Jupyter on the cluster?</strong> Large datasets that won't fit on your laptop, access to powerful GPUs and many-core CPUs, and shared project storage — all in a familiar notebook interface.
+            </div>
+
+            <h3>Architecture</h3>
+            <p>When you start a session on JupyterHub, SLURM allocates a compute node and the Jupyter kernel runs there — not on the login node.</p>
+            <pre><code class="language-text">Your Browser → JupyterHub portal → SLURM Scheduler → Compute Node
+                                                        (Jupyter kernel runs here)</code></pre>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Accessing JupyterHub on ilifu</h2>
+
+            <h3>Step 1 — Log in to the portal</h3>
+            <ul>
+                <li>Navigate to the ilifu JupyterHub URL (provided by your instructor)</li>
+                <li>Sign in with your ilifu credentials</li>
+            </ul>
+
+            <h3>Step 2 — Select a server profile</h3>
+            <ul>
+                <li>Choose CPUs, memory, and runtime (SLURM will allocate accordingly)</li>
+                <li>Click <strong>Start</strong> — your session is queued as a SLURM job</li>
+                <li>Wait for the server to start; this may take a minute while SLURM queues and schedules the job</li>
+            </ul>
+
+            <h3>Step 3 — Open the tutorial notebook</h3>
+            <ul>
+                <li>Navigate to <code>session1/tutorial1/</code> in the file browser</li>
+                <li>Open the <code>.ipynb</code> file</li>
+                <li>Select the appropriate kernel (default Python is fine for Tutorial 1)</li>
+            </ul>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Keyboard Shortcuts</h2>
+            <p>Jupyter has two modes: <strong>Command mode</strong> (press <code>Esc</code>) for cell-level operations, and <strong>Edit mode</strong> (press <code>Enter</code>) for typing in a cell.</p>
+
+            <table>
+                <thead>
+                    <tr><th>Shortcut</th><th>Mode</th><th>Action</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>Shift+Enter</code></td><td>Either</td><td>Run cell and advance to next</td></tr>
+                    <tr><td><code>Ctrl+Enter</code></td><td>Either</td><td>Run cell and stay</td></tr>
+                    <tr><td><code>A</code></td><td>Command</td><td>Insert cell above</td></tr>
+                    <tr><td><code>B</code></td><td>Command</td><td>Insert cell below</td></tr>
+                    <tr><td><code>D, D</code></td><td>Command</td><td>Delete cell</td></tr>
+                    <tr><td><code>M</code></td><td>Command</td><td>Change cell to Markdown</td></tr>
+                    <tr><td><code>Y</code></td><td>Command</td><td>Change cell to Code</td></tr>
+                    <tr><td><code>Ctrl+S</code></td><td>Either</td><td>Save notebook</td></tr>
+                </tbody>
+            </table>
+
+            <div class="info-box">
+                <strong>Tip:</strong> Press <code>Esc</code> first to enter command mode, then use single-key shortcuts. Press <code>Enter</code> to return to edit mode.
+            </div>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Key Features Demonstrated in the Notebook</h2>
+
+            <h3>Working with Data</h3>
+            <ul>
+                <li>Loading files from cluster storage paths</li>
+                <li>Using <code>pandas</code> for tabular data</li>
+                <li>Plotting with <code>matplotlib</code></li>
+            </ul>
+
+            <h3>Shell Commands in Notebooks</h3>
+            <p>Prefix any shell command with <code>!</code> to run it from a notebook cell:</p>
+            <pre><code class="language-python">!ls                    # list files
+!squeue -u $USER       # check your SLURM jobs
+!cat data/sample.txt   # print file contents</code></pre>
+            <p>Mix Python and shell output in the same notebook for interactive exploration.</p>
+
+            <h3>Markdown Cells</h3>
+            <ul>
+                <li>Document your analysis with formatted text</li>
+                <li>Headers (<code># Title</code>, <code>## Section</code>), bullet points, bold/italic</li>
+                <li>Equations using LaTeX: <code>$E = mc^2$</code></li>
+            </ul>
+
+            <h3>Saving &amp; Checkpoints</h3>
+            <ul>
+                <li>Notebooks auto-save periodically</li>
+                <li>Manual save: <code>Ctrl+S</code> or File → Save</li>
+                <li>Checkpoints allow reverting to a previous state via File → Revert to Checkpoint</li>
+            </ul>
+
+            <div class="info-box tip">
+                <strong>Custom kernels:</strong> After Session 2 Tutorial 1, you'll be able to register your own Python virtual environments as Jupyter kernels — making your packages available in notebooks without modifying the shared cluster environment.
+            </div>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Next Steps</h2>
+            <ul>
+                <li><a href="../tutorial2/">Session 1, Tutorial 2</a> — SLURM job submission basics: submit your first batch job</li>
+                <li><a href="../../session2/tutorial1/">Session 2, Tutorial 1</a> — Create a Python virtual environment and register it as a Jupyter kernel</li>
+                <li><a href="../">← Back to Session 1</a></li>
+            </ul>
+        </section>
+
+        <footer class="page-footer">
+            <div class="footer-logos">
+                <img src="../../assets/cbio_logo.png" alt="CBIO" />
+                <img src="../../assets/idia_logo.png" alt="IDIA" />
+                <img src="../../assets/uct_logo.svg" alt="UCT" />
+            </div>
+            <a href="../">← Back to Session 1</a>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

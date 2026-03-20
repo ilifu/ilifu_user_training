@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Tutorial 1: Nextflow &amp; WDL/Cromwell — Session 4 | ilifu User Training</title>
+    <meta content="Workflow orchestration with Nextflow and WDL/Cromwell on the ilifu SLURM cluster." name="description" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="../../resources/theme.css" rel="stylesheet" />
+    <link href="../../resources/page.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="logo-sidebar">
+        <img alt="CBIO" src="../../assets/cbio_logo.png" title="CBIO — Computational Biology, UCT" />
+        <img alt="IDIA" src="../../assets/idia_logo.png" title="IDIA — Institute for Data Intensive Astronomy" />
+        <img alt="UCT" src="../../assets/uct_logo.svg" title="University of Cape Town" />
+    </div>
+
+    <div class="page-wrapper">
+        <header class="page-header">
+            <img src="../../assets/ilifu_logo.svg" alt="ilifu" />
+            <div>
+                <h1>Session 4, Tutorial 1</h1>
+                <p class="page-intro">Workflow Orchestration with Nextflow and WDL/Cromwell — automate complex multi-step pipelines on the ilifu SLURM cluster.</p>
+            </div>
+            <a href="../" class="btn-secondary">← Session 4</a>
+        </header>
+
+        <section class="tutorial-section">
+            <h2>What Is This Tutorial About?</h2>
+            <p>In previous sessions, you've learned to submit individual jobs to SLURM using <code>sbatch</code> scripts. This works well for single, standalone jobs. But what if you need to run a <strong>pipeline</strong> — a series of steps where some depend on the output of others, others can run in parallel, and you need to manage dozens or hundreds of tasks across the cluster?</p>
+            <p>This is where <strong>workflow orchestration systems</strong> shine.</p>
+
+            <h3>Learning Objectives</h3>
+            <p>By the end of this tutorial, you'll understand:</p>
+            <ul>
+                <li><strong>Why workflows matter:</strong> How they handle complex dependencies, parallelization, and reproducibility</li>
+                <li><strong>Nextflow fundamentals:</strong> Writing tasks, connecting them into workflows, and running on SLURM</li>
+                <li><strong>WDL/Cromwell basics:</strong> An alternative workflow language and execution engine</li>
+                <li><strong>SLURM integration:</strong> How to configure workflows to use appropriate resources on ilifu</li>
+                <li><strong>Scaling considerations:</strong> When to use workflows vs. direct job submission</li>
+            </ul>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Why Workflow Orchestration?</h2>
+            <p>Imagine a bioinformatics pipeline:</p>
+            <pre><code class="language-text">Raw data (FASTQ) → Quality trim → Align to reference → Count hits → Generate report</code></pre>
+
+            <h3>With traditional SLURM</h3>
+            <ul>
+                <li>You submit 4 separate jobs manually</li>
+                <li>You must monitor which jobs finish before submitting the next</li>
+                <li>If step 2 fails for one sample, you manually resubmit only step 2</li>
+                <li>Testing or changing a single step requires rewriting sbatch scripts</li>
+            </ul>
+
+            <h3>With a workflow orchestrator (Nextflow or Cromwell)</h3>
+            <ul>
+                <li>You define all steps in one file with explicit dependencies</li>
+                <li>The system parallelizes independent tasks automatically</li>
+                <li>Failed tasks can resume from checkpoints</li>
+                <li>You can easily test, parameterize, and scale the same workflow</li>
+                <li>Workflows are reproducible and portable across systems</li>
+            </ul>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Key Workflow Concepts</h2>
+
+            <h3>1. Tasks</h3>
+            <p>A <strong>task</strong> is a single computational step with inputs (files, parameters), a script to execute (bash, python, etc.), outputs (files, values), and resource requirements (CPUs, memory, time).</p>
+
+            <h3>2. Workflows</h3>
+            <p>A <strong>workflow</strong> connects multiple tasks by defining task order through dependencies, passing outputs from one task as inputs to another, and allowing independent tasks to run in parallel.</p>
+
+            <h3>3. Resource Management</h3>
+            <p>Workflows request specific resources for each task (CPU cores, memory, execution time, node constraints). The orchestrator (Nextflow/Cromwell) submits these to SLURM appropriately.</p>
+
+            <h3>4. Parallelization &amp; Scatter Operations</h3>
+            <ul>
+                <li><strong>Scatter:</strong> Run the same task on many inputs in parallel</li>
+                <li><strong>Gather:</strong> Combine results from scattered tasks</li>
+            </ul>
+            <p>This is critical for high-throughput science (process 100 samples in parallel).</p>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Getting Started</h2>
+
+            <h3>Prerequisites</h3>
+            <ol>
+                <li>Access to ilifu cluster with login credentials</li>
+                <li>Basic familiarity with SLURM from Sessions 1–3</li>
+                <li>Python environment setup (from Session 2)</li>
+            </ol>
+
+            <h3>Installation &amp; Setup</h3>
+            <p>Log into ilifu and navigate to the tutorial directory:</p>
+            <pre><code class="language-bash">ssh user@ilifu-login.ac.za
+cd /data/user_training  # or your preferred location
+git clone &lt;ilifu_user_training repo&gt;
+cd ilifu_user_training/session5/tutorial1
+mkdir -p logs</code></pre>
+
+            <p>Create a local Python virtual environment:</p>
+            <pre><code class="language-bash">uv venv .venv
+source .venv/bin/activate
+uv sync</code></pre>
+
+            <p>Install Nextflow and Cromwell:</p>
+            <pre><code class="language-bash"># Nextflow (self-contained, downloads to ~/.nextflow)
+curl -fsSL https://get.nextflow.io | bash
+mkdir -p ~/bin
+mv nextflow ~/bin/
+export PATH=$PATH:~/bin
+
+# Cromwell (Java application)
+cd ~/bin
+wget https://github.com/broadinstitute/cromwell/releases/download/v85.1/cromwell-85.1.jar
+ln -s cromwell-85.1.jar cromwell.jar
+cd ~/ilifu_user_training/session5/tutorial1</code></pre>
+
+            <p>Verify installations:</p>
+            <pre><code class="language-bash">nextflow -version
+# Expected output: Nextflow 24.10.x build xxxx
+
+java -jar ~/bin/cromwell.jar --version
+# Expected output: Cromwell 85.1</code></pre>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Part 1: Nextflow Basics</h2>
+
+            <h3>What is Nextflow?</h3>
+            <p>Nextflow is a workflow framework written in Groovy (Java-like language). It emphasizes:</p>
+            <ul>
+                <li><strong>Readability:</strong> Workflows look like natural language</li>
+                <li><strong>Portability:</strong> Same workflow runs on laptop, HPC, cloud</li>
+                <li><strong>Parallelization:</strong> Automatic scatter-gather operations</li>
+                <li><strong>Resumability:</strong> Can restart from failed steps</li>
+            </ul>
+
+            <h3>A Simple Nextflow Workflow: <code>simple_fastq_workflow.nf</code></h3>
+            <p>This workflow has three tasks: trim reads → align sequences → count alignments.</p>
+            <pre><code class="language-groovy">// Define task 1: Trim sequences
+process trim_reads {
+    input:
+        file fastq
+
+    output:
+        file "${fastq.baseName}.trimmed.fastq"
+
+    script:
+    """
+    # Simulate trimming by taking first 80 characters of each sequence
+    awk '/^@/ {print; getline; print substr(\$0,1,80); getline; print; getline; print}' ${fastq} > ${fastq.baseName}.trimmed.fastq
+    """
+}
+
+// Define task 2: Align sequences
+process align_sequences {
+    input:
+        file trimmed_fastq
+
+    output:
+        file "${trimmed_fastq.baseName}.sam"
+
+    script:
+    """
+    (echo "@HD	VN:1.0	SO:coordinate"; \
+     awk 'NR % 4 == 2' ${trimmed_fastq} | head -100 | awk '{print NR "\t0\tref\t" NR "\t60\t" length(\$0) "M\t*\t0\t0\t" \$0 "\tIIIIII"}') > ${trimmed_fastq.baseName}.sam
+    """
+}
+
+// Define task 3: Count hits
+process count_alignments {
+    publishDir "results", mode: 'copy'
+
+    input:
+        file sam_file
+
+    output:
+        file "${sam_file.baseName}.counts.txt"
+
+    script:
+    """
+    TOTAL=\$(grep -v '@' ${sam_file} | wc -l)
+    echo "Total alignments: \$TOTAL" > ${sam_file.baseName}.counts.txt
+    echo "Alignment rate: 100%" >> ${sam_file.baseName}.counts.txt
+    """
+}
+
+// Define the workflow
+workflow {
+    // Create input channel (files matching pattern)
+    fastq_files = Channel.fromPath('data/*.fastq')
+
+    // Connect tasks
+    trim_reads(fastq_files) | align_sequences | count_alignments
+}</code></pre>
+
+            <h3>Breaking It Down</h3>
+            <p><strong>Process blocks</strong> define reusable tasks:</p>
+            <pre><code class="language-groovy">process task_name {
+    input:
+        file variable_name
+
+    output:
+        file output_pattern
+
+    script:
+    """
+    // Your bash/python code here
+    """
+}</code></pre>
+            <p><strong>Key parts:</strong></p>
+            <ul>
+                <li><code>input:</code> — What this task needs (files, values)</li>
+                <li><code>output:</code> — What it produces</li>
+                <li><code>script:</code> — The code to run (typically bash)</li>
+                <li><code>publishDir:</code> — Where to copy important outputs (optional)</li>
+            </ul>
+
+            <p><strong>Workflow block</strong> connects tasks. The <code>|</code> (pipe) operator connects tasks: output of one becomes input to the next. Nextflow automatically handles file passing, scheduling, and parallelization.</p>
+
+            <h3>Creating Test Data</h3>
+            <pre><code class="language-bash"># Create data directory
+mkdir -p data
+
+# Create a sample FASTQ file
+cat &gt; data/sample1.fastq &lt;&lt; 'EOF'
+@seq1
+ACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT
++
+IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+@seq2
+TGCATGCATGCATGCATGCATGCATGCATGCATGCATGCATGCATGCATGCATGCATGCATGCATGCATGCATGCATGCATGCA
++
+IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+EOF
+
+cp data/sample1.fastq data/sample2.fastq</code></pre>
+
+            <h3>Running on ilifu: SLURM Configuration</h3>
+            <p>To use SLURM on ilifu, Nextflow needs a configuration file (<code>nextflow.config</code>):</p>
+            <pre><code class="language-groovy">// Nextflow SLURM Configuration for ilifu
+
+process {
+    // Default resource allocation for all processes
+    cpus = 1
+    memory = 2.GB
+    time = 30.m
+
+    // Override for specific process types (by name)
+    withName: 'align_sequences' {
+        cpus = 4
+        memory = 8.GB
+        time = 2.h
+    }
+
+    withName: 'count_alignments' {
+        cpus = 1
+        memory = 1.GB
+        time = 10.m
+    }
+}
+
+executor {
+    // Use SLURM as the job scheduler
+    name = 'slurm'
+    queueSize = 10  // Limit queued jobs to prevent overwhelming the scheduler
+    pollInterval = '30s'
+    submitRateLimit = '10/1min'  // Don't submit more than 10 jobs per minute
+}
+
+// Optional: log configuration
+trace {
+    enabled = true
+    file = 'trace.txt'
+}
+
+// Optional: timeline visualization
+timeline {
+    enabled = true
+    file = 'timeline.html'
+}</code></pre>
+
+            <h3>Submitting a Nextflow Workflow to SLURM</h3>
+            <p>To run the workflow as a SLURM job (<code>submit_nextflow_workflow.sbatch</code>):</p>
+            <pre><code class="language-bash">#!/bin/bash
+#SBATCH --job-name=nextflow-fastq
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=2
+#SBATCH --mem=4GB
+#SBATCH --time=01:00:00
+#SBATCH --output=logs/%x-%j.out
+#SBATCH --error=logs/%x-%j.err
+
+echo "Starting Nextflow workflow on ilifu"
+echo "Job ID: $SLURM_JOB_ID"
+echo "Running on: $(hostname)"
+
+# Load required modules
+module add java
+
+# Add Nextflow to PATH
+export PATH=$PATH:~/bin
+
+# Activate Python environment if needed
+source .venv/bin/activate
+
+# Run Nextflow workflow
+# -resume: restart from last successful step if interrupted
+# -with-report: generate HTML execution report
+nextflow run simple_fastq_workflow.nf \
+    -resume \
+    -with-report \
+    -with-trace
+
+echo "Workflow complete"</code></pre>
+
+            <h3>Running the Tutorial Example</h3>
+            <pre><code class="language-bash"># First-time run
+sbatch submit_nextflow_workflow.sbatch
+
+# Check job status
+squeue -u $USER
+
+# Monitor progress in real-time
+tail -f logs/nextflow-fastq-*.out
+
+# After completion, view results
+ls -la results/
+cat results/*.counts.txt
+
+# View the execution timeline (download to browser)
+cat timeline.html</code></pre>
+
+            <h3>Expected Output</h3>
+            <pre><code class="language-text">Starting Nextflow workflow on ilifu
+Job ID: 12345
+Running on: node42.ilifu.ac.za
+
+N E X T F L O W  ~  version 24.10.x
+Launching `simple_fastq_workflow.nf` [silly_darwin] - revision: abc123
+
+[  10%] process > trim_reads [0%] 0 of 2
+[  50%] process > trim_reads [100%] 2 of 2 ✓
+[  55%] process > align_sequences [100%] 2 of 2 ✓
+[  75%] process > count_alignments [100%] 2 of 2 ✓
+
+Execution summary
+  command line   : nextflow run simple_fastq_workflow.nf
+  start time     : 2024-11-20 14:32:01
+  duration       : 25s
+  exit status    : 0
+  success        : true ✓
+
+Workflow complete</code></pre>
+
+            <h3>Scatter-Gather: Multi-Sample Workflow</h3>
+            <p>The <code>multi_sample_workflow.nf</code> file extends this to handle multiple samples with automatic parallelization. Key new concepts:</p>
+            <pre><code class="language-groovy">workflow {
+    fastq_files = Channel.fromPath('data/*.fastq')
+
+    // Scatter: Run trim_reads on all samples in parallel
+    trimmed = trim_reads(fastq_files)
+
+    // Continue pipeline
+    aligned = align_sequences(trimmed)
+    counts = count_alignments(aligned)
+
+    // Gather: Collect all results and aggregate
+    aggregate_results(counts.collect())
+}</code></pre>
+            <ul>
+                <li><code>Channel.fromPath()</code> — collect all matching files into a stream</li>
+                <li><code>.collect()</code> — gather outputs from parallel tasks back into a single input</li>
+                <li><strong>Scatter-gather pattern</strong> — critical for processing many samples efficiently</li>
+            </ul>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Part 2: WDL &amp; Cromwell Basics</h2>
+
+            <h3>What is WDL &amp; Cromwell?</h3>
+            <p><strong>WDL</strong> (Workflow Description Language) is a more structured, type-safe language for workflows. <strong>Cromwell</strong> is its execution engine.</p>
+            <p>Compared to Nextflow: WDL uses a more formal syntax with stricter types (widely used in bioinformatics), while Cromwell can run WDL workflows locally or on HPC systems.</p>
+
+            <h3>A Simple WDL Workflow: <code>image_reduction.wdl</code></h3>
+            <p>An astronomy-inspired pipeline: image reduction with bias correction, flat-field correction, and stacking.</p>
+            <pre><code class="language-text">version 1.0
+
+task bias_correction {
+    input {
+        File raw_image
+    }
+
+    output {
+        File corrected_image = "${basename(raw_image, '.fits')}_bias_corrected.fits"
+    }
+
+    command {
+        # Simulate bias correction (subtract a constant)
+        python3 &lt;&lt; 'PYTHON_SCRIPT'
+        # ... Python code to subtract bias ...
+        PYTHON_SCRIPT
+    }
+
+    runtime {
+        cpu: 1
+        memory: "1 GB"
+    }
+}
+
+workflow image_reduction {
+    input {
+        Array[File] raw_images
+    }
+
+    # Scatter: apply bias correction to all images in parallel
+    scatter (image in raw_images) {
+        call bias_correction { input: raw_image = image }
+    }
+
+    # ... flat_field_correction and stack_images follow
+}</code></pre>
+
+            <h3>WDL Task Syntax</h3>
+            <pre><code class="language-text">task task_name {
+    input {
+        File input_file
+        String param
+    }
+
+    output {
+        File output_file = "path_to_output"
+    }
+
+    command {
+        # Bash or Python code here
+    }
+
+    runtime {
+        cpu: 1
+        memory: "1 GB"
+    }
+}</code></pre>
+            <p><strong>Key parts:</strong></p>
+            <ul>
+                <li><code>input {}</code> — explicitly typed inputs (File, String, Int, Array[File], etc.)</li>
+                <li><code>output {}</code> — generated file paths</li>
+                <li><code>command {}</code> — execution code</li>
+                <li><code>runtime {}</code> — resource requirements</li>
+                <li><code>scatter</code> — parallel iteration over arrays</li>
+            </ul>
+
+            <h3>Creating Test Data for WDL</h3>
+            <pre><code class="language-bash"># Create test FITS files (simulated as text files with pixel values)
+mkdir -p fits_data
+
+for i in {1..3}; do
+    cat &gt; fits_data/image_$i.fits &lt;&lt; EOF
+150
+155
+160
+145
+EOF
+done</code></pre>
+
+            <h3>Cromwell SLURM Configuration (<code>cromwell_slurm.conf</code>)</h3>
+            <pre><code class="language-text"># Cromwell configuration for SLURM backend on ilifu
+
+include required(classpath("application"))
+
+backend {
+    default = "SLURM"
+
+    providers {
+        SLURM {
+            actor-factory = "cromwell.backend.impl.sfs.config.ConfigBackendLifecycleActorFactory"
+            config {
+                runtime-attributes = """
+                    Int cpu = 1
+                    Int memory_gb = 2
+                    Int time_hours = 1
+                """
+
+                submit = """
+                    sbatch \
+                        --job-name=${job_name} \
+                        --cpus-per-task=${cpu} \
+                        --mem=${memory_gb}G \
+                        --time=${time_hours}:00:00 \
+                        --output=${cwd}/cromwell_slurm_%j.log \
+                        ${script}
+                """
+
+                kill = "scancel ${job_id}"
+                check-alive = "squeue -j ${job_id}"
+                job-id-regex = "Submitted batch job (\\d+)"
+            }
+        }
+    }
+}</code></pre>
+
+            <h3>Submitting a WDL Workflow</h3>
+            <pre><code class="language-bash"># Prepare test data
+mkdir -p fits_data
+for i in {1..3}; do echo "150" &gt; fits_data/image_$i.fits; done
+
+# Submit to SLURM
+sbatch submit_cromwell_workflow.sbatch
+
+# Check job
+squeue -u $USER
+
+# View logs
+tail -f logs/cromwell-images-*.out
+
+# Cromwell stores results in cromwell-executions/
+ls cromwell-executions/image_reduction/</code></pre>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Key Concepts &amp; Comparison</h2>
+
+            <h3>Nextflow vs. WDL/Cromwell</h3>
+            <table>
+                <thead>
+                    <tr><th>Feature</th><th>Nextflow</th><th>WDL/Cromwell</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Syntax</td><td>Groovy-based, flexible</td><td>Formally defined, strict types</td></tr>
+                    <tr><td>Learning curve</td><td>Gentle, more Pythonic</td><td>Steeper, more Java-like</td></tr>
+                    <tr><td>Parallelization</td><td>Implicit with pipes</td><td>Explicit <code>scatter</code> statements</td></tr>
+                    <tr><td>Portability</td><td>Excellent (laptop → cloud)</td><td>Good (wide ecosystem support)</td></tr>
+                    <tr><td>Community</td><td>Large, especially bioinformatics</td><td>Also strong in bioinformatics</td></tr>
+                    <tr><td>SLURM integration</td><td>Via <code>nextflow.config</code></td><td>Via Cromwell backend config</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Resource Management on ilifu</h3>
+            <p>Both orchestrators translate task resource requests into SLURM directives:</p>
+            <pre><code class="language-groovy">// Nextflow configuration:
+process.cpus = 4
+process.memory = "8.GB"
+process.time = "2.h"</code></pre>
+            <p>→ Becomes:</p>
+            <pre><code class="language-bash">#SBATCH --cpus-per-task=4
+#SBATCH --mem=8GB
+#SBATCH --time=02:00:00</code></pre>
+
+            <h3>Task Dependencies</h3>
+            <p><strong>Nextflow (implicit):</strong></p>
+            <pre><code class="language-groovy">trim_reads(input) | align_sequences | count_alignments</code></pre>
+            <p><strong>WDL (explicit):</strong></p>
+            <pre><code class="language-text">scatter (image in raw_images) {
+    call bias_correction { input: raw_image = image }
+}
+scatter (bias_corrected in bias_correction.corrected_image) {
+    call flat_field { input: image = bias_corrected }
+}</code></pre>
+            <p>The orchestrator ensures tasks complete in the right order, outputs are passed correctly, failed tasks don't trigger dependent tasks, and failed jobs can resume from the last successful step.</p>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Real-World Results: Workflow vs. Direct SLURM</h2>
+            <p>To understand the overhead and benefits, consider this scenario: processing 10 FASTQ samples through a 3-step pipeline.</p>
+
+            <h3>Direct SLURM approach</h3>
+            <ul>
+                <li>Job 1: Trim all 10 samples — 45 seconds</li>
+                <li>Job 2: Align all 10 samples (submitted after Job 1) — 120 seconds</li>
+                <li>Job 3: Count alignments (submitted after Job 2) — 30 seconds</li>
+            </ul>
+            <p><strong>Total time: 195 seconds</strong> (sequential steps, manual monitoring)</p>
+
+            <h3>Nextflow workflow approach</h3>
+            <ul>
+                <li>Trim all 10 samples in parallel — 50 seconds</li>
+                <li>Align all 10 samples in parallel — 125 seconds</li>
+                <li>Count all alignments in parallel — 35 seconds</li>
+            </ul>
+            <p><strong>Total time: 210 seconds</strong> (includes Nextflow overhead)</p>
+
+            <h3>Key lessons</h3>
+            <ol>
+                <li><strong>Overhead:</strong> Workflow engines add ~15 seconds of startup/coordination overhead</li>
+                <li><strong>Parallelization:</strong> Nextflow handles within-stage parallelization automatically</li>
+                <li><strong>Scalability:</strong> With 100 samples, the workflow approach scales linearly; direct SLURM would need manual parallelization</li>
+                <li><strong>Fault tolerance:</strong> If one sample fails in step 2, the direct approach requires manual resubmission; Nextflow can resume automatically</li>
+            </ol>
+
+            <div class="info-box tip">
+                <strong>Decision rule:</strong> Use <strong>direct SLURM</strong> for single jobs, simple pipelines, minimal dependencies. Use <strong>Nextflow/WDL</strong> for complex pipelines, many samples, or when you need reproducibility and fault tolerance.
+            </div>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Troubleshooting</h2>
+
+            <h3>"nextflow: command not found"</h3>
+            <pre><code class="language-bash"># Nextflow not in PATH
+export PATH=$PATH:~/bin
+# Or edit ~/.bashrc to make permanent
+echo 'export PATH=$PATH:~/bin' &gt;&gt; ~/.bashrc</code></pre>
+
+            <h3>"java: command not found"</h3>
+            <pre><code class="language-bash"># Load Java module
+module add java
+module list  # Verify it's loaded</code></pre>
+
+            <h3>Workflow stuck or slow</h3>
+            <pre><code class="language-bash"># Check SLURM queue
+squeue -u $USER
+
+# Kill a specific Nextflow job
+scancel &lt;job_id&gt;
+
+# View Nextflow logs
+cat .nextflow.log
+
+# See task details
+nextflow log &lt;run_name&gt; -f name,exit,duration</code></pre>
+
+            <h3>Cromwell doesn't find files</h3>
+            <ul>
+                <li>Ensure paths in JSON input are relative to the current directory</li>
+                <li>Use <code>pwd</code> to verify your working directory</li>
+                <li>Check file permissions: <code>ls -l &lt;file&gt;</code></li>
+            </ul>
+
+            <h3>Resources exhausted</h3>
+            <ul>
+                <li>Reduce memory/CPU per task in <code>nextflow.config</code> or WDL runtime</li>
+                <li>Reduce <code>queueSize</code> in Nextflow to submit fewer jobs at once</li>
+                <li>Check queue with <code>sinfo</code> for available nodes</li>
+            </ul>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Next Steps</h2>
+            <p>Now that you understand workflow basics:</p>
+            <ol>
+                <li><strong>Experiment:</strong> Modify the example workflows (add a new task, change parameters)</li>
+                <li><strong>Scale up:</strong> Create test data with 50+ samples and see parallelization in action</li>
+                <li><strong>Real data:</strong> Adapt one workflow to your own research data</li>
+                <li><strong>Advanced:</strong> Explore conditional execution, dynamic inputs, and workflow parameters</li>
+            </ol>
+
+            <h3>Further Reading</h3>
+            <ul>
+                <li><a href="https://www.nextflow.io/docs/latest/">Nextflow Documentation</a></li>
+                <li><a href="https://github.com/openwdl/wdl">WDL Specification</a></li>
+                <li><a href="https://cromwell.readthedocs.io/">Cromwell Documentation</a></li>
+                <li><a href="https://docs.ilifu.ac.za">ilifu Documentation</a></li>
+            </ul>
+
+            <div class="info-box tip">
+                <strong>The key takeaway:</strong> As your science becomes more complex, workflows become more essential. They encode your methodology, enable reproducibility, and free you from manual job scheduling.
+            </div>
+
+            <p><a href="../">← Back to Session 4</a> &nbsp;|&nbsp; <a href="../../">← All Sessions</a></p>
+        </section>
+
+        <footer class="page-footer">
+            <div class="footer-logos">
+                <img src="../../assets/cbio_logo.png" alt="CBIO" />
+                <img src="../../assets/idia_logo.png" alt="IDIA" />
+                <img src="../../assets/uct_logo.svg" alt="UCT" />
+            </div>
+            <a href="../">← Back to Session 4</a>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

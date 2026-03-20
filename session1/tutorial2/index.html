@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Tutorial 2: Slurm Job Submission — Session 1 | ilifu User Training</title>
+    <meta content="Learn how to submit batch jobs to Slurm on the ilifu cluster, from minimal to maximal sbatch scripts." name="description" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="../../resources/theme.css" rel="stylesheet" />
+    <link href="../../resources/page.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="logo-sidebar">
+        <img alt="CBIO" src="../../assets/cbio_logo.png" title="CBIO — Computational Biology, UCT" />
+        <img alt="IDIA" src="../../assets/idia_logo.png" title="IDIA — Institute for Data Intensive Astronomy" />
+        <img alt="UCT" src="../../assets/uct_logo.svg" title="University of Cape Town" />
+    </div>
+
+    <div class="page-wrapper">
+        <header class="page-header">
+            <img src="../../assets/ilifu_logo.svg" alt="ilifu" />
+            <div>
+                <h1>Session 1, Tutorial 2</h1>
+                <p class="page-intro">Slurm Job Submission — write batch scripts and submit jobs to the ilifu SLURM scheduler.</p>
+            </div>
+            <a href="../" class="btn-secondary">← Session 1</a>
+        </header>
+
+        <section class="tutorial-section">
+            <h2>Overview</h2>
+            <p>Slurm is a job scheduling system for managing compute resources on a cluster. It consists of a <strong>login node</strong> (where users interact with the system) and many <strong>compute nodes</strong> (where jobs actually run).</p>
+            <p>Using a batch script to submit jobs to Slurm is like writing a to-do list for the cluster. Instead of asking the system to run something right now, you write instructions that Slurm will execute automatically when resources become available. Batch scripts allow you to:</p>
+            <ul>
+                <li>Submit multiple jobs in parallel</li>
+                <li>Create job dependencies where one job relies on another's output</li>
+                <li>Specify resource requirements (CPU, memory, time)</li>
+                <li>Capture logs automatically</li>
+            </ul>
+            <p>Interactive jobs are useful for developing and testing workflows before submitting batch jobs.</p>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Logging In</h2>
+            <p>Access the Slurm login node via SSH:</p>
+            <pre><code class="language-bash">ssh &lt;username&gt;@slurm.ilifu.ac.za</code></pre>
+
+            <h3>Accessing Compute Nodes</h3>
+            <p>Some activities require direct access to compute nodes (e.g., monitoring a job with <code>htop</code>). Use SSH authentication forwarding with the <code>-A</code> flag to enable agent forwarding:</p>
+            <pre><code class="language-bash">ssh -A &lt;username&gt;@slurm.ilifu.ac.za</code></pre>
+            <p>This allows you to SSH from the login node to compute nodes without re-entering credentials.</p>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Your First Job: A Minimal Example</h2>
+            <p>Let's start with the simplest possible Slurm job. Here's <code>minimal.sbatch</code>:</p>
+            <pre><code class="language-bash">#!/bin/bash
+
+echo "Hello World!"</code></pre>
+
+            <h3>Breaking It Down</h3>
+            <ul>
+                <li><code>#!/bin/bash</code> — standard shebang line indicating this is a bash script</li>
+                <li>The script then simply runs <code>echo "Hello World!"</code> on a compute node</li>
+            </ul>
+
+            <h3>Submitting Your Job</h3>
+            <p>Once logged into the login node, submit the job with:</p>
+            <pre><code class="language-bash">sbatch minimal.sbatch</code></pre>
+            <p>Slurm will queue your job. If resources are available, it will run immediately on a compute node.</p>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Monitoring Your Job</h2>
+            <p>Check the status of your jobs with:</p>
+            <pre><code class="language-bash">squeue -u &lt;username&gt;</code></pre>
+            <p>This displays all jobs you've submitted, showing amongst other things, their:</p>
+            <ul>
+                <li>Job ID</li>
+                <li>Name</li>
+                <li>Status (RUNNING, PENDING, COMPLETED)</li>
+            </ul>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Adding Output Capture</h2>
+            <p>By default, job output goes nowhere. To capture stdout and stderr to files, add these directives:</p>
+            <pre><code class="language-bash">#SBATCH --output=logs/demo-job-%j.out
+#SBATCH --error=logs/demo-job-%j.err</code></pre>
+            <p>The <code>%j</code> placeholder is replaced with the job ID, ensuring each run has unique log files. Create the <code>logs</code> directory before submitting:</p>
+            <pre><code class="language-bash">mkdir -p logs</code></pre>
+            <div class="info-box">
+                <strong>Important:</strong> Slurm cannot create the logs directory for you — if it doesn't exist, the job will fail. Always run <code>mkdir -p logs</code> before submitting.
+            </div>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>A More Advanced Example: Building Features Incrementally</h2>
+            <p>As jobs become more complex, you'll need more control. Here's <code>maximal.sbatch</code> with explanations of each addition.</p>
+
+            <div class="step-block">
+                <h3>Step 1: Add Job Naming</h3>
+                <pre><code class="language-bash">#SBATCH --job-name=tutorial2_R_container</code></pre>
+                <p>This makes your job easier to identify in <code>squeue</code> output instead of seeing just a number. It is also useful when you view past jobs with <code>sacct</code>.</p>
+            </div>
+
+            <div class="step-block">
+                <h3>Step 2: Set Time and Memory Limits</h3>
+                <pre><code class="language-bash">#SBATCH --time=00-00:01:00
+#SBATCH --mem=4G</code></pre>
+                <ul>
+                    <li><code>--time=00-00:01:00</code> — Maximum runtime: 0 days, 0 hours, 1 minute. Jobs exceeding this are terminated. Format: <code>DD-HH:MM:SS</code>. Set this slightly higher than your expected runtime.</li>
+                    <li><code>--mem=4G</code> — Allocate 4 GB of memory to this job. Requesting too little causes out-of-memory errors; requesting too much wastes resources and delays job scheduling.</li>
+                </ul>
+            </div>
+
+            <div class="step-block">
+                <h3>Step 3: Organize Output Files</h3>
+                <pre><code class="language-bash">#SBATCH --output=R_container-%j.stdout
+#SBATCH --error=R_container-%j.stderr</code></pre>
+                <p>Now stdout and stderr are captured to separate files. The <code>%j</code> is replaced with your job ID.</p>
+            </div>
+
+            <div class="step-block">
+                <h3>Step 4: Add Email Notifications</h3>
+                <pre><code class="language-bash">#SBATCH --mail-user=your@email_address
+#SBATCH --mail-type=BEGIN,END,FAIL,TIME_LIMIT_80</code></pre>
+                <p>Slurm will email you when:</p>
+                <ul>
+                    <li><code>BEGIN</code> — Job starts</li>
+                    <li><code>END</code> — Job completes successfully</li>
+                    <li><code>FAIL</code> — Job fails</li>
+                    <li><code>TIME_LIMIT_80</code> — Job uses 80% of allocated time (warning before timeout)</li>
+                </ul>
+                <p>This helps you monitor long-running jobs without checking <code>squeue</code> repeatedly.</p>
+            </div>
+
+            <div class="step-block">
+                <h3>Step 5: Specify a Billing Account</h3>
+                <pre><code class="language-bash">#SBATCH --account=&lt;YOUR_ACCOUNT_NAME&gt;</code></pre>
+                <p>Many clusters require jobs to be billed to a specific project or account. Check with your cluster administrator for the correct account name.</p>
+            </div>
+
+            <div class="step-block">
+                <h3>Step 6: Run Containerized Software</h3>
+                <p>The job itself runs an R script inside a Singularity container:</p>
+                <pre><code class="language-bash">singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rscript hello_world.R</code></pre>
+                <p>Containers provide reproducible software environments packaged with all dependencies. An alternative approach is to load modules (shown commented out):</p>
+                <pre><code class="language-bash"># module add R
+# Rscript hello_world.R</code></pre>
+                <p>Both approaches work: containers bundle everything together for consistency; while modules load pre-installed software on the system. Choose based on what's available and your needs.</p>
+            </div>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Complete Advanced Example</h2>
+            <p>Here's the full <code>maximal.sbatch</code> with all features:</p>
+            <pre><code class="language-bash">#!/bin/bash
+#SBATCH --job-name=tutorial2_R_container
+#SBATCH --time=00-00:01:00
+#SBATCH --mem=4G
+#SBATCH --partition=Devel
+#SBATCH --output=R_container-%j.stdout
+#SBATCH --error=R_container-%j.stderr
+#SBATCH --mail-user=your@email_address
+#SBATCH --mail-type=BEGIN,END,FAIL,TIME_LIMIT_80
+#SBATCH --account=b34-admins-ag
+
+singularity exec /software/common/containers/RStudio2023.06.1-524-R4.3.1.sif Rscript hello_world.R</code></pre>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Summary</h2>
+            <p>Start simple with minimal resource requests, then add features as needed:</p>
+            <ol>
+                <li>Basic job → add output capture</li>
+                <li>Add time/memory limits to prevent runaway jobs</li>
+                <li>Add email notifications for long jobs</li>
+                <li>Use containers for reproducible environments</li>
+                <li>Specify billing accounts as required by your cluster</li>
+            </ol>
+            <p>As your jobs become more sophisticated, refer to the Slurm documentation (<code>man sbatch</code>) for additional options.</p>
+
+            <h3>Next</h3>
+            <ul>
+                <li><a href="../../session2/">Session 2</a> — Python virtual environments and interactive job submission</li>
+                <li><a href="../">← Back to Session 1</a></li>
+            </ul>
+        </section>
+
+        <footer class="page-footer">
+            <div class="footer-logos">
+                <img src="../../assets/cbio_logo.png" alt="CBIO" />
+                <img src="../../assets/idia_logo.png" alt="IDIA" />
+                <img src="../../assets/uct_logo.svg" alt="UCT" />
+            </div>
+            <a href="../">← Back to Session 1</a>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

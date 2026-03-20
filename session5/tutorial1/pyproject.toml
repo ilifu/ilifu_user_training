@@ -1,0 +1,28 @@
+[project]
+name = "session4-tutorial1"
+version = "1.0.0"
+description = "Workflow orchestration with Nextflow and WDL - Session 4 Tutorial 1"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    { name = "ilifu User Training", email = "training@ilifu.ac.za" }
+]
+
+dependencies = [
+    # No Python dependencies required for the basic tutorial
+    # Nextflow and Cromwell are Java applications, not Python packages
+]
+
+[project.optional-dependencies]
+# Optional dependencies for extended examples
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+]
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = []

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Session 4 — Workflow Orchestration | ilifu User Training</title>
+    <meta content="Session 4: Nextflow and WDL/Cromwell workflow orchestration on the ilifu SLURM cluster." name="description" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/white.min.css" id="theme" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/highlight/monokai.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="../resources/theme.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="logo-sidebar">
+        <img alt="CBIO" src="../assets/cbio_logo.png" title="CBIO — Computational Biology, UCT" />
+        <img alt="IDIA" src="../assets/idia_logo.png" title="IDIA — Institute for Data Intensive Astronomy" />
+        <img alt="UCT"
+            src="../assets/uct_logo.svg"
+            title="University of Cape Town" />
+    </div>
+
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- SLIDE 1: Title -->
+            <section class="title-slide">
+                <div class="slide-header" style="justify-content:center; border-bottom:none; margin-bottom:0.8em;">
+                    <img src="../assets/ilifu_logo.svg" alt="ilifu" style="height:60px;" />
+                </div>
+                <h1>Session 4</h1>
+                <p class="subtitle">Workflow Orchestration</p>
+                <div class="meta">
+                    <strong>Part of:</strong> ilifu User Training &nbsp;|&nbsp;
+                    <a href="../">← Back to all sessions</a>
+                </div>
+            </section>
+
+            <!-- SLIDE 2: Tutorial -->
+            <section>
+                <div class="slide-content">
+                    <div class="slide-header">
+                        <span style="font-weight:700; font-size:0.75em; color:var(--brand-blue);">Session 4 — Workflow Orchestration</span>
+                        <img src="../assets/ilifu_logo.svg" alt="ilifu" />
+                    </div>
+                    <h2>Session 4 Tutorial</h2>
+                    <div class="thank-you-cards" style="flex-wrap:wrap; gap:1.5em; margin-top:0.8em;">
+                        <a href="tutorial1/" style="text-decoration:none;">
+                            <div class="support-card">
+                                <h3>Tutorial 1</h3>
+                                <p style="font-size:0.7em; margin-bottom:0.5em;">Nextflow &amp; WDL/Cromwell</p>
+                                <span>Pipelines on SLURM →</span>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="slide-footer">
+                        <span><a href="../">← ilifu User Training</a></span>
+                        <span>Session 4</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 3: Session Context -->
+            <section>
+                <div class="slide-content">
+                    <div class="slide-header">
+                        <span style="font-weight:700; font-size:0.75em; color:var(--brand-blue);">Session 4 — Workflow Orchestration</span>
+                        <img src="../assets/ilifu_logo.svg" alt="ilifu" />
+                    </div>
+                    <h2>What You'll Learn</h2>
+                    <div class="columns">
+                        <div class="col">
+                            <h3>Why Workflow Orchestration?</h3>
+                            <ul>
+                                <li>Automated dependency management between pipeline steps</li>
+                                <li>Resume from failed steps (no reprocessing already-done work)</li>
+                                <li>Automatic parallelization of independent tasks (scatter/gather)</li>
+                                <li>Reproducible, portable pipelines</li>
+                            </ul>
+                            <h3 style="margin-top:0.6em;">Nextflow</h3>
+                            <ul>
+                                <li>Groovy-based DSL: <code>process</code>, <code>workflow</code>, channels</li>
+                                <li>SLURM integration via <code>nextflow.config</code></li>
+                                <li>A complete FASTQ processing pipeline example</li>
+                            </ul>
+                            <h3 style="margin-top:0.6em;">WDL / Cromwell</h3>
+                            <ul>
+                                <li>Formal typed language: <code>task</code>, <code>scatter</code>, <code>workflow</code></li>
+                                <li>SLURM backend via HOCON configuration</li>
+                                <li>An astronomical image reduction pipeline example</li>
+                            </ul>
+                        </div>
+                        <div class="col">
+                            <h3>Prerequisites</h3>
+                            <ul>
+                                <li>Sessions 1–3 complete (especially SLURM basics from S1)</li>
+                                <li>Java installed on the cluster (<code>module add java</code>)</li>
+                                <li>Nextflow and Cromwell installed to <code>~/bin/</code></li>
+                            </ul>
+                            <div class="info-box" style="margin-top:0.8em;">
+                                <strong>Overhead context:</strong> Workflow engines add ~15 seconds of
+                                startup overhead. They pay off when you have many samples, complex
+                                dependencies, or need resumability.
+                            </div>
+                            <div class="info-box tip" style="margin-top:0.5em;">
+                                <strong>When to use direct SLURM:</strong> For single, simple jobs
+                                without dependencies, <code>sbatch</code> is faster and simpler.
+                                Workflows shine at scale.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide-footer">
+                        <span><a href="../">← ilifu User Training</a></span>
+                        <span>Session 4</span>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/highlight/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/notes/notes.min.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            width: 1920,
+            height: 1080,
+            center: false,
+            plugins: [RevealHighlight, RevealNotes]
+        });
+    </script>
+</body>
+</html>

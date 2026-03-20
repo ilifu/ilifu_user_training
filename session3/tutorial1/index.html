@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Tutorial 1: MPI Scaling Demo — Session 3 | ilifu User Training</title>
+    <meta content="Explore MPI parallelism scaling with Python and C++ on the ilifu cluster, and discover why multi-node jobs can be slower." name="description" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="../../resources/theme.css" rel="stylesheet" />
+    <link href="../../resources/page.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="logo-sidebar">
+        <img alt="CBIO" src="../../assets/cbio_logo.png" title="CBIO — Computational Biology, UCT" />
+        <img alt="IDIA" src="../../assets/idia_logo.png" title="IDIA — Institute for Data Intensive Astronomy" />
+        <img alt="UCT" src="../../assets/uct_logo.svg" title="University of Cape Town" />
+    </div>
+
+    <div class="page-wrapper">
+        <header class="page-header">
+            <img src="../../assets/ilifu_logo.svg" alt="ilifu" />
+            <div>
+                <h1>Session 3, Tutorial 1</h1>
+                <p class="page-intro">MPI Scaling Demo — spread work across CPUs and nodes, and see why multi-node jobs can be <em>slower</em>.</p>
+            </div>
+            <a href="../" class="btn-secondary">← Session 3</a>
+        </header>
+
+        <section class="tutorial-section">
+            <h2>What Is This Tutorial About?</h2>
+            <p>Thanks to <a href="https://github.com/robinlh/slurm-mpi-demo/tree/master">Robin Hall</a> for creating this tutorial.</p>
+            <p>This tutorial demonstrates how to run code in parallel — spreading work across multiple CPU cores and computing nodes. You'll learn:</p>
+            <ul>
+                <li>How <strong>SLURM</strong> allocates computing resources</li>
+                <li>How <strong>MPI</strong> (Message Passing Interface) lets different processes work together</li>
+                <li>How adding more CPUs <em>usually</em> makes code run faster, but not always</li>
+            </ul>
+            <p>We'll use a simple Python script that adds up 10 million numbers, splitting the work across different numbers of cores and nodes. By watching how the execution time changes, you'll see parallelism in action and discover its limitations.</p>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>The Example: <code>simple_mpi.py</code></h2>
+            <p>This script adds all numbers from 1 to 10,000,000 in parallel. Here's how it works:</p>
+            <ul>
+                <li><strong>Rank 0</strong> (the "leader" process) creates the full list of numbers and splits it into chunks</li>
+                <li><strong>All processes</strong> receive their chunk of numbers (using <code>Scatterv</code>)</li>
+                <li><strong>Each process</strong> independently adds up its chunk</li>
+                <li><strong>Process 0</strong> collects all the partial sums and adds them together (using <code>Reduce</code>)</li>
+            </ul>
+            <p>The script also prints out which process is running and on which computer (<code>gethostname()</code>), the partial sum calculated by each process, and the total execution time.</p>
+            <p>This demonstrates the key MPI concepts: distributing work (<code>Scatterv</code>), doing work in parallel, and collecting results (<code>Reduce</code>).</p>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Getting Started</h2>
+
+            <h3>Prerequisites</h3>
+            <p>Create a logs directory before running any jobs:</p>
+            <pre><code class="language-bash">mkdir -p logs</code></pre>
+
+            <h3>Setup: Using uv and OpenMPI</h3>
+            <p>This project uses <strong>uv</strong> for Python package management. Dependencies are listed in <code>pyproject.toml</code>.</p>
+
+            <div class="step-block">
+                <h4>Step 1: Load OpenMPI</h4>
+                <p>Check available versions with:</p>
+                <pre><code class="language-bash">module avail</code></pre>
+                <p>Load OpenMPI:</p>
+                <pre><code class="language-bash">module load openmpi/5.0.3</code></pre>
+            </div>
+
+            <div class="step-block">
+                <h4>Step 2: Create and activate a virtual environment</h4>
+                <pre><code class="language-bash">uv venv .venv
+source .venv/bin/activate</code></pre>
+            </div>
+
+            <div class="step-block">
+                <h4>Step 3: Install dependencies</h4>
+                <pre><code class="language-bash">uv sync</code></pre>
+                <p>This installs all dependencies listed in <code>pyproject.toml</code> (mpi4py, numpy).</p>
+            </div>
+
+            <div class="info-box tip">
+                <strong>Note:</strong> When running sbatch scripts, the OpenMPI module is loaded automatically in each script (see the <code>module load</code> line). You only need to set up <code>.venv</code> once before submitting jobs.
+            </div>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Python Scaling Demo</h2>
+            <p>Now you're ready to run the example jobs. Submit each script with <code>sbatch</code>, then check the results in the <code>logs/</code> directory. Watch how execution time changes as you add more resources!</p>
+
+            <h3>Demo 1: 1 CPU, 1 Node (Baseline)</h3>
+            <p><strong>What it does:</strong> Runs the script on a single CPU core.</p>
+            <pre><code class="language-bash">sbatch 1_cpu_1_node.sbatch</code></pre>
+            <p>Check the output:</p>
+            <pre><code class="language-bash">cat logs/1-cpu-1-node-*.out</code></pre>
+            <p><strong>What to look for:</strong> Only one process (Rank 0); all work happens on one core; this is our baseline — all other runs will be compared to this time.</p>
+
+            <hr style="margin: 1.5em 0; border: none; border-top: 1px solid var(--brand-rule);" />
+
+            <h3>Demo 2: 4 CPUs, 1 Node (Good Parallelism)</h3>
+            <p><strong>What it does:</strong> Splits the work across 4 CPU cores on the same physical machine.</p>
+            <pre><code class="language-bash">sbatch 4_cpus_1_node.sbatch</code></pre>
+            <p>Check the output:</p>
+            <pre><code class="language-bash">cat logs/4-cpus-1-node-*.out</code></pre>
+            <p><strong>What to look for:</strong> Four processes (Rank 0, 1, 2, 3), all running on the same hostname; execution time roughly 4× faster than Demo 1; each process receives ≈2.5 million numbers.</p>
+            <div class="info-box tip">
+                <strong>Key lesson:</strong> When processes are on the same machine, they can communicate quickly through fast shared memory — no network overhead. This is very efficient!
+            </div>
+
+            <hr style="margin: 1.5em 0; border: none; border-top: 1px solid var(--brand-rule);" />
+
+            <h3>Demo 3: 8 CPUs, 1 Node (Maximum Single-Node Parallelism)</h3>
+            <p><strong>What it does:</strong> Uses all 8 cores on a single machine.</p>
+            <pre><code class="language-bash">sbatch 8_cpus_1_node.sbatch</code></pre>
+            <p>Check the output:</p>
+            <pre><code class="language-bash">cat logs/8-cpus-1-node-*.out</code></pre>
+            <p><strong>What to look for:</strong> Eight processes (Rank 0 through 7), all running on the same hostname; execution time slightly faster than Demo 2 (roughly 5–8× faster than baseline); each process receives ≈1.25 million numbers.</p>
+            <div class="info-box tip">
+                <strong>Key lesson:</strong> Adding more cores on the same machine continues to help, but you may hit diminishing returns depending on the CPU architecture and what the cores need to share.
+            </div>
+
+            <hr style="margin: 1.5em 0; border: none; border-top: 1px solid var(--brand-rule);" />
+
+            <h3>Demo 4: 8 CPUs, 2 Nodes (Communication Overhead)</h3>
+            <p><strong>What it does:</strong> Spreads the work across 2 different physical machines (4 cores each).</p>
+            <pre><code class="language-bash">sbatch 8_cpus_2_nodes.sbatch</code></pre>
+            <p>Check the output:</p>
+            <pre><code class="language-bash">cat logs/8-cpus-2-nodes-*.out</code></pre>
+            <p><strong>What to look for:</strong> Eight processes split across two hostnames (4 per node); execution time will be <strong>similar to or even slower</strong> than Demo 3; the network communication between nodes is the bottleneck.</p>
+            <div class="info-box" style="border-color: #e53e3e; background: #fff5f5;">
+                <strong>Key lesson:</strong> When processes need to communicate across physical machines, network latency becomes a major bottleneck. ILIFU doesn't have InfiniBand (a high-speed interconnect), so inter-node communication is relatively slow. Adding more nodes doesn't help — it hurts!
+            </div>
+
+            <hr style="margin: 1.5em 0; border: none; border-top: 1px solid var(--brand-rule);" />
+
+            <h3>Understanding the Results</h3>
+            <p>To quickly compare execution times across all four simple_mpi demos:</p>
+            <pre><code class="language-bash">grep "total time" logs/*-*-*.out</code></pre>
+            <p>You should see something like:</p>
+            <pre><code class="language-text">logs/1-cpu-1-node-*.out:total time: 2.345 s
+logs/4-cpus-1-node-*.out:total time: 0.612 s
+logs/8-cpus-1-node-*.out:total time: 0.321 s
+logs/8-cpus-2-nodes-*.out:total time: 0.425 s</code></pre>
+            <p><strong>Compare the execution times across all four demos:</strong></p>
+            <ol>
+                <li>Demo 1: Baseline (slowest) ~2.3 s</li>
+                <li>Demo 2: Faster (~4× speedup) ~0.6 s</li>
+                <li>Demo 3: Fastest (~7× speedup) ~0.3 s</li>
+                <li>Demo 4: Slower than Demo 3 (network overhead) ~0.4 s</li>
+            </ol>
+            <p>This is a real-world lesson in high-performance computing: <strong>parallelism doesn't scale infinitely</strong>. The type of interconnect and the amount of communication your code does matter greatly.</p>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Advanced Demo: C++ with Explicit OpenMP Parallelism</h2>
+            <p>For a better demonstration of how OpenMP threading helps with scaling, we provide a <strong>C++ version</strong> (<code>hybrid_sum.cpp</code>) with an explicit inner loop that benefits from parallelization. This makes the scaling much more visible than library-based operations like NumPy/Polars.</p>
+
+            <h3>The Example: <code>hybrid_sum.cpp</code></h3>
+            <p>This C++ program sums all numbers from 1 to 100 million (10× larger than the Python example). Here's how it works:</p>
+            <ul>
+                <li><strong>Rank 0</strong> divides the range among all processes</li>
+                <li><strong>Each process</strong> sums its assigned numbers using <code>#pragma omp parallel for</code></li>
+                <li><strong>OpenMP parallelizes the inner loop</strong> across all available threads</li>
+                <li><strong>Rank 0</strong> collects all partial sums using <code>MPI_Reduce</code></li>
+            </ul>
+            <p>The key difference from the Python version: the inner loop is <strong>explicitly parallelizable by OpenMP</strong>, so adding threads actually helps!</p>
+
+            <h3>Compiling the C++ Program</h3>
+            <p>Before running the sbatch files, compile the program:</p>
+            <pre><code class="language-bash">module load openmpi/5.0.3
+mpic++ -fopenmp -O3 hybrid_sum.cpp -o hybrid_sum</code></pre>
+            <p>This creates an executable <code>hybrid_sum</code> that the sbatch scripts will use.</p>
+
+            <hr style="margin: 1.5em 0; border: none; border-top: 1px solid var(--brand-rule);" />
+
+            <h3>C++ Demo 1: Single Core (Baseline)</h3>
+            <pre><code class="language-bash">sbatch hybrid_sum_1_cpu_1_core.sbatch
+cat logs/hybrid-sum-1-core-*.out</code></pre>
+            <p>1 MPI process, 1 OpenMP thread. Execution time is the slowest (baseline for comparison).</p>
+
+            <h3>C++ Demo 2: 8 Cores, Pure MPI (8 Processes, 1 Thread Each)</h3>
+            <pre><code class="language-bash">sbatch hybrid_sum_1_node_8_cores_8mpi.sbatch
+cat logs/hybrid-sum-8mpi-1thread-*.out</code></pre>
+            <p>8 MPI processes, 1 OpenMP thread per process. Execution time roughly 8× faster than Demo 1. Pure MPI parallelism.</p>
+
+            <h3>C++ Demo 3: 8 Cores, Hybrid (4 Processes, 2 Threads Each)</h3>
+            <pre><code class="language-bash">sbatch hybrid_sum_1_node_8_cores_4mpi.sbatch
+cat logs/hybrid-sum-4mpi-2threads-*.out</code></pre>
+            <p>4 MPI processes, 2 OpenMP threads per process. Execution time <strong>comparable to or slightly better than Demo 2</strong> (also uses 8 cores total). Fewer MPI processes = less communication overhead.</p>
+            <div class="info-box tip">
+                <strong>Key lesson:</strong> Both Demo 2 and Demo 3 use 8 cores total, but you can achieve similar performance with fewer MPI processes by using OpenMP threading. This shows how hybrid parallelism can be more efficient than pure MPI when communication is expensive.
+            </div>
+
+            <h3>C++ Demo 4: 8 Cores, Maximum Threading (1 Process, 8 Threads)</h3>
+            <pre><code class="language-bash">sbatch hybrid_sum_1_node_8_cores_1mpi.sbatch
+cat logs/hybrid-sum-1mpi-8threads-*.out</code></pre>
+            <p>1 MPI process, 8 OpenMP threads. No inter-process communication overhead at all. With only 1 MPI process, OpenMP threads do all the parallelism internally — the most efficient approach on a single node for communication-heavy problems.</p>
+
+            <h3>C++ Demo 5: 8 Cores Across 2 Nodes (1 Process Per Node, 4 Threads Each)</h3>
+            <pre><code class="language-bash">sbatch hybrid_sum_2_nodes_4_cores_1mpi.sbatch
+cat logs/hybrid-sum-2nodes-1mpi-4threads-*.out</code></pre>
+            <p>2 MPI processes (one per node), 4 OpenMP threads per process. Execution time <strong>slower than Demo 2/3/4</strong> due to network latency between nodes. Just like in the simple_mpi examples, adding a second node hurts performance.</p>
+
+            <hr style="margin: 1.5em 0; border: none; border-top: 1px solid var(--brand-rule);" />
+
+            <h3>Comparing All C++ Results</h3>
+            <pre><code class="language-bash">grep "compute sum\|Total execution time" logs/hybrid-sum-*.out</code></pre>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Real World Results and Discussion</h2>
+
+            <h3>Python Scaling Results</h3>
+            <pre><code class="language-bash">$ grep "total time" logs/*-*-*.out
+logs/1-cpu-1-node-11782520.out:total time: 0.854665236 s
+logs/1-cpu-1-node-11782544.out:total time: 0.784402891 s
+logs/1-cpu-1-node-11782553.out:total time: 0.7282585349999999 s
+logs/1-cpu-1-node-11782562.out:total time: 0.743162718 s
+logs/1-cpu-1-node-11782571.out:total time: 0.72452584 s
+logs/4-cpus-1-node-11782521.out:total time: 0.240675235 s
+logs/4-cpus-1-node-11782545.out:total time: 0.250779262 s
+logs/4-cpus-1-node-11782554.out:total time: 0.22841073700000003 s
+logs/4-cpus-1-node-11782563.out:total time: 0.28881356 s
+logs/4-cpus-1-node-11782572.out:total time: 0.236492038 s
+logs/8-cpus-1-node-11782522.out:total time: 0.153521193 s
+logs/8-cpus-1-node-11782546.out:total time: 0.161418649 s
+logs/8-cpus-1-node-11782555.out:total time: 0.150885582 s
+logs/8-cpus-1-node-11782564.out:total time: 0.15295338 s
+logs/8-cpus-1-node-11782573.out:total time: 0.157965705 s
+logs/8-cpus-2-nodes-11782523.out:total time: 0.181922794 s
+logs/8-cpus-2-nodes-11782547.out:total time: 0.17717996 s
+logs/8-cpus-2-nodes-11782556.out:total time: 0.170670935 s
+logs/8-cpus-2-nodes-11782565.out:total time: 0.164204518 s
+logs/8-cpus-2-nodes-11782574.out:total time: 0.171879482 s</code></pre>
+
+            <p><strong>Analysis:</strong></p>
+            <table>
+                <thead>
+                    <tr><th>Configuration</th><th>Average time</th><th>Speedup</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>1 CPU baseline</td><td>~0.76 s</td><td>1×</td></tr>
+                    <tr><td>4 CPUs (1 node)</td><td>~0.25 s</td><td>~3×</td></tr>
+                    <tr><td>8 CPUs (1 node)</td><td>~0.155 s</td><td>~5×</td></tr>
+                    <tr style="background:#fff5f5;"><td>8 CPUs (2 nodes)</td><td>~0.173 s</td><td>slower than 8 CPUs/1 node!</td></tr>
+                </tbody>
+            </table>
+            <p>The key observation: adding a second node actually made the job <strong>slower</strong>. The 8-core, 2-node version takes ~0.173 s vs ~0.155 s for 8 cores on a single node. This is because the network communication overhead between nodes exceeds any benefit from having physically separate processors. <strong>Network latency kills multi-node performance without high-speed interconnects like InfiniBand.</strong></p>
+
+            <h3>C++ Scaling Results</h3>
+            <pre><code class="language-bash">$ grep "compute sum\|Total execution time" logs/hybrid-sum-*.out
+logs/hybrid-sum-1-core-11782524.out:Total execution time: 0.030 s
+logs/hybrid-sum-1-core-11782548.out:Total execution time: 0.030 s
+logs/hybrid-sum-1-core-11782557.out:Total execution time: 0.030 s
+logs/hybrid-sum-1-core-11782566.out:Total execution time: 0.030 s
+logs/hybrid-sum-1-core-11782575.out:Total execution time: 0.030 s
+logs/hybrid-sum-1mpi-8threads-11782525.out:Total execution time: 0.032 s
+logs/hybrid-sum-1mpi-8threads-11782549.out:Total execution time: 0.031 s
+logs/hybrid-sum-1mpi-8threads-11782558.out:Total execution time: 0.030 s
+logs/hybrid-sum-1mpi-8threads-11782567.out:Total execution time: 0.031 s
+logs/hybrid-sum-1mpi-8threads-11782576.out:Total execution time: 0.031 s
+logs/hybrid-sum-2nodes-1mpi-4threads-11782528.out:Total execution time: 0.036 s
+logs/hybrid-sum-2nodes-1mpi-4threads-11782552.out:Total execution time: 0.035 s
+logs/hybrid-sum-2nodes-1mpi-4threads-11782561.out:Total execution time: 0.036 s
+logs/hybrid-sum-2nodes-1mpi-4threads-11782570.out:Total execution time: 0.036 s
+logs/hybrid-sum-2nodes-1mpi-4threads-11782579.out:Total execution time: 0.026 s
+logs/hybrid-sum-4mpi-2threads-11782526.out:Total execution time: 0.008 s
+logs/hybrid-sum-4mpi-2threads-11782550.out:Total execution time: 0.008 s
+logs/hybrid-sum-4mpi-2threads-11782559.out:Total execution time: 0.010 s
+logs/hybrid-sum-4mpi-2threads-11782568.out:Total execution time: 0.008 s
+logs/hybrid-sum-4mpi-2threads-11782577.out:Total execution time: 0.008 s
+logs/hybrid-sum-8mpi-1thread-11782527.out:Total execution time: 0.010 s
+logs/hybrid-sum-8mpi-1thread-11782551.out:Total execution time: 0.004 s
+logs/hybrid-sum-8mpi-1thread-11782560.out:Total execution time: 0.004 s
+logs/hybrid-sum-8mpi-1thread-11782569.out:Total execution time: 0.004 s
+logs/hybrid-sum-8mpi-1thread-11782578.out:Total execution time: 0.005 s</code></pre>
+
+            <p><strong>Analysis:</strong></p>
+            <table>
+                <thead>
+                    <tr><th>Configuration</th><th>Average time</th><th>Notes</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>1 core baseline</td><td>~0.030 s</td><td>—</td></tr>
+                    <tr><td>8 threads (1 MPI)</td><td>~0.031 s</td><td>No speedup! Threading overhead or memory contention</td></tr>
+                    <tr><td>4 MPI + 2 threads</td><td>~0.009 s</td><td>~3.3× speedup</td></tr>
+                    <tr><td>8 MPI + 1 thread</td><td>~0.006 s</td><td>~5× speedup — pure MPI wins</td></tr>
+                    <tr style="background:#fff5f5;"><td>2 nodes (1 MPI per node, 4 threads)</td><td>~0.034 s</td><td>Slower than single-node!</td></tr>
+                </tbody>
+            </table>
+
+            <p>Interesting patterns:</p>
+            <ul>
+                <li><strong>Single MPI process with 8 threads (0.031 s):</strong> No speedup! This suggests OpenMP threading doesn't help much for this particular loop structure, possibly due to overhead or memory contention.</li>
+                <li><strong>Pure MPI scales better:</strong> 8 MPI processes (0.006 s) is faster than 4 MPI + 2 threads (0.009 s), despite using the same 8 cores. MPI is more efficient for simple loop-based parallelism than OpenMP threading in this case.</li>
+                <li><strong>Multi-node penalty (0.034 s):</strong> The 2-node version is roughly 4–5× slower than single-node approaches, confirming the network latency lesson.</li>
+            </ul>
+
+            <p><strong>Comparison with Python:</strong> The C++ version shows much tighter, faster execution times (30 ms vs 750 ms baseline), but teaches the same fundamental lesson: <strong>network communication across nodes kills performance, and the choice of parallelism strategy (MPI vs threading) matters for performance.</strong></p>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Key Lessons</h2>
+            <ul>
+                <li><strong>More cores on one node → good speedup</strong> (shared memory, no network)</li>
+                <li><strong>More nodes → often slower</strong> for communication-heavy jobs without InfiniBand</li>
+                <li><strong>Pure MPI beats threading</strong> for simple loop parallelism</li>
+                <li><strong>Parallelism doesn't scale infinitely</strong> — measure before requesting more resources</li>
+            </ul>
+            <div class="info-box" style="border-color: #e53e3e; background: #fff5f5;">
+                <strong>ilifu-specific:</strong> No InfiniBand interconnect → stay on a single node for MPI jobs unless you truly need more memory than one node provides.
+            </div>
+
+            <h3>Next</h3>
+            <ul>
+                <li><a href="../tutorial2/">Tutorial 2</a> — Resource profiling with <code>seff</code>, <code>sacct</code>, and <code>htop</code></li>
+                <li><a href="../">← Back to Session 3</a></li>
+            </ul>
+        </section>
+
+        <footer class="page-footer">
+            <div class="footer-logos">
+                <img src="../../assets/cbio_logo.png" alt="CBIO" />
+                <img src="../../assets/idia_logo.png" alt="IDIA" />
+                <img src="../../assets/uct_logo.svg" alt="UCT" />
+            </div>
+            <a href="../">← Back to Session 3</a>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

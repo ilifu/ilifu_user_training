@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Tutorial 3: SLURM Job Arrays — Session 2 | ilifu User Training</title>
+    <meta content="Submit and manage collections of similar SLURM jobs using job arrays on the ilifu cluster." name="description" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="../../resources/theme.css" rel="stylesheet" />
+    <link href="../../resources/page.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="logo-sidebar">
+        <img alt="CBIO" src="../../assets/cbio_logo.png" title="CBIO — Computational Biology, UCT" />
+        <img alt="IDIA" src="../../assets/idia_logo.png" title="IDIA — Institute for Data Intensive Astronomy" />
+        <img alt="UCT" src="../../assets/uct_logo.svg" title="University of Cape Town" />
+    </div>
+
+    <div class="page-wrapper">
+        <header class="page-header">
+            <img src="../../assets/ilifu_logo.svg" alt="ilifu" />
+            <div>
+                <h1>Session 2, Tutorial 3</h1>
+                <p class="page-intro">SLURM Job Arrays — submit and manage collections of similar jobs quickly and easily.</p>
+            </div>
+            <a href="../" class="btn-secondary">← Session 2</a>
+        </header>
+
+        <section class="tutorial-section">
+            <h2>What Are Job Arrays?</h2>
+            <p>This tutorial shows an example of how to submit a Slurm array job.</p>
+            <p>A Slurm array job is a way for submitting and managing collections of similar jobs quickly and easily. Each job in the array gets a different parameter as input, making sure that they run different computations.</p>
+
+            <h3>Use cases</h3>
+            <ul>
+                <li>Processing 100 input files — one job per file</li>
+                <li>Running the same analysis with many different parameters</li>
+                <li>Cross-validation folds in machine learning</li>
+                <li>Bootstrap resampling across multiple seeds</li>
+            </ul>
+
+            <div class="info-box tip">
+                <strong>Efficiency:</strong> Job arrays are much easier to manage than submitting many individual jobs — and SLURM tracks them all under a single array job ID.
+            </div>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Tutorial Files</h2>
+            <p>There are two files in this tutorial:</p>
+            <ul>
+                <li><code>myscript.py</code> — a dummy Python script that prints the index it received</li>
+                <li><code>slurm-arrayjob.sh</code> — the sbatch script defining how the job array will work</li>
+            </ul>
+            <p>In this case the Slurm array job will be created with 20 jobs, where 5 are run concurrently. The indexes of these jobs will be from 1 to 20. The dummy script receives these indexes as input and just prints out which index it received.</p>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Testing the Script Manually</h2>
+            <p>You can try out the dummy script yourself by calling it with a random number (e.g. with 10):</p>
+            <pre><code class="language-bash">module load python3
+python3 myscript.py --input 10</code></pre>
+            <p>You should see the following output in the terminal:</p>
+            <pre><code class="language-text">The input parameter is: 10</code></pre>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>The Array Job sbatch Script</h2>
+            <p>The <code>slurm-arrayjob.sh</code> script submits 20 tasks (indexes 1–20) with at most 5 running concurrently:</p>
+            <pre><code class="language-bash">#!/bin/bash
+#SBATCH --job-name=myarrayjob
+#SBATCH --array=1-20%5          # Indices 1–20, max 5 concurrent
+#SBATCH --output=logs/myarrayjob-%A_%a.out   # %A = job ID, %a = array index
+#SBATCH --error=logs/myarrayjob-%A_%a.err
+#SBATCH --time=00:05:00
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=1G
+
+module load python3
+
+# $SLURM_ARRAY_TASK_ID is the current array index (1, 2, 3, … 20)
+python3 myscript.py --input $SLURM_ARRAY_TASK_ID</code></pre>
+
+            <h3>Key directives</h3>
+            <ul>
+                <li><code>--array=1-20%5</code> — 20 tasks with indexes 1–20; the <code>%5</code> throttle means at most 5 run simultaneously</li>
+                <li><code>%A</code> — the job array ID (same for all tasks)</li>
+                <li><code>%a</code> — the individual task index</li>
+                <li><code>$SLURM_ARRAY_TASK_ID</code> — the current task's index at runtime</li>
+            </ul>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Submitting the Array Job</h2>
+            <p>Next we are going to run the array job that calls the script 20 times, but with only 5 running concurrently. Run the following command:</p>
+            <pre><code class="language-bash">sbatch slurm-arrayjob.sh</code></pre>
+            <p>After submitting the job, you should see a job ID printed in the terminal.</p>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Monitoring the Array</h2>
+            <p>You will also be able to see the job with that job ID in the queue:</p>
+            <pre><code class="language-bash">squeue -u $USER</code></pre>
+            <p>In order to see how the jobs get completed and how only 5 are run concurrently, you can use the following command. This will refresh the <code>squeue</code> output every 2 seconds:</p>
+            <pre><code class="language-bash">watch "squeue -u $USER"</code></pre>
+            <p>You'll see tasks appear as <code>1000_1</code>, <code>1000_2</code> … <code>1000_20</code> (where 1000 is your job ID), and see them move from PENDING → RUNNING → disappear as they complete. At most 5 run simultaneously.</p>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Checking Output</h2>
+            <p>After the array job completes, you can look at the output generated in the logs folder. There should be a <code>.out</code> file with the standard output for every one of the 20 array jobs. These will be similar to the output you received by running the script manually.</p>
+            <p>For example, if your job ID was 1000, the output for the 5th job will be:</p>
+            <pre><code class="language-bash">cat logs/myarrayjob-1000_5.out
+# The input parameter is: 5</code></pre>
+            <p>There will also be <code>.err</code> files for the standard error: <code>myarrayjob-1000_5.err</code>. This file should be blank if everything went well.</p>
+
+            <div class="info-box">
+                Array jobs are especially useful for automating the running of the same scripts with different inputs. They replace the need to write and submit dozens of individual sbatch scripts.
+            </div>
+
+            <h3>Next</h3>
+            <ul>
+                <li><a href="../../session3/">Session 3</a> — Parallel computing with MPI: scale beyond job arrays</li>
+                <li><a href="../">← Back to Session 2</a></li>
+            </ul>
+        </section>
+
+        <footer class="page-footer">
+            <div class="footer-logos">
+                <img src="../../assets/cbio_logo.png" alt="CBIO" />
+                <img src="../../assets/idia_logo.png" alt="IDIA" />
+                <img src="../../assets/uct_logo.svg" alt="UCT" />
+            </div>
+            <a href="../">← Back to Session 2</a>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

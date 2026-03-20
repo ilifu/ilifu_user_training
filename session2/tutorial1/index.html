@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Tutorial 1: Python Virtual Environments — Session 2 | ilifu User Training</title>
+    <meta content="Create Python virtual environments and register them as Jupyter kernels on the ilifu cluster." name="description" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="../../resources/theme.css" rel="stylesheet" />
+    <link href="../../resources/page.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="logo-sidebar">
+        <img alt="CBIO" src="../../assets/cbio_logo.png" title="CBIO — Computational Biology, UCT" />
+        <img alt="IDIA" src="../../assets/idia_logo.png" title="IDIA — Institute for Data Intensive Astronomy" />
+        <img alt="UCT" src="../../assets/uct_logo.svg" title="University of Cape Town" />
+    </div>
+
+    <div class="page-wrapper">
+        <header class="page-header">
+            <img src="../../assets/ilifu_logo.svg" alt="ilifu" />
+            <div>
+                <h1>Session 2, Tutorial 1</h1>
+                <p class="page-intro">Python Virtual Environments &amp; Jupyter Kernels — install packages without touching the shared cluster environment.</p>
+            </div>
+            <a href="../" class="btn-secondary">← Session 2</a>
+        </header>
+
+        <section class="tutorial-section">
+            <h2>Why Virtual Environments?</h2>
+            <p>A <strong>virtual environment</strong> is an isolated Python installation that lets you install packages without affecting the system Python or other users.</p>
+
+            <h3>Problems they solve</h3>
+            <ul>
+                <li><strong>Version conflicts:</strong> Project A needs numpy 1.21, Project B needs numpy 1.26</li>
+                <li><strong>Permission issues:</strong> You can't install system-wide packages on the cluster</li>
+                <li><strong>Reproducibility:</strong> Pin exact versions for consistent results</li>
+                <li><strong>Isolation:</strong> Break one environment without affecting others</li>
+            </ul>
+
+            <div class="info-box tip">
+                <strong>On ilifu:</strong> Always use a virtual environment for your project code. The shared cluster environment is not yours to modify, and other users depend on its stability.
+            </div>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Step 1 — Choose a Python Version</h2>
+            <p>The compute nodes run Ubuntu 20.04, providing Python 3.8 by default. Use <code>module</code> to access other versions.</p>
+
+            <h3>List available Python modules</h3>
+            <pre><code class="language-bash">module avail</code></pre>
+            <p>Look for entries like <code>python/3.9.4</code>, <code>python/3.10.x</code>, etc.</p>
+
+            <h3>Load a specific Python version</h3>
+            <pre><code class="language-bash">module load python/3.9.4</code></pre>
+
+            <h3>Verify the version</h3>
+            <pre><code class="language-bash">python --version
+# Python 3.9.4</code></pre>
+
+            <div class="info-box">
+                <strong>Note:</strong> If Python 3.8 is sufficient for your work, you do not need to load any module — it is available by default. Only load a module if you need a specific version.
+            </div>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Step 2 — Create &amp; Activate the Environment</h2>
+
+            <h3>Allocate a development node first</h3>
+            <p>Never create environments or install packages on the login node. Get a compute node first:</p>
+            <pre><code class="language-bash">sinteractive</code></pre>
+            <p>Your prompt changes to show the compute node, e.g. <code>username@compute-101:~$</code></p>
+
+            <h3>Create the virtual environment</h3>
+            <pre><code class="language-bash">virtualenv .venv/tutenv</code></pre>
+            <p>This creates a new Python environment at <code>.venv/tutenv/</code></p>
+
+            <h3>Activate the environment</h3>
+            <pre><code class="language-bash">source .venv/tutenv/bin/activate</code></pre>
+            <p>Your prompt now shows the active environment:</p>
+            <pre><code class="language-bash">(.tutenv) username@compute-101:~$</code></pre>
+
+            <div class="info-box tip">
+                <strong>Key point:</strong> Activating updates <code>$PATH</code> so that <code>python</code> and <code>pip</code> now refer to the virtual environment's versions. Always activate before installing packages or running code.
+            </div>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Step 3 — Install Packages</h2>
+            <p>With the virtual environment active, use <code>pip</code> to install packages. They will only be available inside this environment.</p>
+            <pre><code class="language-bash">pip install scikit-learn
+pip install numpy pandas matplotlib</code></pre>
+
+            <h3>Verify installation</h3>
+            <pre><code class="language-bash">python -c "import sklearn; print(sklearn.__version__)"</code></pre>
+
+            <h3>Deactivate when done</h3>
+            <pre><code class="language-bash">deactivate</code></pre>
+
+            <h3>Best practices</h3>
+            <ul>
+                <li>Always activate before <code>pip install</code></li>
+                <li>Create one environment per project</li>
+                <li>Use <code>pip freeze &gt; requirements.txt</code> to record dependencies for reproducibility</li>
+                <li>Do not use <code>sudo pip install</code> (you can't on the cluster anyway)</li>
+                <li>Don't mix environments between projects</li>
+            </ul>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Step 4 — Register as a Jupyter Kernel</h2>
+            <p>To use your virtual environment in Jupyter notebooks, register it as a kernel.</p>
+
+            <h3>Install the kernel package</h3>
+            <pre><code class="language-bash">pip install ipykernel</code></pre>
+
+            <h3>Register the kernel</h3>
+            <pre><code class="language-bash">ipython kernel install --name "tutenv_py3.9.4" --user</code></pre>
+            <p>This creates a kernel config at:</p>
+            <pre><code class="language-bash">~/.local/share/jupyter/kernels/tutenv_py3.9.4/kernel.json</code></pre>
+
+            <h3>Use the kernel in Jupyter</h3>
+            <ul>
+                <li><strong>New notebook:</strong> Select your kernel from the launcher dropdown</li>
+                <li><strong>Existing notebook:</strong> Kernel menu → Change Kernel → select your environment</li>
+            </ul>
+
+            <div class="info-box tip">
+                <strong>Result:</strong> Any package installed in <code>.venv/tutenv</code> is now available in Jupyter notebooks that use this kernel — without modifying the shared cluster environment.
+            </div>
+        </section>
+
+        <section class="tutorial-section">
+            <h2>Quick Reference — Complete Workflow</h2>
+            <pre><code class="language-bash"># 1. Load desired Python version (optional)
+module load python/3.9.4
+
+# 2. Get a compute node
+sinteractive
+
+# 3. Create virtual environment
+virtualenv .venv/tutenv
+
+# 4. Activate it
+source .venv/tutenv/bin/activate
+
+# 5. Install your packages
+pip install scikit-learn numpy pandas ipykernel
+
+# 6. Register as Jupyter kernel
+ipython kernel install --name "tutenv_py3.9.4" --user
+
+# 7. Deactivate when done
+deactivate</code></pre>
+
+            <h3>Next</h3>
+            <ul>
+                <li><a href="../tutorial2/">Tutorial 2</a> — Interactive job submission with <code>sinteractive</code></li>
+                <li><a href="../">← Back to Session 2</a></li>
+            </ul>
+        </section>
+
+        <footer class="page-footer">
+            <div class="footer-logos">
+                <img src="../../assets/cbio_logo.png" alt="CBIO" />
+                <img src="../../assets/idia_logo.png" alt="IDIA" />
+                <img src="../../assets/uct_logo.svg" alt="UCT" />
+            </div>
+            <a href="../">← Back to Session 2</a>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

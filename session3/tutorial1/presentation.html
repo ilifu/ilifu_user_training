@@ -77,7 +77,7 @@
                 <aside class="notes">
                     Good morning everyone and thanks for attending our training session. My name is Dane Kennedy and I'm employed at ilifu as the bioinformatics support contact. In addition to providing technical support for the bioinformatics projects, I'm also involved with maintaining the slurm cluster and administering various portals like the users dot ilifu and helpdesk websites.
 
-                    Despite what you might think based on this slide, this presentation is not about Slurm-baseing or Jab Scheauling, but rather about parallelism. What is parallelism in the computing world, what are our options to achieve parallelism and how do we do it on ilifu's slurm cluster.
+                    DToday I'll be talking about parallelism: what is parallelism in the computing world; what are our options to achieve parallelism and how do we do it on ilifu's slurm cluster.
                 </aside>
             </section>
 
@@ -109,6 +109,20 @@
                                     <li>1 node = 32 CPUs, ~240 GiB RAM (Main partition)</li>
                                 </ul>
                             </div>
+                            <div class="fragment">
+                                <h3 style="margin-top:0.5em;">Storage</h3>
+                                <ul>
+                                    <li>Permanent distributed storage (CephFS), accessible from all nodes</li>
+                                    <li>Your home directory and project directories live here</li>
+                                </ul>
+                            </div>
+                            <div class="fragment">
+                                <h3 style="margin-top:0.5em;">Network</h3>
+                                <ul>
+                                    <li>Fast Ethernet connects all nodes — <strong>no InfiniBand</strong></li>
+                                    <li>This limits multi-node scaling (more on this later)</li>
+                                </ul>
+                            </div>
                         </div>
                         <div class="col fragment">
                             <h3>Partitions — check with <code>sinfo</code></h3>
@@ -118,7 +132,7 @@
                                 </thead>
                                 <tbody>
                                     <tr><td>Main + Devel</td><td>~85</td><td>32</td><td>~240 GB</td></tr>
-                                    <tr><td>HighMem</td><td>2</td><td>32 / 96</td><td>503 GB / 1.5 TB</td></tr>
+                                    <tr><td>HighMem</td><td>8</td><td>32 / 96</td><td>503 GB / 1.5 TB</td></tr>
                                     <tr><td>GPU</td><td>7</td><td>24–48</td><td>232–354 GB + GPUs</td></tr>
                                     <tr><td>Jupyter</td><td colspan="3">Shared with GPU nodes</td></tr>
                                 </tbody>
@@ -143,7 +157,7 @@
 
                     And we have two different networks connecting nodes to each other; and nodes to storage. This is not a low latency network like you might find at the CHPC, but it does have a high bandwidth. What this means is that while it can transmit a large amount of data very quickly; it is not suitable for operations which require a lot of very quick communication between nodes. But I'll talk a bit more about this later.
 
-                    Just a quick note on the other partitions: So although the bulk of the computing power exists in the 85 compute nodes available on the Main partition, we do also have 3 High Memory nodes — two of which have around 500GiB available memory and the third has 1.5 TiB of ram (with 96 cores).
+                    Just a quick note on the other partitions: So although the bulk of the computing power exists in the 85 compute nodes available on the Main partition, we do also have 8 High Memory nodes — six of which have around 500GiB available memory, a seventh with about 1TiB and the eighth has 1.5 TiB of ram (with 96 cores).
 
                     Finally we have the GPU partition which has 7 GPU nodes (two of which are shared with Jupyter). These have various numbers and various flavours of GPUs in them.
                 </aside>
@@ -180,14 +194,18 @@
 
                     The Oxford definition is [read above]
 
-                    We have several kinds of parallelism ranging from embarrassingly parallel problems where individual parts of a computation are not dependent on others — I'm not an
-                    Astronomer so this might be the greatest example but I'm told it's kind of representative of what might see in the image domain, but I imagine in radio astronomy if one is doing some signal processing in a volume to create a 3 dimensional image of
+                    We have several kinds of parallelism ranging from embarrassingly parallel problems where individual parts of a computation are not dependent on others — An example from
+                    radio astronomy could be where one is doing some signal processing in a volume to create a 3 dimensional image of
                     some region in space, the individual pixels are, at least computationally, unrelated to one another. So if we're processing this data, these can be done independently of one another.
 
-                    A good example of parallelism for astronomy would be to partition/split the full spectral resolution raw data (or just raw data) from a radio telescope such as MeerKat into multiple spectral windows (SPW) and process the SPWs in parallel instead of the full raw data. Each SPW is processed simultaneously and this is what the Process MeerKat pipeline does during the radio signal processing.
-                    In bioinformatics one might be doing a genome assembly and part of this might be comparing reads to an existing genome and using that as a basis for assembly.
+                    Another good example of parallelism for astronomy would be to partition/split the full spectral resolution raw data (or just raw data) from a radio telescope such as MeerKat into multiple
+                    spectral windows (or SPWs) and process these SPWs in parallel instead of the full raw data. Each SPW is processed simultaneously and this is what the Process MeerKat pipeline does during the radio signal processing.
 
-                    Another class of parallelism is where individual components are highly dependent on each other. Here an example from the bioinformatics world might be where we're doing a protein folding simulation where we're modelling individual atoms and how they're interacting with each other. So in this kind of simulation we typically break up our larger volume into smaller volumes, but there is interaction between these smaller volumes.
+                    In bioinformatics one might be doing a genome assembly and part of this might be aligning reads to an existing genome — these can all be done independently and is ideal for doing in parallel.
+
+                    Another class of parallelism is where individual components are highly dependent on each other. An example from the bioinformatics world might be where we're doing a protein folding simulation where
+                    we're modelling individual atoms and how they're interacting with each other. So in this kind of simulation we typically break up our larger volume into smaller volumes, but we need to account for the interaction
+                    of molecules on the sides of these smaller volumes.
                 </aside>
             </section>
 
@@ -277,7 +295,7 @@ average = (57.5+80.5+60.0)/3 = 66
                     </div>
                 </div>
                 <aside class="notes">
-                    So let's consider some computer program or application. A simple program might look as follows:
+                    So let's consider some computer program or application. In this extremely simple example we're considering looking for the average of a set of numbers. A simple program might look as follows:
 
                     [read serial code]
 
@@ -297,10 +315,10 @@ average = (57.5+80.5+60.0)/3 = 66
                     </div>
                     <h2>Parallelism Requirements</h2>
                     <ul>
-                        <li class="fragment">Executing portions of program simultaneously</li>
-                        <li class="fragment">Possible when we have many processors (cores/CPUs)</li>
-                        <li class="fragment">Capacity dependent on structure of both hardware AND software</li>
-                        <li class="fragment">Requires overall control/coordination mechanism
+                        <li>Executing portions of program simultaneously</li>
+                        <li>Possible when we have many processors (cores/CPUs)</li>
+                        <li>Capacity dependent on structure of both hardware AND software</li>
+                        <li>Requires overall control/coordination mechanism
                             <ul>
                                 <li>i.e. message passing in MPI / threading / OpenMP</li>
                             </ul>
@@ -335,11 +353,10 @@ average = (57.5+80.5+60.0)/3 = 66
                     <h2>Parallelism on the ilifu Cluster</h2>
                     <ul>
                         <li class="fragment">A cluster includes many connected nodes</li>
-                        <li class="fragment">Each node has RAM and multiple cores</li>
-                        <li class="fragment">Some nodes have GPUs</li>
-                        <li class="fragment">Work of job is partitioned into smaller jobs
+                        <li class="fragment">Each node has RAM and multiple cores <span class="fragment">(some nodes also have GPUs)</span></li>
+                        <li  class="fragment">Work of job is partitioned into smaller jobs
                             <ul>
-                                <li>Sometimes with a partition of the data</li>
+                                <li>Usually on independent parts of the data</li>
                             </ul>
                         </li>
                     </ul>
@@ -348,9 +365,11 @@ average = (57.5+80.5+60.0)/3 = 66
                     </div>
                 </div>
                 <aside class="notes">
-                    Parallelism on a computing cluster can look a bit different depending on the problem that you're trying to solve.
-
-                    [READ SLIDE]
+                    Parallelism can look a bit different depending on the problem you're trying to solve and the resources available. As noted before on ilifu we have:<br />
+                    * many connected nodes where <br />
+                    * each node has many cores and a lot of RAM <br />
+                    * some nodes have GPUs which can add a whole extra level of parallelism <br />
+                    * Work is typically partitioned into smaller parts that can be processed simultaneously. This is often done by partitioning the data into smaller chunks and processing those chunks in parallel.  <br /> <br />
 
                     A small note on the way our physical hardware is set up — we do not have a low-latency network like the CHPC does with their infiniband network. When we talk about latency what we mean is the time it takes for even a small message to get from one node to the other. The implication is that if you have the kind of problems where there is lots of communication between nodes (like the protein folding example I mentioned earlier) then spreading the problem across multiple nodes can actually have a negative effect on your overall computation time because you end up spending a lot of time waiting for communication between nodes, rather than doing lots of computation.
                     So if you have the kind of problem that requires that — you're better off using say the CHPC which has an infiniband network. Our network is quite high bandwidth though, so while there might be a relatively large delay in getting a message from A to B, those messages can be big so we can move a lot of data quite quickly.
@@ -369,7 +388,7 @@ average = (57.5+80.5+60.0)/3 = 66
                     </div>
                     <h2>Single-node vs Multi-node Parallelism</h2>
                     <div class="columns">
-                        <div class="col">
+                        <div class="col fragment">
                             <h3>Single-node (shared memory)</h3>
                             <ul>
                                 <li>Distributes work over many CPUs <em>within one node</em></li>
@@ -384,7 +403,7 @@ average = (57.5+80.5+60.0)/3 = 66
                                 </div>
                             </div>
                         </div>
-                        <div class="col">
+                        <div class="col fragment">
                             <h3>Multi-node (distributed memory)</h3>
                             <ul>
                                 <li>Distributes work over many tasks across 1+ nodes</li>
@@ -418,7 +437,7 @@ average = (57.5+80.5+60.0)/3 = 66
                     Typically parallelism is implemented using one of three mechanisms:
 
                     It can be on a single machine or node that has multiple cores (most modern CPUs have this) — this would be usually be done using threads or OpenMP. As mentioned earlier OpenMP is a framework that makes it easier to develop multi-threaded code. Multi-threaded code works well on multi-core machines where there is shared memory because different parts of the software running in parallel can communicate directly with each other; i.e. there's no need to go over an external network.
-                    GPUs are usually used in scenarios where you can run exactly the same bit of code on different parts of data simultaneously. This is a bit different from threading where the actual code running can be somewhat independent or doing slightly different things.
+                    GPUs are usually used in scenarios where you can run exactly the same bit of code on different parts of data simultaneously. This is a bit different from threading where the actual code running can be somewhat independent or doing slightly different things. <br /><br />
                     When moving over to multiple machines at the same time we usually use the MPI library which makes it easy to distribute the work over many tasks. Slurm will set up the environment, by this I mean it will allocate the machines for the job and tell the job how much memory and CPU is available. MPI can then use these resources to split out the parts of the job to where they should run and combine the results together again at the end. If you are using singularity remember that a container is kind of like a standalone machine with its own operating system and software and you will need to ensure that you are using the same version of MPI inside and outside of the container.
                 </aside>
             </section>
@@ -797,7 +816,8 @@ mpirun python myscript.py</code></pre>
             width: 1920,
             height: 1080,
             center: false,
-            plugins: [RevealHighlight, RevealNotes]
+            plugins: [RevealHighlight, RevealNotes],
+            pdfSeparateFragments: false
         });
     </script>
 </body>

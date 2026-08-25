@@ -1,5 +1,5 @@
 [project]
-name = "session4-tutorial1"
+name = "nextflow-tutorial"
 version = "1.0.0"
 description = "Workflow orchestration with Nextflow and WDL - Session 4 Tutorial 1"
 readme = "README.md"

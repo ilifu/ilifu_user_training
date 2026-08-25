@@ -3,30 +3,30 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Tutorial 1: Nextflow &amp; WDL/Cromwell — Session 4 | ilifu User Training</title>
+    <title>Tutorial 1: Nextflow &amp; WDL/Cromwell — Standalone Tutorial | ilifu User Training</title>
     <meta content="Workflow orchestration with Nextflow and WDL/Cromwell on the ilifu SLURM cluster." name="description" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
-    <link href="../../resources/theme.css" rel="stylesheet" />
-    <link href="../../resources/page.css" rel="stylesheet" />
+    <link href="../../../resources/theme.css" rel="stylesheet" />
+    <link href="../../../resources/page.css" rel="stylesheet" />
 </head>
 <body>
     <div class="logo-sidebar">
-        <img alt="CBIO" src="../../assets/cbio_logo.png" title="CBIO — Computational Biology, UCT" />
-        <img alt="IDIA" src="../../assets/idia_logo.png" title="IDIA — Institute for Data Intensive Astronomy" />
-        <img alt="UCT" src="../../assets/uct_logo.svg" title="University of Cape Town" />
+        <img alt="CBIO" src="../../../assets/cbio_logo.png" title="CBIO — Computational Biology, UCT" />
+        <img alt="IDIA" src="../../../assets/idia_logo.png" title="IDIA — Institute for Data Intensive Astronomy" />
+        <img alt="UCT" src="../../../assets/uct_logo.svg" title="University of Cape Town" />
     </div>
 
     <div class="page-wrapper">
         <header class="page-header">
-            <img src="../../assets/ilifu_logo.svg" alt="ilifu" />
+            <img src="../../../assets/ilifu_logo.svg" alt="ilifu" />
             <div>
-                <h1>Session 4, Tutorial 1</h1>
+                <h1>Workflow Orchestration</h1>
                 <p class="page-intro">Workflow Orchestration with Nextflow and WDL/Cromwell — automate complex multi-step pipelines on the ilifu SLURM cluster.</p>
             </div>
-            <a href="../" class="btn-secondary">← Session 4</a>
+            <a href="../" class="btn-secondary">← Workflow Orchestration</a>
         </header>
 
         <section class="tutorial-section">
@@ -103,7 +103,7 @@
             <pre><code class="language-bash">ssh user@ilifu-login.ac.za
 cd /data/user_training  # or your preferred location
 git clone &lt;ilifu_user_training repo&gt;
-cd ilifu_user_training/session5/tutorial1
+cd ilifu_user_training/standalone/nextflow/tutorial1
 mkdir -p logs</code></pre>
 
             <p>Create a local Python virtual environment:</p>
@@ -122,7 +122,7 @@ export PATH=$PATH:~/bin
 cd ~/bin
 wget https://github.com/broadinstitute/cromwell/releases/download/v85.1/cromwell-85.1.jar
 ln -s cromwell-85.1.jar cromwell.jar
-cd ~/ilifu_user_training/session5/tutorial1</code></pre>
+cd ~/ilifu_user_training/standalone/nextflow/tutorial1</code></pre>
 
             <p>Verify installations:</p>
             <pre><code class="language-bash">nextflow -version
@@ -666,16 +666,16 @@ nextflow log &lt;run_name&gt; -f name,exit,duration</code></pre>
                 <strong>The key takeaway:</strong> As your science becomes more complex, workflows become more essential. They encode your methodology, enable reproducibility, and free you from manual job scheduling.
             </div>
 
-            <p><a href="../">← Back to Session 4</a> &nbsp;|&nbsp; <a href="../../">← All Sessions</a></p>
+            <p><a href="../">← Workflow Orchestration</a> &nbsp;|&nbsp; <a href="../../../">← All Sessions</a></p>
         </section>
 
         <footer class="page-footer">
             <div class="footer-logos">
-                <img src="../../assets/cbio_logo.png" alt="CBIO" />
-                <img src="../../assets/idia_logo.png" alt="IDIA" />
-                <img src="../../assets/uct_logo.svg" alt="UCT" />
+                <img src="../../../assets/cbio_logo.png" alt="CBIO" />
+                <img src="../../../assets/idia_logo.png" alt="IDIA" />
+                <img src="../../../assets/uct_logo.svg" alt="UCT" />
             </div>
-            <a href="../">← Back to Session 4</a>
+            <a href="../">← Workflow Orchestration</a>
         </footer>
     </div>
 

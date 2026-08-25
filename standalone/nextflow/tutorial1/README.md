@@ -1,4 +1,4 @@
-# Session 4, Tutorial 1: Workflow Orchestration with Nextflow and WDL
+# Workflow Orchestration with Nextflow and WDL
 
 ## What is this tutorial about?
 
@@ -87,7 +87,7 @@ Log into ilifu and create a working directory for this tutorial:
 ssh user@ilifu-login.ac.za
 cd /data/user_training  # or your preferred location
 git clone <ilifu_user_training repo>
-cd ilifu_user_training/session4/tutorial1
+cd ilifu_user_training/standalone/nextflow/tutorial1
 mkdir -p logs
 ```
 
@@ -112,7 +112,7 @@ export PATH=$PATH:~/bin
 cd ~/bin
 wget https://github.com/broadinstitute/cromwell/releases/download/v85.1/cromwell-85.1.jar
 ln -s cromwell-85.1.jar cromwell.jar
-cd ~/ilifu_user_training/session4/tutorial1
+cd ~/ilifu_user_training/standalone/nextflow/tutorial1
 ```
 
 Verify installations:
@@ -1023,6 +1023,6 @@ Now that you understand workflow basics:
 
 ---
 
-**You've completed Session 4, Tutorial 1!** You now understand how workflow orchestration systems (Nextflow and WDL/Cromwell) can simplify complex, multi-step computational pipelines on the ilifu SLURM cluster.
+**You've completed the workflow orchestration tutorial!** You now understand how workflow orchestration systems (Nextflow and WDL/Cromwell) can simplify complex, multi-step computational pipelines on the ilifu SLURM cluster.
 
 The key takeaway: **As your science becomes more complex, workflows become more essential.** They encode your methodology, enable reproducibility, and free you from manual job scheduling.

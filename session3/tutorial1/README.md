@@ -350,7 +350,7 @@ You should see output showing computation times for each process. Notice:
 - **Demos 2, 3, 4**: All much faster (use 8 cores), similar performance
 - **Demo 5**: Slower due to network overhead between nodes
 
-The key insight: **On a single node**, you can choose between pure MPI, hybrid MPI+OpenMP, or pure threading—they'll all perform similarly. **Across nodes**, network latency dominates and kills performance.
+The key insight: **On a single node**, you can choose between pure MPI, hybrid MPI+OpenMP, or pure threading—they'll all perform similarly. **Across nodes**, network latency dominates for this communication-heavy workload and erases the gains.
 
 ## Real world results and discussion
 
@@ -386,7 +386,7 @@ logs/8-cpus-2-nodes-11782574.out:total time: 0.171879482 s
 - **8 CPUs (1 node)**: Average ~0.155 seconds (**~5× speedup**)
 - **8 CPUs (2 nodes)**: Average ~0.173 seconds (**slower than single-node 8-CPU!**)
 
-The key observation: adding a second node actually makes the job **slower**. The 8-core, 2-node version takes ~0.173s vs ~0.155s for 8 cores on a single node. This is because the network communication overhead between nodes exceeds any benefit from having physically separate processors. This perfectly demonstrates the lesson: **network latency kills multi-node performance without high-speed interconnects like InfiniBand.**
+The key observation: adding a second node actually makes the job **slower**. The 8-core, 2-node version takes ~0.173s vs ~0.155s for 8 cores on a single node. This is because the network communication overhead between nodes exceeds any benefit from having physically separate processors. This perfectly demonstrates the lesson: **without a high-speed interconnect like InfiniBand, network latency dominates for communication-heavy workloads — stay on one node unless the job needs more resources than one node provides.**
 
 ### C++ Scaling Results
 
@@ -431,6 +431,6 @@ Interesting patterns emerge:
 - **Pure MPI approaches scale better**: 8 MPI processes (0.006s) is faster than 4 MPI + 2 threads (0.009s), despite using the same 8 cores. This shows MPI is more efficient for simple loop-based parallelism than OpenMP threading in this case.
 - **Multi-node penalty (0.034s)**: Again, the 2-node version is roughly 4-5× slower than single-node approaches, confirming the network latency lesson.
 
-**Comparison with Python:** The C++ version shows much tighter, faster execution times (30ms vs 750ms baseline), but teaches the same fundamental lesson: **network communication across nodes kills performance, and the choice of parallelism strategy (MPI vs threading) matters for performance.**
+**Comparison with Python:** The C++ version shows much tighter, faster execution times (30ms vs 750ms baseline), but teaches the same fundamental lesson: **network communication across nodes carries a real cost, and the choice of parallelism strategy (MPI vs threading) matters for performance.**
 
 

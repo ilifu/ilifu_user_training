@@ -250,7 +250,7 @@ logs/8-cpus-2-nodes-11782574.out:total time: 0.171879482 s</code></pre>
                     <tr style="background:#fff5f5;"><td>8 CPUs (2 nodes)</td><td>~0.173 s</td><td>slower than 8 CPUs/1 node!</td></tr>
                 </tbody>
             </table>
-            <p>The key observation: adding a second node actually made the job <strong>slower</strong>. The 8-core, 2-node version takes ~0.173 s vs ~0.155 s for 8 cores on a single node. This is because the network communication overhead between nodes exceeds any benefit from having physically separate processors. <strong>Network latency kills multi-node performance without high-speed interconnects like InfiniBand.</strong></p>
+            <p>The key observation: adding a second node actually made the job <strong>slower</strong>. The 8-core, 2-node version takes ~0.173 s vs ~0.155 s for 8 cores on a single node. This is because the network communication overhead between nodes exceeds any benefit from having physically separate processors. <strong>Without a high-speed interconnect like InfiniBand, network latency dominates for communication-heavy workloads — stay on one node unless the job needs more resources than one node provides.</strong></p>
 
             <h3>C++ Scaling Results</h3>
             <pre><code class="language-bash">$ grep "compute sum\|Total execution time" logs/hybrid-sum-*.out
@@ -301,7 +301,7 @@ logs/hybrid-sum-8mpi-1thread-11782578.out:Total execution time: 0.005 s</code></
                 <li><strong>Multi-node penalty (0.034 s):</strong> The 2-node version is roughly 4–5× slower than single-node approaches, confirming the network latency lesson.</li>
             </ul>
 
-            <p><strong>Comparison with Python:</strong> The C++ version shows much tighter, faster execution times (30 ms vs 750 ms baseline), but teaches the same fundamental lesson: <strong>network communication across nodes kills performance, and the choice of parallelism strategy (MPI vs threading) matters for performance.</strong></p>
+            <p><strong>Comparison with Python:</strong> The C++ version shows much tighter, faster execution times (30 ms vs 750 ms baseline), but teaches the same fundamental lesson: <strong>network communication across nodes carries a real cost, and the choice of parallelism strategy (MPI vs threading) matters for performance.</strong></p>
         </section>
 
         <section class="tutorial-section">

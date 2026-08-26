@@ -1,11 +1,11 @@
 Thanks to Robin Hall for creating this tutorial: https://github.com/robinlh/slurm-mpi-demo/tree/master
 
-# SLURM MPI Demo: Understanding Parallel Computing
+# Slurm MPI Demo: Understanding Parallel Computing
 
 ## What is this tutorial about?
 
 This tutorial demonstrates how to run code in parallel—spreading work across multiple CPU cores and computing nodes. You'll learn:
-- How **SLURM** (a job scheduler) allocates computing resources
+- How **Slurm** (a job scheduler) allocates computing resources
 - How **MPI** (Message Passing Interface) lets different processes work together
 - How adding more CPUs *usually* makes code run faster, but not always!
 
@@ -167,7 +167,7 @@ cat logs/8-cpus-2-nodes-*.out
 - Execution time will be **similar to or even slower** than Demo 3
 - The network communication between nodes is the bottleneck
 
-**Key lesson:** When processes need to communicate across physical machines, network latency becomes a major bottleneck. ILIFU doesn't have InfiniBand (a high-speed interconnect), so inter-node communication is (relatively) slow. Adding more nodes doesn't help—it hurts!
+**Key lesson:** When processes need to communicate across physical machines, network latency becomes a major bottleneck. ilifu doesn't have InfiniBand (a high-speed interconnect), so inter-node communication is (relatively) slow. Adding more nodes doesn't help—it hurts!
 
 ---
 

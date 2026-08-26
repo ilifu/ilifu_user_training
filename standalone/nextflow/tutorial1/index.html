@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Tutorial 1: Nextflow &amp; WDL/Cromwell — Standalone Tutorial | ilifu User Training</title>
-    <meta content="Workflow orchestration with Nextflow and WDL/Cromwell on the ilifu SLURM cluster." name="description" />
+    <meta content="Workflow orchestration with Nextflow and WDL/Cromwell on the ilifu Slurm cluster." name="description" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
@@ -24,23 +24,23 @@
             <img src="../../../assets/ilifu_logo.svg" alt="ilifu" />
             <div>
                 <h1>Workflow Orchestration</h1>
-                <p class="page-intro">Workflow Orchestration with Nextflow and WDL/Cromwell — automate complex multi-step pipelines on the ilifu SLURM cluster.</p>
+                <p class="page-intro">Workflow Orchestration with Nextflow and WDL/Cromwell — automate complex multi-step pipelines on the ilifu Slurm cluster.</p>
             </div>
             <a href="../" class="btn-secondary">← Workflow Orchestration</a>
         </header>
 
         <section class="tutorial-section">
             <h2>What Is This Tutorial About?</h2>
-            <p>In previous sessions, you've learned to submit individual jobs to SLURM using <code>sbatch</code> scripts. This works well for single, standalone jobs. But what if you need to run a <strong>pipeline</strong> — a series of steps where some depend on the output of others, others can run in parallel, and you need to manage dozens or hundreds of tasks across the cluster?</p>
+            <p>In previous sessions, you've learned to submit individual jobs to Slurm using <code>sbatch</code> scripts. This works well for single, standalone jobs. But what if you need to run a <strong>pipeline</strong> — a series of steps where some depend on the output of others, others can run in parallel, and you need to manage dozens or hundreds of tasks across the cluster?</p>
             <p>This is where <strong>workflow orchestration systems</strong> shine.</p>
 
             <h3>Learning Objectives</h3>
             <p>By the end of this tutorial, you'll understand:</p>
             <ul>
                 <li><strong>Why workflows matter:</strong> How they handle complex dependencies, parallelization, and reproducibility</li>
-                <li><strong>Nextflow fundamentals:</strong> Writing tasks, connecting them into workflows, and running on SLURM</li>
+                <li><strong>Nextflow fundamentals:</strong> Writing tasks, connecting them into workflows, and running on Slurm</li>
                 <li><strong>WDL/Cromwell basics:</strong> An alternative workflow language and execution engine</li>
-                <li><strong>SLURM integration:</strong> How to configure workflows to use appropriate resources on ilifu</li>
+                <li><strong>Slurm integration:</strong> How to configure workflows to use appropriate resources on ilifu</li>
                 <li><strong>Scaling considerations:</strong> When to use workflows vs. direct job submission</li>
             </ul>
         </section>
@@ -50,7 +50,7 @@
             <p>Imagine a bioinformatics pipeline:</p>
             <pre><code class="language-text">Raw data (FASTQ) → Quality trim → Align to reference → Count hits → Generate report</code></pre>
 
-            <h3>With traditional SLURM</h3>
+            <h3>With traditional Slurm</h3>
             <ul>
                 <li>You submit 4 separate jobs manually</li>
                 <li>You must monitor which jobs finish before submitting the next</li>
@@ -78,7 +78,7 @@
             <p>A <strong>workflow</strong> connects multiple tasks by defining task order through dependencies, passing outputs from one task as inputs to another, and allowing independent tasks to run in parallel.</p>
 
             <h3>3. Resource Management</h3>
-            <p>Workflows request specific resources for each task (CPU cores, memory, execution time, node constraints). The orchestrator (Nextflow/Cromwell) submits these to SLURM appropriately.</p>
+            <p>Workflows request specific resources for each task (CPU cores, memory, execution time, node constraints). The orchestrator (Nextflow/Cromwell) submits these to Slurm appropriately.</p>
 
             <h3>4. Parallelization &amp; Scatter Operations</h3>
             <ul>
@@ -94,7 +94,7 @@
             <h3>Prerequisites</h3>
             <ol>
                 <li>Access to ilifu cluster with login credentials</li>
-                <li>Basic familiarity with SLURM from Sessions 1–3</li>
+                <li>Basic familiarity with Slurm from Sessions 1–3</li>
                 <li>Python environment setup (from Session 2)</li>
             </ol>
 
@@ -245,9 +245,9 @@ EOF
 
 cp data/sample1.fastq data/sample2.fastq</code></pre>
 
-            <h3>Running on ilifu: SLURM Configuration</h3>
-            <p>To use SLURM on ilifu, Nextflow needs a configuration file (<code>nextflow.config</code>):</p>
-            <pre><code class="language-groovy">// Nextflow SLURM Configuration for ilifu
+            <h3>Running on ilifu: Slurm Configuration</h3>
+            <p>To use Slurm on ilifu, Nextflow needs a configuration file (<code>nextflow.config</code>):</p>
+            <pre><code class="language-groovy">// Nextflow Slurm Configuration for ilifu
 
 process {
     // Default resource allocation for all processes
@@ -270,7 +270,7 @@ process {
 }
 
 executor {
-    // Use SLURM as the job scheduler
+    // Use Slurm as the job scheduler
     name = 'slurm'
     queueSize = 10  // Limit queued jobs to prevent overwhelming the scheduler
     pollInterval = '30s'
@@ -289,8 +289,8 @@ timeline {
     file = 'timeline.html'
 }</code></pre>
 
-            <h3>Submitting a Nextflow Workflow to SLURM</h3>
-            <p>To run the workflow as a SLURM job (<code>submit_nextflow_workflow.sbatch</code>):</p>
+            <h3>Submitting a Nextflow Workflow to Slurm</h3>
+            <p>To run the workflow as a Slurm job (<code>submit_nextflow_workflow.sbatch</code>):</p>
             <pre><code class="language-bash">#!/bin/bash
 #SBATCH --job-name=nextflow-fastq
 #SBATCH --nodes=1
@@ -473,8 +473,8 @@ for i in {1..3}; do
 EOF
 done</code></pre>
 
-            <h3>Cromwell SLURM Configuration (<code>cromwell_slurm.conf</code>)</h3>
-            <pre><code class="language-text"># Cromwell configuration for SLURM backend on ilifu
+            <h3>Cromwell Slurm Configuration (<code>cromwell_slurm.conf</code>)</h3>
+            <pre><code class="language-text"># Cromwell configuration for Slurm backend on ilifu
 
 include required(classpath("application"))
 
@@ -514,7 +514,7 @@ backend {
 mkdir -p fits_data
 for i in {1..3}; do echo "150" &gt; fits_data/image_$i.fits; done
 
-# Submit to SLURM
+# Submit to Slurm
 sbatch submit_cromwell_workflow.sbatch
 
 # Check job
@@ -541,12 +541,12 @@ ls cromwell-executions/image_reduction/</code></pre>
                     <tr><td>Parallelization</td><td>Implicit with pipes</td><td>Explicit <code>scatter</code> statements</td></tr>
                     <tr><td>Portability</td><td>Excellent (laptop → cloud)</td><td>Good (wide ecosystem support)</td></tr>
                     <tr><td>Community</td><td>Large, especially bioinformatics</td><td>Also strong in bioinformatics</td></tr>
-                    <tr><td>SLURM integration</td><td>Via <code>nextflow.config</code></td><td>Via Cromwell backend config</td></tr>
+                    <tr><td>Slurm integration</td><td>Via <code>nextflow.config</code></td><td>Via Cromwell backend config</td></tr>
                 </tbody>
             </table>
 
             <h3>Resource Management on ilifu</h3>
-            <p>Both orchestrators translate task resource requests into SLURM directives:</p>
+            <p>Both orchestrators translate task resource requests into Slurm directives:</p>
             <pre><code class="language-groovy">// Nextflow configuration:
 process.cpus = 4
 process.memory = "8.GB"
@@ -570,10 +570,10 @@ scatter (bias_corrected in bias_correction.corrected_image) {
         </section>
 
         <section class="tutorial-section">
-            <h2>Real-World Results: Workflow vs. Direct SLURM</h2>
+            <h2>Real-World Results: Workflow vs. Direct Slurm</h2>
             <p>To understand the overhead and benefits, consider this scenario: processing 10 FASTQ samples through a 3-step pipeline.</p>
 
-            <h3>Direct SLURM approach</h3>
+            <h3>Direct Slurm approach</h3>
             <ul>
                 <li>Job 1: Trim all 10 samples — 45 seconds</li>
                 <li>Job 2: Align all 10 samples (submitted after Job 1) — 120 seconds</li>
@@ -593,12 +593,12 @@ scatter (bias_corrected in bias_correction.corrected_image) {
             <ol>
                 <li><strong>Overhead:</strong> Workflow engines add ~15 seconds of startup/coordination overhead</li>
                 <li><strong>Parallelization:</strong> Nextflow handles within-stage parallelization automatically</li>
-                <li><strong>Scalability:</strong> With 100 samples, the workflow approach scales linearly; direct SLURM would need manual parallelization</li>
+                <li><strong>Scalability:</strong> With 100 samples, the workflow approach scales linearly; direct Slurm would need manual parallelization</li>
                 <li><strong>Fault tolerance:</strong> If one sample fails in step 2, the direct approach requires manual resubmission; Nextflow can resume automatically</li>
             </ol>
 
             <div class="info-box tip">
-                <strong>Decision rule:</strong> Use <strong>direct SLURM</strong> for single jobs, simple pipelines, minimal dependencies. Use <strong>Nextflow/WDL</strong> for complex pipelines, many samples, or when you need reproducibility and fault tolerance.
+                <strong>Decision rule:</strong> Use <strong>direct Slurm</strong> for single jobs, simple pipelines, minimal dependencies. Use <strong>Nextflow/WDL</strong> for complex pipelines, many samples, or when you need reproducibility and fault tolerance.
             </div>
         </section>
 
@@ -617,7 +617,7 @@ module add java
 module list  # Verify it's loaded</code></pre>
 
             <h3>Workflow stuck or slow</h3>
-            <pre><code class="language-bash"># Check SLURM queue
+            <pre><code class="language-bash"># Check Slurm queue
 squeue -u $USER
 
 # Kill a specific Nextflow job

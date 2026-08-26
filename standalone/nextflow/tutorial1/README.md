@@ -2,7 +2,7 @@
 
 ## What is this tutorial about?
 
-In previous sessions, you've learned to submit individual jobs to SLURM using `sbatch` scripts. This works well for single, standalone jobs. But what if you need to run a **pipeline** — a series of steps where some depend on the output of others, others can run in parallel, and you need to manage dozens or hundreds of tasks across the cluster?
+In previous sessions, you've learned to submit individual jobs to Slurm using `sbatch` scripts. This works well for single, standalone jobs. But what if you need to run a **pipeline** — a series of steps where some depend on the output of others, others can run in parallel, and you need to manage dozens or hundreds of tasks across the cluster?
 
 This is where **workflow orchestration systems** shine.
 
@@ -11,9 +11,9 @@ This is where **workflow orchestration systems** shine.
 By the end of this tutorial, you'll understand:
 
 - **Why workflows matter**: How they handle complex dependencies, parallelization, and reproducibility
-- **Nextflow fundamentals**: Writing tasks, connecting them into workflows, and running on SLURM
+- **Nextflow fundamentals**: Writing tasks, connecting them into workflows, and running on Slurm
 - **WDL/Cromwell basics**: An alternative workflow language and execution engine
-- **SLURM integration**: How to configure workflows to use appropriate resources on ilifu
+- **Slurm integration**: How to configure workflows to use appropriate resources on ilifu
 - **Scaling considerations**: When to use workflows vs. direct job submission
 
 ## Why Workflow Orchestration?
@@ -23,7 +23,7 @@ Imagine a bioinformatics pipeline:
 Raw data (FASTQ) → Quality trim → Align to reference → Count hits → Generate report
 ```
 
-With traditional SLURM:
+With traditional Slurm:
 - You submit 4 separate jobs manually
 - You must monitor which jobs finish before submitting the next
 - If step 2 fails for one sample, you manually resubmit only step 2
@@ -36,7 +36,7 @@ With a workflow orchestrator (Nextflow or Cromwell):
 - You can easily test, parameterize, and scale the same workflow
 - Workflows are reproducible and portable across systems
 
-This tutorial shows you how to write and execute such workflows on the ilifu SLURM cluster.
+This tutorial shows you how to write and execute such workflows on the ilifu Slurm cluster.
 
 ## Key Workflow Concepts
 
@@ -60,7 +60,7 @@ Workflows can request specific resources for each task:
 - Execution time
 - Node constraints
 
-The orchestrator (Nextflow/Cromwell) submits these to SLURM appropriately.
+The orchestrator (Nextflow/Cromwell) submits these to Slurm appropriately.
 
 ### 4. Parallelization & Scatter Operations
 Workflows can automatically process multiple inputs:
@@ -76,7 +76,7 @@ This is critical for high-throughput science (process 100 samples in parallel).
 Before you start, ensure you have:
 
 1. **Access to ilifu cluster** with login credentials
-2. **Basic familiarity** with SLURM from Session 1-3
+2. **Basic familiarity** with Slurm from Session 1-3
 3. **Python environment setup** (from Session 2)
 
 ### Installation & Setup
@@ -269,14 +269,14 @@ EOF
 cp data/sample1.fastq data/sample2.fastq
 ```
 
-### Running on ilifu: SLURM Configuration
+### Running on ilifu: Slurm Configuration
 
-To use SLURM on ilifu, Nextflow needs a configuration file.
+To use Slurm on ilifu, Nextflow needs a configuration file.
 
 **File: `nextflow.config`**
 
 ```groovy
-// Nextflow SLURM Configuration for ilifu
+// Nextflow Slurm Configuration for ilifu
 
 process {
     // Default resource allocation for all processes
@@ -299,7 +299,7 @@ process {
 }
 
 executor {
-    // Use SLURM as the job scheduler
+    // Use Slurm as the job scheduler
     name = 'slurm'
     queueSize = 10  // Limit queued jobs to prevent overwhelming the scheduler
     pollInterval = '30s'
@@ -319,9 +319,9 @@ timeline {
 }
 ```
 
-### Submitting a Nextflow Workflow to SLURM
+### Submitting a Nextflow Workflow to Slurm
 
-To run the workflow as a SLURM job (not just from login node), use an sbatch script.
+To run the workflow as a Slurm job (not just from login node), use an sbatch script.
 
 **File: `submit_nextflow_workflow.sbatch`**
 
@@ -710,14 +710,14 @@ EOF
 done
 ```
 
-### Running WDL on ilifu: SLURM Configuration
+### Running WDL on ilifu: Slurm Configuration
 
-Cromwell needs a configuration file to use SLURM backend.
+Cromwell needs a configuration file to use Slurm backend.
 
 **File: `cromwell_slurm.conf`**
 
 ```hocon
-# Cromwell configuration for SLURM backend on ilifu
+# Cromwell configuration for Slurm backend on ilifu
 
 include required(classpath("application"))
 
@@ -774,7 +774,7 @@ workflow-options {
 }
 ```
 
-### Submitting a WDL Workflow to SLURM
+### Submitting a WDL Workflow to Slurm
 
 **File: `submit_cromwell_workflow.sbatch`**
 
@@ -829,7 +829,7 @@ for i in {1..3}; do
     echo "150" > fits_data/image_$i.fits
 done
 
-# Submit to SLURM
+# Submit to Slurm
 sbatch submit_cromwell_workflow.sbatch
 
 # Check job
@@ -855,7 +855,7 @@ ls cromwell-executions/image_reduction/
 | **Parallelization** | Implicit with pipes | Explicit `scatter` statements |
 | **Portability** | Excellent (laptop → cloud) | Good (wide ecosystem support) |
 | **Community** | Large, especially bioinformatics | Also strong in bioinformatics |
-| **SLURM Integration** | Via `nextflow.config` | Via Cromwell backend config |
+| **Slurm Integration** | Via `nextflow.config` | Via Cromwell backend config |
 
 **Choose Nextflow if:**
 - You want rapid prototyping
@@ -869,7 +869,7 @@ ls cromwell-executions/image_reduction/
 
 ### Resource Management on ilifu
 
-Both orchestrators translate task resource requests into SLURM directives:
+Both orchestrators translate task resource requests into Slurm directives:
 
 **Nextflow configuration:**
 ```groovy
@@ -923,13 +923,13 @@ The orchestrator ensures:
 
 ---
 
-## Real-World Results: Workflow vs. Direct SLURM
+## Real-World Results: Workflow vs. Direct Slurm
 
 To understand the overhead and benefits, let's compare:
 
 ### Scenario: Process 10 FASTQ samples through 3-step pipeline
 
-**Direct SLURM approach:**
+**Direct Slurm approach:**
 - Job 1: Trim all 10 samples (single node, 10 cores)
   - Elapsed time: 45 seconds
 - Job 2: Align all 10 samples (submitted after Job 1 completes)
@@ -952,11 +952,11 @@ To understand the overhead and benefits, let's compare:
 **Key lessons:**
 1. **Overhead**: Workflow engines add ~15 seconds of startup/coordination overhead
 2. **Parallelization**: Nextflow handles within-stage parallelization automatically
-3. **Scalability**: With 100 samples, the workflow approach scales linearly; direct SLURM would need manual parallelization
+3. **Scalability**: With 100 samples, the workflow approach scales linearly; direct Slurm would need manual parallelization
 4. **Fault tolerance**: If one sample fails in step 2, the direct approach requires manual resubmission; Nextflow can resume automatically
 
 **When to use each:**
-- **Direct SLURM**: Single jobs, simple pipelines, minimal dependencies
+- **Direct Slurm**: Single jobs, simple pipelines, minimal dependencies
 - **Nextflow/WDL**: Complex pipelines, many samples, need reproducibility
 
 ---
@@ -980,7 +980,7 @@ module list  # Verify it's loaded
 
 ### Workflow stuck or slow
 ```bash
-# Check SLURM queue
+# Check Slurm queue
 squeue -u $USER
 
 # Kill a specific Nextflow job
@@ -1023,6 +1023,6 @@ Now that you understand workflow basics:
 
 ---
 
-**You've completed the workflow orchestration tutorial!** You now understand how workflow orchestration systems (Nextflow and WDL/Cromwell) can simplify complex, multi-step computational pipelines on the ilifu SLURM cluster.
+**You've completed the workflow orchestration tutorial!** You now understand how workflow orchestration systems (Nextflow and WDL/Cromwell) can simplify complex, multi-step computational pipelines on the ilifu Slurm cluster.
 
 The key takeaway: **As your science becomes more complex, workflows become more essential.** They encode your methodology, enable reproducibility, and free you from manual job scheduling.

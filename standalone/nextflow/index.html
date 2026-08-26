@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Workflow Orchestration | ilifu User Training</title>
-    <meta content="Nextflow and WDL/Cromwell workflow orchestration on the ilifu SLURM cluster — standalone tutorial." name="description" />
+    <meta content="Nextflow and WDL/Cromwell workflow orchestration on the ilifu Slurm cluster — standalone tutorial." name="description" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/white.min.css" id="theme" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/highlight/monokai.min.css" rel="stylesheet" />
@@ -51,7 +51,7 @@
                             <div class="support-card">
                                 <h3>Tutorial 1</h3>
                                 <p style="font-size:0.7em; margin-bottom:0.5em;">Nextflow &amp; WDL/Cromwell</p>
-                                <span>Pipelines on SLURM →</span>
+                                <span>Pipelines on Slurm →</span>
                             </div>
                         </a>
                     </div>
@@ -82,20 +82,20 @@
                             <h3 style="margin-top:0.6em;">Nextflow</h3>
                             <ul>
                                 <li>Groovy-based DSL: <code>process</code>, <code>workflow</code>, channels</li>
-                                <li>SLURM integration via <code>nextflow.config</code></li>
+                                <li>Slurm integration via <code>nextflow.config</code></li>
                                 <li>A complete FASTQ processing pipeline example</li>
                             </ul>
                             <h3 style="margin-top:0.6em;">WDL / Cromwell</h3>
                             <ul>
                                 <li>Formal typed language: <code>task</code>, <code>scatter</code>, <code>workflow</code></li>
-                                <li>SLURM backend via HOCON configuration</li>
+                                <li>Slurm backend via HOCON configuration</li>
                                 <li>An astronomical image reduction pipeline example</li>
                             </ul>
                         </div>
                         <div class="col">
                             <h3>Prerequisites</h3>
                             <ul>
-                                <li>Sessions 1–3 complete (especially SLURM basics from S1)</li>
+                                <li>Sessions 1–3 complete (especially Slurm basics from S1)</li>
                                 <li>Java installed on the cluster (<code>module add java</code>)</li>
                                 <li>Nextflow and Cromwell installed to <code>~/bin/</code></li>
                             </ul>
@@ -105,7 +105,7 @@
                                 dependencies, or need resumability.
                             </div>
                             <div class="info-box tip" style="margin-top:0.5em;">
-                                <strong>When to use direct SLURM:</strong> For single, simple jobs
+                                <strong>When to use direct Slurm:</strong> For single, simple jobs
                                 without dependencies, <code>sbatch</code> is faster and simpler.
                                 Workflows shine at scale.
                             </div>

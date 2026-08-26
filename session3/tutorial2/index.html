@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Tutorial 2: Resource Profiling — Session 3 | ilifu User Training</title>
-    <meta content="Profile SLURM jobs with sstat, sacct, seff, and htop on the ilifu cluster." name="description" />
+    <meta content="Profile Slurm jobs with sstat, sacct, seff, and htop on the ilifu cluster." name="description" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
@@ -34,7 +34,7 @@
             <p>This tutorial briefly outlines how to profile running or previously run jobs, for the purpose of making efficient use of resources on the ilifu facility. It is based on the <a href="https://docs.ilifu.ac.za/#/tech_docs/resource_allocation">resource allocation guide</a>, where you can find much more information, in addition to the recordings and slides available on the <a href="https://www.ilifu.ac.za/latest-training">ilifu website</a>.</p>
 
             <h3>Why profile your jobs?</h3>
-            <p>When you submit a SLURM job, you request resources upfront: CPUs, memory, and wall-time. But how much did you actually use?</p>
+            <p>When you submit a Slurm job, you request resources upfront: CPUs, memory, and wall-time. But how much did you actually use?</p>
             <ul>
                 <li>Over-requesting memory blocks those resources for others</li>
                 <li>Over-requesting wall-time lowers your priority in the queue</li>
@@ -59,7 +59,7 @@
 
         <section class="tutorial-section">
             <h2>Submit Job</h2>
-            <p>After cloning this repo, create the logs directory (<code>mkdir logs</code>). Submit <code>initialise_array.sbatch</code> to the SLURM queue:</p>
+            <p>After cloning this repo, create the logs directory (<code>mkdir logs</code>). Submit <code>initialise_array.sbatch</code> to the Slurm queue:</p>
             <pre><code class="language-bash">sbatch initialise_array.sbatch</code></pre>
             <p>Store the job ID that is output when you run the job (e.g. 2605138) as an environment variable:</p>
             <pre><code class="language-bash">jobid=2605138</code></pre>
@@ -101,7 +101,7 @@ htop -u $USER</code></pre>
             <h3>Using <code>seff</code></h3>
             <p>List the efficiency of your job's use of compute resources with:</p>
             <pre><code class="language-bash">seff $jobid</code></pre>
-            <p>This should list a moderate to high memory efficiency (≥50%, depending on how close the maximum memory usage occurred to when SLURM samples it every 20 seconds), but low CPU efficiency, which is penalised due to our wall-time being longer than necessary (but useful for allowing time for live profiling).</p>
+            <p>This should list a moderate to high memory efficiency (≥50%, depending on how close the maximum memory usage occurred to when Slurm samples it every 20 seconds), but low CPU efficiency, which is penalised due to our wall-time being longer than necessary (but useful for allowing time for live profiling).</p>
             <p>To view the effect of the CPU efficiency decreasing, submit the job again and watch the output of <code>seff</code>:</p>
             <pre><code class="language-bash">watch seff $jobid</code></pre>
         </section>
@@ -120,7 +120,7 @@ htop -u $USER</code></pre>
 
         <section class="tutorial-section">
             <h2>Accounting Groups</h2>
-            <p>Each project supported on ilifu has a corresponding SLURM accounting group, against which resource usage is charged. If you are a member of multiple projects on the ilifu cluster, it is important to select the correct project accounting group when submitting a job.</p>
+            <p>Each project supported on ilifu has a corresponding Slurm accounting group, against which resource usage is charged. If you are a member of multiple projects on the ilifu cluster, it is important to select the correct project accounting group when submitting a job.</p>
 
             <h3>List your accounting groups</h3>
             <pre><code class="language-bash">sacctmgr show user $USER cluster=ilifu-slurm2021 -s format=account%25</code></pre>
@@ -132,7 +132,7 @@ htop -u $USER</code></pre>
             <pre><code class="language-bash">sacctmgr modify user name=${USER} set DefaultAccount=&lt;account&gt;</code></pre>
 
             <h3>Specify account when submitting a job</h3>
-            <p>Your account can be specified within the SLURM parameter <code>--account</code> (following <code>#SBATCH</code> within sbatch jobs):</p>
+            <p>Your account can be specified within the Slurm parameter <code>--account</code> (following <code>#SBATCH</code> within sbatch jobs):</p>
             <pre><code class="language-bash">#SBATCH --account=b05-pipelines-ag</code></pre>
 
             <h3>Next</h3>

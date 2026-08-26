@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Tutorial 3: High-throughput Jobs — Session 3 | ilifu User Training</title>
-    <meta content="Improve resource efficiency by splitting large jobs into smaller ones and using SLURM job dependencies (afterok)." name="description" />
+    <meta content="Improve resource efficiency by splitting large jobs into smaller ones and using Slurm job dependencies (afterok)." name="description" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
@@ -56,8 +56,8 @@
         </section>
 
         <section class="tutorial-section">
-            <h2>Submit Combined Script as a SLURM Job</h2>
-            <p>After cloning this repo, first create the logs directory (<code>mkdir logs</code>). Submit <code>slurm_script_combined.sbatch</code> to the SLURM queue:</p>
+            <h2>Submit Combined Script as a Slurm Job</h2>
+            <p>After cloning this repo, first create the logs directory (<code>mkdir logs</code>). Submit <code>slurm_script_combined.sbatch</code> to the Slurm queue:</p>
             <pre><code class="language-bash">sbatch slurm_script_combined.sbatch</code></pre>
             <p>Store the job ID that is output when you run the combined job (e.g. 9418176) as an environment variable:</p>
             <pre><code class="language-bash">jobid_comb=9418176</code></pre>

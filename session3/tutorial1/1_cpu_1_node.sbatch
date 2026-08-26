@@ -8,7 +8,7 @@
 #SBATCH --output=logs/%x-%j.out
 #SBATCH --error=logs/%x-%j.err
 
-echo "Submitting SLURM job: simple_mpi.py using 1 core & 1 node"
+echo "Submitting Slurm job: simple_mpi.py using 1 core & 1 node"
 module add openmpi/5.0.3
 source .venv/bin/activate
 mpirun python simple_mpi.py

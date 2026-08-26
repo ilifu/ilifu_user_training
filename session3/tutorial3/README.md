@@ -17,9 +17,9 @@ The second script is the main calculation for the project and mainly makes use o
 We have also created the sbatch files for these scripts, with roughly resource requirements. These are saved as 
 `slurm_script1_setup.sbatch`, `slurm_script2_calc.sbatch` and `slurm_script_combined.sbatch`. 
 
-## Submit Combined Script as a SLURM Job
+## Submit Combined Script as a Slurm Job
 
-After cloning this repo, first create the logs directory (`mkdir logs`). Submit `slurm_script_combined.sbatch` to the SLURM queue:
+After cloning this repo, first create the logs directory (`mkdir logs`). Submit `slurm_script_combined.sbatch` to the Slurm queue:
 
 ```bash
 sbatch slurm_script_combined.sbatch

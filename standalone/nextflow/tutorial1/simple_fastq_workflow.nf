@@ -6,7 +6,7 @@
 // This workflow demonstrates:
 // - Task definition with input/output
 // - Connecting tasks via pipes
-// - SLURM resource configuration
+// - Slurm resource configuration
 // - File publishing
 
 // Define task 1: Trim sequences

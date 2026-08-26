@@ -31,10 +31,10 @@
 
         <section class="tutorial-section">
             <h2>What is Jupyter on ilifu?</h2>
-            <p>ilifu provides <strong>JupyterHub</strong> — a multi-user Jupyter environment that runs your notebooks directly on the HPC cluster. You access it through your browser; the notebook kernel runs on a compute node allocated by SLURM.</p>
+            <p>ilifu provides <strong>JupyterHub</strong> — a multi-user Jupyter environment that runs your notebooks directly on the HPC cluster. You access it through your browser; the notebook kernel runs on a compute node allocated by Slurm.</p>
             <ul>
                 <li>Access via the <strong>ilifu portal</strong> — no local installation needed</li>
-                <li>Your notebook runs on a <strong>compute node</strong> allocated by SLURM</li>
+                <li>Your notebook runs on a <strong>compute node</strong> allocated by Slurm</li>
                 <li>Full access to cluster storage, modules, and compute resources</li>
                 <li>Supports Python, R, and custom virtual environment kernels</li>
             </ul>
@@ -43,8 +43,8 @@
             </div>
 
             <h3>Architecture</h3>
-            <p>When you start a session on JupyterHub, SLURM allocates a compute node and the Jupyter kernel runs there — not on the login node.</p>
-            <pre><code class="language-text">Your Browser → JupyterHub portal → SLURM Scheduler → Compute Node
+            <p>When you start a session on JupyterHub, Slurm allocates a compute node and the Jupyter kernel runs there — not on the login node.</p>
+            <pre><code class="language-text">Your Browser → JupyterHub portal → Slurm Scheduler → Compute Node
                                                         (Jupyter kernel runs here)</code></pre>
         </section>
 
@@ -59,9 +59,9 @@
 
             <h3>Step 2 — Select a server profile</h3>
             <ul>
-                <li>Choose CPUs, memory, and runtime (SLURM will allocate accordingly)</li>
-                <li>Click <strong>Start</strong> — your session is queued as a SLURM job</li>
-                <li>Wait for the server to start; this may take a minute while SLURM queues and schedules the job</li>
+                <li>Choose CPUs, memory, and runtime (Slurm will allocate accordingly)</li>
+                <li>Click <strong>Start</strong> — your session is queued as a Slurm job</li>
+                <li>Wait for the server to start; this may take a minute while Slurm queues and schedules the job</li>
             </ul>
 
             <h3>Step 3 — Open the tutorial notebook</h3>
@@ -110,7 +110,7 @@
             <h3>Shell Commands in Notebooks</h3>
             <p>Prefix any shell command with <code>!</code> to run it from a notebook cell:</p>
             <pre><code class="language-python">!ls                    # list files
-!squeue -u $USER       # check your SLURM jobs
+!squeue -u $USER       # check your Slurm jobs
 !cat data/sample.txt   # print file contents</code></pre>
             <p>Mix Python and shell output in the same notebook for interactive exploration.</p>
 
@@ -136,7 +136,7 @@
         <section class="tutorial-section">
             <h2>Next Steps</h2>
             <ul>
-                <li><a href="../tutorial2/">Session 1, Tutorial 2</a> — SLURM job submission basics: submit your first batch job</li>
+                <li><a href="../tutorial2/">Session 1, Tutorial 2</a> — Slurm job submission basics: submit your first batch job</li>
                 <li><a href="../../session2/tutorial1/">Session 2, Tutorial 1</a> — Create a Python virtual environment and register it as a Jupyter kernel</li>
                 <li><a href="../">← Back to Session 1</a></li>
             </ul>

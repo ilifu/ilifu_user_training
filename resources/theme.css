@@ -82,6 +82,9 @@
 .slide-content {
     width: 100%;
     flex: 1;
+    /* Allow shrinking below content height so flex:1 children (e.g. asciinema
+       players) are bounded by the slide instead of overflowing past the footer */
+    min-height: 0;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -278,6 +281,9 @@
 
 .columns .col {
     flex: 1;
+    /* min-width:auto would let wide content (code, asciinema) grab extra width;
+       force equal columns and let the content scale down instead */
+    min-width: 0;
     text-align: left;
 }
 

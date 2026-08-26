@@ -1,0 +1,340 @@
+/* page.css — styles for static (non-reveal) HTML pages.
+   Loads after theme.css and consumes the same --brand-* CSS variables. */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--brand-text);
+    background: var(--brand-light);
+    min-height: 100vh;
+}
+
+a { color: var(--brand-link); }
+
+h1, h2, h3 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    color: var(--brand-blue);
+    letter-spacing: -0.02em;
+}
+
+/* Page wrapper — offset from right sidebar */
+.page-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2.5em 120px 2.5em 3em;
+}
+
+/* Header */
+.page-header {
+    display: flex;
+    align-items: center;
+    gap: 1.2em;
+    padding-bottom: 1em;
+    border-bottom: 3px solid var(--brand-rule);
+    margin-bottom: 1.5em;
+}
+
+.page-header img {
+    height: 52px;
+    object-fit: contain;
+}
+
+.page-header h1 {
+    font-size: 1.9em;
+    margin: 0;
+}
+
+.page-intro {
+    font-size: 1em;
+    color: var(--brand-subtle);
+    margin: 0 0 2em 0;
+    max-width: 680px;
+    line-height: 1.6;
+}
+
+/* Subsection heading (PRESENTATIONS / RELATED TUTORIALS) */
+.content-subhead {
+    font-size: 0.72em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--brand-blue);
+    margin: 0 0 0.6em 0;
+}
+
+/* Presentation list */
+.pres-list {
+    margin: 0 0 1.5em 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.pres-item {
+    padding-left: 1em;
+    border-left: 2px solid var(--brand-rule);
+}
+
+.pres-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    flex-wrap: wrap;
+    margin-bottom: 0.35em;
+}
+
+.pres-name {
+    font-size: 0.88em;
+    font-weight: 600;
+    color: var(--brand-text);
+    margin-right: 0.2em;
+}
+
+.pres-topics {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2em;
+    font-size: 0.82em;
+    color: var(--brand-subtle);
+}
+
+.pres-topics li::before {
+    content: '–';
+    margin-right: 0.4em;
+    color: var(--brand-rule);
+}
+
+/* Recording button */
+.btn-recording {
+    display: inline-block;
+    padding: 0.4em 0.9em;
+    background: transparent;
+    color: #c0392b;
+    border: 1.5px solid #c0392b;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.78em;
+    font-weight: 600;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn-recording:hover {
+    background: #c0392b;
+    color: #fff;
+}
+
+/* Tutorial list */
+.tutorial-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5em 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3em;
+    font-size: 0.85em;
+    color: var(--brand-subtle);
+}
+
+.tutorial-list li::before {
+    content: '→';
+    margin-right: 0.5em;
+    color: var(--brand-rule);
+}
+
+.tutorial-list a {
+    color: var(--brand-link);
+    text-decoration: none;
+}
+
+.tutorial-list a:hover {
+    text-decoration: underline;
+}
+
+.btn-primary {
+    display: inline-block;
+    padding: 0.5em 1.1em;
+    background: var(--brand-blue);
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.82em;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover {
+    background: var(--brand-blue-dark);
+    color: #fff;
+}
+
+.btn-secondary {
+    display: inline-block;
+    padding: 0.5em 1.1em;
+    background: transparent;
+    color: var(--brand-blue);
+    border: 1.5px solid var(--brand-blue);
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.82em;
+    font-weight: 600;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn-secondary:hover {
+    background: var(--brand-blue);
+    color: #fff;
+}
+
+.btn-pdf {
+    display: inline-block;
+    padding: 0.5em 1.1em;
+    background: transparent;
+    color: #555;
+    border: 1.5px solid #bbb;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.82em;
+    font-weight: 600;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.btn-pdf:hover {
+    background: #f0f0f0;
+    border-color: #888;
+    color: #333;
+}
+
+/* Session sections */
+.session-section {
+    margin-bottom: 2.5em;
+}
+
+.session-heading {
+    font-size: 1.25em;
+    color: var(--brand-blue);
+    margin: 0 0 1em 0;
+    padding-bottom: 0.4em;
+    border-bottom: 2px solid var(--brand-rule);
+}
+
+.session-heading span {
+    font-weight: 400;
+    font-size: 0.85em;
+    color: var(--brand-subtle);
+    margin-left: 0.4em;
+}
+
+/* Inline code */
+.inline-code {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.9em;
+    background: #eef2f7;
+    padding: 0.1em 0.3em;
+    border-radius: 3px;
+    color: var(--brand-blue-dark);
+    border: 1px solid var(--brand-border);
+}
+
+/* Footer */
+.page-footer {
+    border-top: 2px solid var(--brand-rule);
+    padding-top: 1.2em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1em;
+    font-size: 0.8em;
+    color: var(--brand-subtle);
+}
+
+.footer-logos {
+    display: flex;
+    align-items: center;
+    gap: 1.2em;
+}
+
+.footer-logos img {
+    height: 32px;
+    object-fit: contain;
+    opacity: 0.8;
+}
+
+.footer-contact {
+    display: flex;
+    gap: 1.5em;
+}
+
+.footer-contact a {
+    color: var(--brand-subtle);
+    text-decoration: none;
+}
+
+.footer-contact a:hover {
+    color: var(--brand-blue);
+}
+
+@media (max-width: 768px) {
+    .page-wrapper {
+        padding: 1.5em 1.5em 1.5em 1.5em;
+    }
+    .logo-sidebar {
+        display: none;
+    }
+}
+
+/* Tutorial page content */
+pre {
+    font-family: 'Fira Code', monospace;
+    background: #272822;
+    padding: 1em 1.2em;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 0.8em 0;
+    line-height: 1.5;
+}
+
+pre code {
+    font-size: 0.82em;
+    background: transparent;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    color: inherit;
+}
+
+:not(pre) > code {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.9em;
+    background: #eef2f7;
+    padding: 0.1em 0.3em;
+    border-radius: 3px;
+    color: var(--brand-blue-dark);
+    border: 1px solid var(--brand-border);
+}
+
+.tutorial-section {
+    margin-bottom: 2.5em;
+    padding-top: 1.5em;
+    border-top: 1px solid var(--brand-rule);
+}
+
+.tutorial-section:first-of-type {
+    border-top: none;
+    padding-top: 0;
+}
+
+.step-block {
+    border-left: 3px solid var(--brand-blue);
+    padding: 0.6em 0.6em 0.6em 1em;
+    margin: 0.8em 0;
+    background: #f8fafc;
+    border-radius: 0 4px 4px 0;
+}

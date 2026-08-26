@@ -8,9 +8,9 @@
 #SBATCH --output=logs/%x-%j.out
 #SBATCH --error=logs/%x-%j.err
 
-echo "Submitting SLURM job: simple_mpi.py using 8 cores & 2 nodes"
+echo "Submitting Slurm job: simple_mpi.py using 8 cores & 2 nodes"
 module add openmpi/5.0.3
 
 source .venv/bin/activate
 
-mpirun python simple_mpi.py
+mpirun --mca btl tcp,self python simple_mpi.py  # force tcp

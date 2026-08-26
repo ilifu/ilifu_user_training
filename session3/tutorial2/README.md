@@ -4,7 +4,7 @@ This tutorial briefly outlines how to profile running or previously run jobs, fo
 
 ## Submit job
 
-After cloning this repo, create the logs directory (`mkdir logs`). Submit `initialise_array.sbatch` to the SLURM queue:
+After cloning this repo, create the logs directory (`mkdir logs`). Submit `initialise_array.sbatch` to the Slurm queue:
 
 ```bash
 sbatch initialise_array.sbatch
@@ -54,7 +54,7 @@ Now list the efficiency of your job’s use of compute resources with:
 seff $jobid
 ```
 
-This should list a moderate to high memory efficiency (>=50%, depending on how close the maximum memory usage occurred to when SLURM samples it every 20 seconds), but low CPU efficiency, which is penalised due to our wall-time being longer than necessary (but useful for allowing time for live profiling). To view the effect of the CPU efficiency decreasing, submit the job again and watch the output of `seff`:
+This should list a moderate to high memory efficiency (>=50%, depending on how close the maximum memory usage occurred to when Slurm samples it every 20 seconds), but low CPU efficiency, which is penalised due to our wall-time being longer than necessary (but useful for allowing time for live profiling). To view the effect of the CPU efficiency decreasing, submit the job again and watch the output of `seff`:
 
 ```bash
 watch seff $jobid
@@ -78,7 +78,7 @@ sacct -X --name=initialise_array --starttime=2022-01-01 --endtime=2022-04-12
 
 ## Accounting Groups
 
-Each project supported on ilifu has a corresponding SLURM accounting group, against which resource usage is charged. If you are a member of multiple projects on the ilifu cluster, it is important to select the correct project accounting group when submitting a job. You can list your accounting groups, corresponding to the different ilifu projects in which you’re involved, using the following:
+Each project supported on ilifu has a corresponding Slurm accounting group, against which resource usage is charged. If you are a member of multiple projects on the ilifu cluster, it is important to select the correct project accounting group when submitting a job. You can list your accounting groups, corresponding to the different ilifu projects in which you’re involved, using the following:
 
 ```bash
 sacctmgr show user $USER cluster=ilifu-slurm2021 -s format=account%25
@@ -96,4 +96,4 @@ You can change your default account using:
 sacctmgr modify user name=${USER} set DefaultAccount=<account>
 ```
 
-When submitting a job, your account can be specified within the SLURM parameter `--account` (following `#SBATCH` within sbatch jobs). For example: `--account=b05-pipelines-ag`
+When submitting a job, your account can be specified within the Slurm parameter `--account` (following `#SBATCH` within sbatch jobs). For example: `--account=b05-pipelines-ag`

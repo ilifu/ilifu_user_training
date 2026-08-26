@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Session 3 — Parallel Computing with MPI | ilifu User Training</title>
-    <meta content="Session 3: MPI scaling demos, resource profiling with seff/sacct, and high-throughput job dependencies." name="description" />
+    <title>Session 3 — Parallelism | ilifu User Training</title>
+    <meta content="Session 3: parallel scaling demos, resource profiling with seff/sacct, and high-throughput job dependencies." name="description" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/white.min.css" id="theme" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/highlight/monokai.min.css" rel="stylesheet" />
@@ -31,7 +31,8 @@
                     <img src="../assets/ilifu_logo.svg" alt="ilifu" style="height:60px;" />
                 </div>
                 <h1>Session 3</h1>
-                <p class="subtitle">Parallel Computing with MPI</p>
+                <p class="subtitle">Parallelism</p>
+                <p class="meta">Scale it → measure it → restructure it</p>
                 <div class="meta">
                     <strong>Part of:</strong> ilifu User Training &nbsp;|&nbsp;
                     <a href="../">← Back to all sessions</a>
@@ -42,7 +43,7 @@
             <section>
                 <div class="slide-content">
                     <div class="slide-header">
-                        <span style="font-weight:700; font-size:0.75em; color:var(--brand-blue);">Session 3 — Parallel Computing with MPI</span>
+                        <span style="font-weight:700; font-size:0.75em; color:var(--brand-blue);">Session 3 — Parallelism</span>
                         <img src="../assets/ilifu_logo.svg" alt="ilifu" />
                     </div>
                     <h2>Session 3 Tutorials</h2>
@@ -50,7 +51,7 @@
                         <a href="tutorial1/" style="text-decoration:none;">
                             <div class="support-card">
                                 <h3>Tutorial 1</h3>
-                                <p style="font-size:0.7em; margin-bottom:0.5em;">MPI Scaling Demo</p>
+                                <p style="font-size:0.7em; margin-bottom:0.5em;">Parallel Scaling</p>
                                 <span>Python &amp; C++ parallelism →</span>
                             </div>
                         </a>
@@ -65,7 +66,7 @@
                             <div class="support-card">
                                 <h3>Tutorial 3</h3>
                                 <p style="font-size:0.7em; margin-bottom:0.5em;">High-throughput Jobs</p>
-                                <span>Split jobs &amp; afterok →</span>
+                                <span>Split jobs &amp; dependencies (<code>afterok</code>) →</span>
                             </div>
                         </a>
                     </div>
@@ -80,19 +81,19 @@
             <section>
                 <div class="slide-content">
                     <div class="slide-header">
-                        <span style="font-weight:700; font-size:0.75em; color:var(--brand-blue);">Session 3 — Parallel Computing with MPI</span>
+                        <span style="font-weight:700; font-size:0.75em; color:var(--brand-blue);">Session 3 — Parallelism</span>
                         <img src="../assets/ilifu_logo.svg" alt="ilifu" />
                     </div>
                     <h2>What You'll Learn</h2>
                     <div class="columns">
                         <div class="col">
-                            <h3>Tutorial 1 — MPI Scaling</h3>
+                            <h3>Tutorial 1 — Parallel Scaling</h3>
                             <ul>
-                                <li>MPI concepts: <code>Scatterv</code>, <code>Reduce</code>, ranks</li>
+                                <li>MPI (Message Passing Interface) concepts: <code>Scatterv</code>, <code>Reduce</code>, ranks</li>
                                 <li>Setup: <code>module load openmpi</code> + <code>uv venv</code></li>
-                                <li>4 Python demos: 1→4→8 CPUs (1 node), then 8 CPUs (2 nodes)</li>
-                                <li>C++ hybrid MPI + OpenMP demos</li>
-                                <li><strong>Key lesson:</strong> network latency kills multi-node performance</li>
+                                <li>Four configurations of one Python program: 1, 4 and 8 MPI processes on one node, then 8 across 2 nodes</li>
+                                <li>C++ demos comparing pure MPI, OpenMP and hybrid MPI+OpenMP</li>
+                                <li><strong>Key lesson:</strong> inter-node communication overhead can outweigh the gain — keep jobs on one node when they fit</li>
                             </ul>
                             <h3 style="margin-top:0.6em;">Tutorial 2 — Profiling</h3>
                             <ul>
@@ -100,24 +101,24 @@
                                 <li>Post-job analysis: <code>sacct</code>, <code>seff</code></li>
                                 <li>Wall-time efficiency and memory efficiency</li>
                             </ul>
-                            <h3 style="margin-top:0.6em;">Tutorial 3 — Efficient High-throughput</h3>
+                            <h3 style="margin-top:0.6em;">Tutorial 3 — Efficient High-throughput Jobs</h3>
                             <ul>
-                                <li>Combined job (28% memory efficiency) vs. split jobs (75% + 70%)</li>
-                                <li>SLURM job dependencies with <code>afterok</code></li>
+                                <li>Example result: combined job at 28% memory efficiency vs. split jobs at 75–70%</li>
+                                <li>Slurm job dependencies with <code>afterok</code></li>
                                 <li>Automatic dependency submission scripts</li>
                             </ul>
                         </div>
                         <div class="col">
                             <h3>Prerequisites</h3>
                             <ul>
-                                <li>Sessions 1 &amp; 2 complete</li>
-                                <li><code>uv</code> available on the cluster</li>
-                                <li>C compiler for Tutorial 1 C++ demo (<code>mpic++</code>)</li>
+                                <li>Sessions 1 &amp; 2, or equivalent experience</li>
+                                <li>Setup provided on ilifu: <code>uv</code> and the OpenMPI C++ compiler wrapper (<code>mpic++</code>)</li>
                             </ul>
                             <div class="info-box" style="margin-top:0.8em;">
-                                <strong>Cluster context:</strong> ilifu uses Gigabit Ethernet between nodes,
-                                not InfiniBand. The multi-node scaling results in Tutorial 1 reflect this
-                                real-world constraint — a deliberate teaching point.
+                                <strong>Cluster context:</strong> ilifu uses Gigabit Ethernet between nodes —
+                                high bandwidth, but not the low-latency InfiniBand found on some HPC clusters.
+                                The multi-node scaling results in Tutorial 1 reflect this real-world
+                                constraint — a deliberate teaching point.
                             </div>
                             <div class="info-box tip" style="margin-top:0.5em;">
                                 <strong>Next:</strong> the standalone

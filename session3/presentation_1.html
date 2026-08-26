@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Parallelism — ilifu Online Training Session 3</title>
-    <meta content="Parallelism tutorial for ilifu HPC cluster users. Session 3, Tutorial 1."
+    <meta content="Parallelism on the ilifu HPC cluster: processes, threads, MPI and Slurm. Session 3."
         name="description" />
     <!-- Reveal.js -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css" rel="stylesheet" />
@@ -44,24 +44,13 @@
             <!-- SLIDE 1: Title                   -->
             <!-- =============================== -->
             <section class="title-slide">
-<!--                <div class="slide-header">-->
-<!--                    <h1>ilifu Online Training</h1>-->
-<!--                </div>-->
-<!--                <div class="slide-content">-->
-<!--                    <h1 class="subtitle" style="text-align: center;">Session 1: Introduction to Slurm</h1>-->
-<!--                    <h1 class="subtitle" style="text-align: center;"><small>24 February 2026</small></h1>-->
-<!--                    <h2 class="meta" style="text-align: center;">-->
-<!--                        <small>Dane Kennedy · ilifu Bioinformatics Support<br />-->
-<!--                            University of Cape Town-->
-<!--                        </small>-->
-<!--                    </h2>-->
-<!--                </div>-->
-
                 <div class="slide-header">
                     <h1><img src="../assets/ilifu_logo.svg" alt="ilifu" style="height:80px;" /> Online Training</h1>
                 </div>
                 <div class="slide-content">
                     <h1 class="subtitle" style="text-align: center;">Session 3: Parallelism</h1>
+                    <h2 class="subtitle" style="text-align: center; color: var(--brand-subtle);">
+                        <small>Choosing processes, threads, CPUs and nodes on ilifu</small></h2>
                     <h1 class="subtitle" style="text-align: center;"><small>8 September 2026</small></h1>
                     <h2 class="meta" style="text-align: center;">
                         <small>Dane Kennedy · ilifu Bioinformatics Support<br />
@@ -69,36 +58,62 @@
                         </small>
                     </h2>
                 </div>
-
                 <div class="slide-footer">
                     <a href="https://ilifu.github.io/ilifu_user_training/session3/presentation_1.html">View on github.io</a>
                     <a href="presentation_1.html?print-pdf">printable version</a>
                 </div>
                 <aside class="notes">
-                    Good morning everyone and thanks for attending our training session. My name is Dane Kennedy and I'm employed at ilifu as the bioinformatics support contact. In addition to providing technical support for the bioinformatics projects, I'm also involved with maintaining the slurm cluster and administering various portals like the users dot ilifu and helpdesk websites.
+                    Good morning everyone and thanks for attending our training session. My name is Dane Kennedy and I'm the bioinformatics support contact at ilifu.
 
-                    DToday I'll be talking about parallelism: what is parallelism in the computing world; what are our options to achieve parallelism and how do we do it on ilifu's slurm cluster.
+                    Today I'll be talking about parallelism: what parallelism is, which models are available, and how to request the matching resources on ilifu's Slurm cluster. By the end you should be able to choose the right combination of processes, threads, CPUs and nodes for your own software.
                 </aside>
             </section>
 
             <!-- =============================== -->
-            <!-- SLIDE 2: ilifu components        -->
-            <!-- (merged original slides 2 + 3)  -->
+            <!-- SLIDE 2: Learning outcomes       -->
             <!-- =============================== -->
             <section>
+                <div class="slide-header">
+                    <img alt="Slurm" src="../assets/slurm_logo.svg" />
+                    <h3>By the end of this session&hellip;</h3>
+                    <img alt="ilifu" src="../assets/ilifu_logo.svg" />
+                </div>
                 <div class="slide-content">
-                    <div class="slide-header">
-                        <span style="font-weight:700; font-size:0.75em; color:var(--brand-blue);">Session 3 — Parallelism</span>
-                        <img alt="ilifu" src="../assets/ilifu_logo.svg" />
-                    </div>
-                    <h2>ilifu Components (review)</h2>
+                    <p>&hellip;you will be able to:</p>
+                    <ul>
+                        <li class="fragment">distinguish processes, threads, tasks, CPUs and nodes;</li>
+                        <li class="fragment">request resources for serial, threaded, MPI and hybrid programs;</li>
+                        <li class="fragment">measure speedup and recognise communication overhead; and</li>
+                        <li class="fragment">decide when (and when not) to use multiple nodes on ilifu.</li>
+                    </ul>
+                </div>
+                <div class="slide-footer">
+                    <a href="https://docs.ilifu.ac.za/#/tech_docs/running_jobs">Running jobs on ilifu</a>
+                </div>
+                <aside class="notes">
+                    These are the four concrete things you should be able to do by the end of this session. Everything we cover builds towards them, and we'll return to this list at the end.
+
+                    The central question for the whole session is: when will more computing resources actually make my program faster?
+                </aside>
+            </section>
+
+            <!-- =============================== -->
+            <!-- SLIDE 3: ilifu components        -->
+            <!-- =============================== -->
+            <section>
+                <div class="slide-header">
+                    <img alt="Slurm" src="../assets/slurm_logo.svg" />
+                    <h3>ilifu Components (review)</h3>
+                    <img alt="ilifu" src="../assets/ilifu_logo.svg" />
+                </div>
+                <div class="slide-content">
                     <div class="columns">
                         <div class="col">
                             <div class="fragment">
                                 <h3>Login node</h3>
                                 <ul>
                                     <li>Where you land when you log in (also known as "head node")</li>
-                                    <li>Run SLURM commands / submit jobs, but <strong>not</strong> software or heavy processes</li>
+                                    <li>Run Slurm commands / submit jobs, but <strong>not</strong> software or heavy processes</li>
                                 </ul>
                             </div>
                             <div class="fragment">
@@ -106,11 +121,13 @@
                                 <ul>
                                     <li>Where your processes run (also known as "worker nodes")</li>
                                     <li>Access software via modules / Singularity containers</li>
-                                    <li>1 node = 32 CPUs, ~240 GiB RAM (Main partition)</li>
+                                    <li>1 node = 32 CPUs, ~240 GiB RAM (most Main partition nodes)</li>
                                 </ul>
                             </div>
+                        </div>
+                        <div class="col">
                             <div class="fragment">
-                                <h3 style="margin-top:0.5em;">Storage</h3>
+                                <h3>Storage</h3>
                                 <ul>
                                     <li>Permanent distributed storage (CephFS), accessible from all nodes</li>
                                     <li>Your home directory and project directories live here</li>
@@ -119,121 +136,98 @@
                             <div class="fragment">
                                 <h3 style="margin-top:0.5em;">Network</h3>
                                 <ul>
-                                    <li>Fast Ethernet connects all nodes — <strong>no InfiniBand</strong></li>
-                                    <li>This limits multi-node scaling (more on this later)</li>
+                                    <li>Gigabit Ethernet connects all nodes: high bandwidth, but <strong>not low latency</strong> — <strong>no InfiniBand</strong></li>
+                                    <li>This limits multi-node scaling for communication-heavy jobs (more on this later)</li>
                                 </ul>
                             </div>
+                            <div class="info-box tip fragment" style="margin-top:0.5em;">
+                                <strong>Partitions:</strong> Main is the default; HighMem and GPU exist for bigger memory
+                                and GPU work. Check live state with <code>sinfo</code> — full node specifications are in
+                                the reference table at the end of this presentation.
+                            </div>
                         </div>
-                        <div class="col fragment">
-                            <h3>Partitions — check with <code>sinfo</code></h3>
-                            <table>
-                                <thead>
-                                    <tr><th>Partition</th><th>Nodes</th><th>CPUs / node</th><th>RAM (usable)</th></tr>
-                                </thead>
-                                <tbody>
-                                    <tr><td>Main + Devel</td><td>~85</td><td>32</td><td>~240 GB</td></tr>
-                                    <tr><td>HighMem</td><td>8</td><td>32 / 96</td><td>503 GB / 1.5 TB</td></tr>
-                                    <tr><td>GPU</td><td>7</td><td>24–48</td><td>232–354 GB + GPUs</td></tr>
-                                    <tr><td>Jupyter</td><td colspan="3">Shared with GPU nodes</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="slide-footer">
-
                     </div>
                 </div>
+                <div class="slide-footer">
+                    <a href="https://docs.ilifu.ac.za/#/tech_docs/running_jobs?id=available-resources">Available Resources</a>
+                </div>
                 <aside class="notes">
-                    A quick review of ilifu's resources: while ilifu is a cloud computing facility, the bulk of what we have is dedicated to the computing machines and storage we provide on our slurm computing cluster. What is a computing cluster? A computing cluster is a collection of servers or nodes (those terms can be used interchangeably) that are combined to work together in a way that is more powerful than the sum of the individual parts. In this case the individual parts consist of:
+                    A quick review of ilifu's resources. A computing cluster is a collection of servers or nodes (those terms can be used interchangeably) that are combined to work together in a way that is more powerful than the sum of the individual parts. The parts are: a login node (your main interface to the cluster); the compute nodes (grouped into partitions, also known as queues); permanent shared storage; and a network connecting it all together.
 
-                    A login node (which is often the main interface you will be using to the cluster);
-                    the compute nodes (which are grouped together in what we call partitions, also known as queues);
-                    some permanent storage;
-                    and a fast network connecting that all together.
+                    Today I'll be using the "Main" partition, whose nodes are largely 32-core servers with between 230 and 250 GiB of RAM, depending on the specific node you end up on. We have something like 8 PiB of shared storage on our Ceph cluster.
 
-                    Today I'll be using the "Main" partition which has nodes which consist largely of 32-core/cpu servers with between 230 and 250 GiB of RAM (depending on the specific node you end up on).
+                    The network deserves a special mention because it matters for this session: our nodes are connected by Gigabit Ethernet. It has high bandwidth — it can move a lot of data quickly — but it is not a low-latency network like the InfiniBand you might find at the CHPC. That means it is not well suited to workloads that need a lot of very quick back-and-forth communication between nodes. I'll come back to this when we look at multi-node jobs.
 
-                    We have something like 8PiB of shared storage available on our Ceph cluster.
-
-                    And we have two different networks connecting nodes to each other; and nodes to storage. This is not a low latency network like you might find at the CHPC, but it does have a high bandwidth. What this means is that while it can transmit a large amount of data very quickly; it is not suitable for operations which require a lot of very quick communication between nodes. But I'll talk a bit more about this later.
-
-                    Just a quick note on the other partitions: So although the bulk of the computing power exists in the 85 compute nodes available on the Main partition, we do also have 8 High Memory nodes — six of which have around 500GiB available memory, a seventh with about 1TiB and the eighth has 1.5 TiB of ram (with 96 cores).
-
-                    Finally we have the GPU partition which has 7 GPU nodes (two of which are shared with Jupyter). These have various numbers and various flavours of GPUs in them.
+                    The full partition and node specifications are on a reference slide at the end — you don't need to memorise them.
                 </aside>
             </section>
 
             <!-- =============================== -->
-            <!-- SLIDE 3: What is Parallelism?   -->
-            <!-- (was slide 4)                   -->
+            <!-- SLIDE 4: What is Parallelism?   -->
             <!-- =============================== -->
             <section>
+                <div class="slide-header">
+                    <img alt="Slurm" src="../assets/slurm_logo.svg" />
+                    <h3>What is Parallelism?</h3>
+                    <img alt="ilifu" src="../assets/ilifu_logo.svg" />
+                </div>
                 <div class="slide-content">
-                    <div class="slide-header">
-                        <span style="font-weight:700; font-size:0.75em; color:var(--brand-blue);">Session 3 — Parallelism</span>
-                        <img alt="ilifu" src="../assets/ilifu_logo.svg" />
-                    </div>
-                    <h2>What is Parallelism?</h2>
                     <div class="info-box">
-                        <strong>Oxford definition for parallel processing:</strong><br/>
-                        a mode of operation in which a process is split into parts, which are executed simultaneously on different processors attached to the same computer [or different computers attached to the same cluster].
+                        <strong>Parallel computing</strong> performs multiple parts of a computation at the same time.
+                    </div>
+                    <div class="info-box tip fragment">
+                        It helps only when the work <strong>can be divided</strong> and the cost of
+                        <strong>coordinating the workers</strong> is small enough.
                     </div>
                     <ul>
                         <li class="fragment">A cluster includes many connected nodes, each with its own RAM &amp; CPUs</li>
                         <li class="fragment">A node = single computer / server / VM / machine / box</li>
-                        <li class="fragment">The work is partitioned into smaller jobs, sometimes with a partition of the dataset</li>
+                        <li class="fragment">The work is partitioned into smaller units of work, often by splitting the dataset</li>
                     </ul>
-                    <div class="slide-footer">
-                        <span><a href="https://en.wikipedia.org/wiki/Parallel_computing">Parallelism (Wikipedia)</a></span>
-                    </div>
+                </div>
+                <div class="slide-footer">
+                    <span><a href="https://en.wikipedia.org/wiki/Parallel_computing">Parallelism (Wikipedia)</a></span>
                 </div>
                 <aside class="notes">
-                    Modern data sets in both bioinformatics and astronomy have grown so large that it's becoming increasingly rare to be able to do meaningful research on our own
-                    PCs / laptops or even large individual servers we might find in our labs. We are usually limited by the amount of memory, CPU or storage available on these devices
-                    and that's when we need to look at larger resources such as a computing cluster and that's where we can really take advantage of parallelism. So what is parallelism?
+                    Modern data sets in both bioinformatics and astronomy have grown so large that it's becoming increasingly rare to be able to do meaningful research on our own PCs or laptops. We are usually limited by the memory, CPU or storage available on these devices, and that's when we need a computing cluster — and where we can really take advantage of parallelism.
 
-                    The Oxford definition is [read above]
+                    Parallel computing simply means performing multiple parts of a computation at the same time. The catch is that it only helps when the work can be divided, and when the cost of coordinating the workers doesn't swallow the benefit.
 
-                    We have several kinds of parallelism ranging from embarrassingly parallel problems where individual parts of a computation are not dependent on others — An example from
-                    radio astronomy could be where one is doing some signal processing in a volume to create a 3 dimensional image of
-                    some region in space, the individual pixels are, at least computationally, unrelated to one another. So if we're processing this data, these can be done independently of one another.
+                    An astronomy example: the raw data from a radio telescope such as MeerKAT can be partitioned into multiple spectral windows (SPWs), and each SPW processed simultaneously — this is what the processMeerKAT pipeline does during signal processing.
 
-                    Another good example of parallelism for astronomy would be to partition/split the full spectral resolution raw data (or just raw data) from a radio telescope such as MeerKat into multiple
-                    spectral windows (or SPWs) and process these SPWs in parallel instead of the full raw data. Each SPW is processed simultaneously and this is what the Process MeerKat pipeline does during the radio signal processing.
+                    A bioinformatics example: aligning sequencing reads to an existing genome — the reads can be processed independently, making the workload well suited to parallel execution.
 
-                    In bioinformatics one might be doing a genome assembly and part of this might be aligning reads to an existing genome — these can all be done independently and is ideal for doing in parallel.
-
-                    Another class of parallelism is where individual components are highly dependent on each other. An example from the bioinformatics world might be where we're doing a protein folding simulation where
-                    we're modelling individual atoms and how they're interacting with each other. So in this kind of simulation we typically break up our larger volume into smaller volumes, but we need to account for the interaction
-                    of molecules on the sides of these smaller volumes.
+                    There is also a harder class of problem where the parts are highly dependent on each other — for example a protein-folding simulation, where we break a volume into smaller volumes but must constantly account for interactions at the boundaries. Keep that example in mind: it's the kind of communication-heavy workload that behaves very differently on our network.
                 </aside>
             </section>
 
             <!-- =============================== -->
-            <!-- SLIDE 4: Serial vs Parallel     -->
-            <!-- (merged original slides 5 + 6) -->
+            <!-- SLIDE 5: Serial baseline        -->
             <!-- =============================== -->
             <section>
+                <div class="slide-header">
+                    <img alt="Slurm" src="../assets/slurm_logo.svg" />
+                    <h3>Serial vs Parallel — the serial baseline</h3>
+                    <img alt="ilifu" src="../assets/ilifu_logo.svg" />
+                </div>
                 <div class="slide-content">
-                    <div class="slide-header">
-                        <span style="font-weight:700; font-size:0.75em; color:var(--brand-blue);">Session 3 — Parallelism</span>
-                        <img alt="ilifu" src="../assets/ilifu_logo.svg" />
-                    </div>
-                    <h2>Serial vs Parallel Program</h2>
                     <div class="columns">
                         <div class="col">
-                            <h3>Serial: one step at a time</h3>
+                            <h3>One step at a time</h3>
                             <pre>
-<code class="language-python" data-line-numbers="1-5|1|2|3-4|3-4|3-4|3-4|3-4|3-4|5|1-5" data-fragment-index="0" data-trim="">
+<code class="language-python" data-line-numbers="1-5|1|2|3-4|5|1-5" data-fragment-index="0" data-trim="">
 grades = [50, 65, 82, 79, 48, 72]
 total = 0
 for grade in grades:
     total = total + grade
-average = total / number_of_grades
+average = total / len(grades)
 </code>
                             </pre>
                             <p>All instructions run sequentially on a single CPU.</p>
-                            <pre class="no-line-numbers"><code class="language-python" data-line-numbers="1-9|1|2|3|4|5|6|7|8|9|1-9" data-fragment-index="0" data-trim="">
+                        </div>
+                        <div class="col">
+                            <h3>Execution trace</h3>
+                            <pre class="no-line-numbers"><code class="language-plaintext" data-line-numbers="1-9|1|2|3|4|5|6|7|8|9|1-9" data-fragment-index="0" data-trim="">
 grades = [50, 65, 82, 79, 48, 72]
 total = 0
 total = 0 + 50 = 50
@@ -245,155 +239,146 @@ total = 324 + 72 = 396
 average = 396 / 6 = 66
 </code></pre>
                         </div>
+                    </div>
+                </div>
+                <div class="slide-footer">
+                </div>
+                <aside class="notes">
+                    Let's consider a very simple computation: the average of a set of grades. A serial program does one step at a time — six additions, one after the other, then a division. Only one CPU does any work, no matter how many the machine has.
+
+                    This is our baseline. The question is: how do we share this work between several workers?
+                </aside>
+            </section>
+
+            <!-- =============================== -->
+            <!-- SLIDE 6: Parallel version       -->
+            <!-- =============================== -->
+            <section>
+                <div class="slide-header">
+                    <img alt="Slurm" src="../assets/slurm_logo.svg" />
+                    <h3>Serial vs Parallel — split, process, combine</h3>
+                    <img alt="ilifu" src="../assets/ilifu_logo.svg" />
+                </div>
+                <div class="slide-content">
+                    <div class="columns">
                         <div class="col">
-                            <h3>Parallel: split → process → combine</h3>
+                            <h3>Each worker sums its chunk</h3>
                             <pre>
-<code class="language-python" data-line-numbers="1-5|1|2-3|4|5|1-5" data-fragment-index="11" data-trim="">
+<code class="language-python" data-line-numbers="1-5|1|2-3|4|5|1-5" data-fragment-index="0" data-trim="">
 grades = [50, 65, 82, 79, 48, 72]
-chunk = len(grades) // N  # choose N=3
-grades_part = grades[rank*chunk:(rank+1)*chunk]
-average_part = sum(grades_part) / len(grades_part)
-average = sum(all_averages) / N
+chunk = len(grades) // N  # choose N=3 workers
+grades_part = grades[worker_id*chunk:(worker_id+1)*chunk]
+partial_sum = sum(grades_part)
+average = sum(all_partial_sums) / len(grades)
 </code>
                             </pre>
-                            <p>All 3 workers process their chunk simultaneously.</p>
+                            <p>All 3 workers process their chunk simultaneously; one worker combines the partial sums.</p>
+                        </div>
+                        <div class="col">
+                            <h3>Execution trace</h3>
                             <pre class="no-line-numbers">
-<code class="language-python" data-line-numbers="1-11|1|2-5|6-9|10-11|1-11" data-fragment-index="11" data-trim="">
+<code class="language-plaintext" data-line-numbers="1-11|1|2-5|6-9|10-11|1-11" data-fragment-index="0" data-trim="">
 grades = [50, 65, 82, 79, 48, 72]
 # Split: each worker takes 2 consecutive grades
 W0: grades_part = [50, 65]
 W1: grades_part = [82, 79]
 W2: grades_part = [48, 72]
-# Process: all workers compute simultaneously
-W0: avg_part = 115/2 = 57.5
-W1: avg_part = 161/2 = 80.5
-W2: avg_part = 120/2 = 60.0
+# Process: all workers sum simultaneously
+W0: partial_sum = 115
+W1: partial_sum = 161
+W2: partial_sum = 120
 # Combine (W0):
-average = (57.5+80.5+60.0)/3 = 66
+average = (115 + 161 + 120) / 6 = 66
 </code>
                             </pre>
                         </div>
                     </div>
                     <div class="arch-diagram" style="margin-top:0.5em;">
-                        <div class="arch-box fragment" data-fragment-index="12">
+                        <div class="arch-box fragment" data-fragment-index="5">
                             <div class="box-title">Split data</div>
                             <div>Divide into N chunks</div>
                         </div>
-                        <div class="arch-arrow fragment" data-fragment-index="13">→</div>
-                        <div class="arch-box compute fragment" data-fragment-index="13">
+                        <div class="arch-arrow fragment" data-fragment-index="6">→</div>
+                        <div class="arch-box compute fragment" data-fragment-index="6">
                             <div class="box-title">Process simultaneously</div>
                             <div>N workers in parallel</div>
                         </div>
-                        <div class="arch-arrow fragment" data-fragment-index="14">→</div>
-                        <div class="arch-box login fragment" data-fragment-index="14">
+                        <div class="arch-arrow fragment" data-fragment-index="7">→</div>
+                        <div class="arch-box login fragment" data-fragment-index="7">
                             <div class="box-title">Combine results</div>
                             <div>Reduce / gather</div>
                         </div>
                     </div>
-                    <div class="slide-footer">
-                        <span><a href="https://en.wikipedia.org/wiki/Divide-and-conquer_algorithm">Divide-and-conquer algorithm</a></span>
-                    </div>
+                </div>
+                <div class="slide-footer">
+                    <span><a href="https://en.wikipedia.org/wiki/Divide-and-conquer_algorithm">Divide-and-conquer algorithm</a></span>
                 </div>
                 <aside class="notes">
-                    So let's consider some computer program or application. In this extremely simple example we're considering looking for the average of a set of numbers. A simple program might look as follows:
+                    The parallel version has three phases: split the data into chunks, let every worker process its own chunk at the same time, then combine the results.
 
-                    [read serial code]
+                    Note that each worker computes a partial sum, not a partial average. Combining partial sums works no matter how the data was divided; averaging the workers' averages would only be correct if every chunk had exactly the same size. Summing partial results like this is called a reduction, and it's exactly what the MPI.Reduce call does in the tutorial's simple_mpi.py — so this little example is the same shape as the real demo we'll run later.
 
-                    Moving onto a parallel solution, it might look like this: we partition the grades into n sets, do the summation simultaneously, then combine results at the end.
+                    The split-process-combine pattern at the bottom is the shape of almost all data parallelism.
                 </aside>
             </section>
 
             <!-- =============================== -->
-            <!-- SLIDE 5: Parallelism requirements -->
-            <!-- (was slide 7)                   -->
+            <!-- SLIDE 7: More resources are not enough -->
             <!-- =============================== -->
             <section>
+                <div class="slide-header">
+                    <img alt="Slurm" src="../assets/slurm_logo.svg" />
+                    <h3>More resources are not enough</h3>
+                    <img alt="ilifu" src="../assets/ilifu_logo.svg" />
+                </div>
                 <div class="slide-content">
-                    <div class="slide-header">
-                        <span style="font-weight:700; font-size:0.75em; color:var(--brand-blue);">Session 3 — Parallelism</span>
-                        <img alt="ilifu" src="../assets/ilifu_logo.svg" />
-                    </div>
-                    <h2>Parallelism Requirements</h2>
+                    <p>Parallelism only pays off when <em>all</em> of these hold:</p>
                     <ul>
-                        <li>Executing portions of program simultaneously</li>
-                        <li>Possible when we have many processors (cores/CPUs)</li>
-                        <li>Capacity dependent on structure of both hardware AND software</li>
-                        <li>Requires overall control/coordination mechanism
-                            <ul>
-                                <li>i.e. message passing in MPI / threading / OpenMP</li>
-                            </ul>
-                        </li>
+                        <li class="fragment"><strong>Hardware</strong> must provide concurrent resources — multiple CPU cores (some nodes also have GPUs)</li>
+                        <li class="fragment"><strong>Software</strong> must expose parallel work — code written with MPI, threading or OpenMP in mind</li>
+                        <li class="fragment"><strong>Coordination</strong> has a cost — splitting work, communicating, combining results all take time</li>
+                        <li class="fragment"><strong>The workload</strong> must be large enough to repay that cost</li>
                     </ul>
-                    <div class="slide-footer">
+                    <div class="info-box fragment" style="margin-top:0.5em;">
+                        Running ordinary serial software on a node with more cores will <strong>not</strong> make it faster —
+                        the software has to be written (and configured) to use them.
                     </div>
                 </div>
+                <div class="slide-footer">
+                </div>
                 <aside class="notes">
-                    So compared to a serial or sequential process, parallelism is more complicated and requires multiple portions of a program to run simultaneously.
+                    So compared to a serial process, parallelism has several requirements, and it's worth spelling them out because the most common misconception we see is "I requested more CPUs, why isn't my job faster?".
 
-                    This has several requirements.
+                    First we need multiple resources available simultaneously — many CPU cores. On a single core, only one instruction stream executes at any instant (the operating system can time-slice many processes, but they take turns).
 
-                    Firstly we need to have multiple resources available simultaneously, so this is where we have many CPU cores available. Obviously if we're on a single core machine, we can only run one thing at a time.
+                    Second, the software must have been written to take advantage of those resources. You cannot take an arbitrary piece of software and expect it to run faster on a machine with more cores.
 
-                    But, we also need the software/program to have been written in such a way that it can take advantage of these resources. In other words, we cannot simply take a piece of software and expect it to run better/faster simply by running it on a machine with more cores. The software has to be coded with parallelism in mind.
+                    Third, coordination — the mechanism by which the parts of the program communicate — takes time. Typically one part of the software is in charge of the overall plan: telling the other parts which data to analyse and combining results at the end. This is achieved with frameworks or libraries such as MPI (Message Passing Interface), traditional threading, or OpenMP (Open Multi-Processing, a framework that makes threading easier).
 
-                    This involves some overall control / coordination mechanism — so ways for individual parts of the program to communicate with each other. Typically this involves one part of the software being in charge of the overall plan — telling other bits of the software which data to analyse and combining the results at the end. This can be done in various ways but is often achieved with frameworks or libraries such as MPI (message passing interface) / traditional (old-school) threading / or OpenMP (Open Multi-processing) (which is a framework to do threading).
+                    And fourth, the problem has to be big enough that the time saved computing outweighs the time spent coordinating.
+
+                    One more hardware note that matters on ilifu specifically: we do not have a low-latency network like the CHPC's InfiniBand. Latency is the time it takes for even a small message to get from one node to another. If you have the kind of problem with lots of communication between nodes — like the protein-folding example — spreading it across multiple nodes can actually slow it down, because you spend your time waiting for messages rather than computing. For those problems you're better off at a facility with InfiniBand. Our network does have high bandwidth though: messages take a while to get going, but they can be big, so we can move a lot of data quickly.
                 </aside>
             </section>
 
             <!-- =============================== -->
-            <!-- SLIDE 6: Parallelism on ilifu   -->
-            <!-- (was slide 8)                   -->
+            <!-- SLIDE 8: Single vs Multi-node   -->
             <!-- =============================== -->
             <section>
-                <div class="slide-content">
-                    <div class="slide-header">
-                        <span style="font-weight:700; font-size:0.75em; color:var(--brand-blue);">Session 3 — Parallelism</span>
-                        <img alt="ilifu" src="../assets/ilifu_logo.svg" />
-                    </div>
-                    <h2>Parallelism on the ilifu Cluster</h2>
-                    <ul>
-                        <li class="fragment">A cluster includes many connected nodes</li>
-                        <li class="fragment">Each node has RAM and multiple cores <span class="fragment">(some nodes also have GPUs)</span></li>
-                        <li  class="fragment">Work of job is partitioned into smaller jobs
-                            <ul>
-                                <li>Usually on independent parts of the data</li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <div class="slide-footer">
-
-                    </div>
+                <div class="slide-header">
+                    <img alt="Slurm" src="../assets/slurm_logo.svg" />
+                    <h3>Single-node vs Multi-node Parallelism</h3>
+                    <img alt="ilifu" src="../assets/ilifu_logo.svg" />
                 </div>
-                <aside class="notes">
-                    Parallelism can look a bit different depending on the problem you're trying to solve and the resources available. As noted before on ilifu we have:<br />
-                    * many connected nodes where <br />
-                    * each node has many cores and a lot of RAM <br />
-                    * some nodes have GPUs which can add a whole extra level of parallelism <br />
-                    * Work is typically partitioned into smaller parts that can be processed simultaneously. This is often done by partitioning the data into smaller chunks and processing those chunks in parallel.  <br /> <br />
-
-                    A small note on the way our physical hardware is set up — we do not have a low-latency network like the CHPC does with their infiniband network. When we talk about latency what we mean is the time it takes for even a small message to get from one node to the other. The implication is that if you have the kind of problems where there is lots of communication between nodes (like the protein folding example I mentioned earlier) then spreading the problem across multiple nodes can actually have a negative effect on your overall computation time because you end up spending a lot of time waiting for communication between nodes, rather than doing lots of computation.
-                    So if you have the kind of problem that requires that — you're better off using say the CHPC which has an infiniband network. Our network is quite high bandwidth though, so while there might be a relatively large delay in getting a message from A to B, those messages can be big so we can move a lot of data quite quickly.
-                </aside>
-            </section>
-
-            <!-- =============================== -->
-            <!-- SLIDE 7: Single vs Multi-node   -->
-            <!-- (was slide 9)                   -->
-            <!-- =============================== -->
-            <section>
                 <div class="slide-content">
-                    <div class="slide-header">
-                        <span style="font-weight:700; font-size:0.75em; color:var(--brand-blue);">Session 3 — Parallelism</span>
-                        <img alt="ilifu" src="../assets/ilifu_logo.svg" />
-                    </div>
-                    <h2>Single-node vs Multi-node Parallelism</h2>
                     <div class="columns">
                         <div class="col fragment">
                             <h3>Single-node (shared memory)</h3>
                             <ul>
                                 <li>Distributes work over many CPUs <em>within one node</em></li>
-                                <li>Typically implemented using threads / OpenMP</li>
-                                <li>GPU acceleration (also single-node)</li>
+                                <li>Threads / OpenMP — workers share the node's memory directly</li>
+                                <li>MPI also works within one node (ranks communicate via shared memory)</li>
+                                <li>GPU acceleration — a separate execution model, also single-node</li>
                             </ul>
                             <div class="arch-diagram" style="margin-top:0.5em; flex-direction:column; gap:0.3em;">
                                 <div class="arch-box login" style="width:100%; box-sizing:border-box;">
@@ -406,9 +391,8 @@ average = (57.5+80.5+60.0)/3 = 66
                         <div class="col fragment">
                             <h3>Multi-node (distributed memory)</h3>
                             <ul>
-                                <li>Distributes work over many tasks across 1+ nodes</li>
-                                <li>Requires MPI: <code>mpirun</code>, <code>srun</code>, <code>mpicasa</code></li>
-                                <li>MPI version inside/outside container must match</li>
+                                <li>Distributes work over many tasks across 2+ nodes</li>
+                                <li>Requires MPI: <code>mpirun</code>, <code>srun</code>, <code>mpicasa</code> (CASA)</li>
                                 <li>Hybrid parallelism: MPI + OpenMP / MPI + GPU</li>
                             </ul>
                             <div class="arch-diagram" style="margin-top:0.5em;">
@@ -424,35 +408,35 @@ average = (57.5+80.5+60.0)/3 = 66
                             </div>
                             <div class="info-box" style="margin-top:0.4em;">
                                 <strong>⚠ ilifu does not have InfiniBand.</strong> Network latency between nodes
-                                is higher than at e.g. the CHPC. Multi-node MPI adds communication overhead
-                                that can make jobs <em>slower</em> than single-node — the live demo will prove this.
+                                is higher than at e.g. the CHPC. For communication-heavy workloads, multi-node MPI adds
+                                overhead that can make jobs <em>slower</em> than single-node — the live demo will show this.
                             </div>
                         </div>
                     </div>
-                    <div class="slide-footer">
-
-                    </div>
+                </div>
+                <div class="slide-footer">
                 </div>
                 <aside class="notes">
-                    Typically parallelism is implemented using one of three mechanisms:
+                    The central distinction on this slide is shared memory versus distributed memory.
 
-                    It can be on a single machine or node that has multiple cores (most modern CPUs have this) — this would be usually be done using threads or OpenMP. As mentioned earlier OpenMP is a framework that makes it easier to develop multi-threaded code. Multi-threaded code works well on multi-core machines where there is shared memory because different parts of the software running in parallel can communicate directly with each other; i.e. there's no need to go over an external network.
-                    GPUs are usually used in scenarios where you can run exactly the same bit of code on different parts of data simultaneously. This is a bit different from threading where the actual code running can be somewhat independent or doing slightly different things. <br /><br />
-                    When moving over to multiple machines at the same time we usually use the MPI library which makes it easy to distribute the work over many tasks. Slurm will set up the environment, by this I mean it will allocate the machines for the job and tell the job how much memory and CPU is available. MPI can then use these resources to split out the parts of the job to where they should run and combine the results together again at the end. If you are using singularity remember that a container is kind of like a standalone machine with its own operating system and software and you will need to ensure that you are using the same version of MPI inside and outside of the container.
+                    Within a single node, all the cores can see the same memory. Multi-threaded code — usually written with threads or OpenMP — works well here because the parallel parts communicate directly through that shared memory; nothing goes over a network. GPUs are a different execution model again: they're used where you run exactly the same code on many pieces of data simultaneously, whereas threads can each be doing somewhat different things.
+
+                    MPI is not only for multiple nodes — MPI ranks on the same node communicate through shared memory too, and in fact most of our demo runs MPI on a single node. What MPI adds is the ability to go beyond one node: Slurm allocates the machines and tells the job what memory and CPUs are available, and MPI distributes the work across them and combines the results.
+
+                    Two practical notes for later: first, if you use Singularity, a container is an isolated software environment — it shares the host's kernel, it is not a separate machine — but you still need the MPI version inside the container to match the version outside it. Second, when you mix MPI and threads, where the ranks and threads are placed (binding) is a separate concern from how many you request — benchmark before trusting a layout.
                 </aside>
             </section>
 
             <!-- =============================== -->
-            <!-- SLIDE 8: Parallelism in SLURM   -->
-            <!-- table (was slide 10)            -->
+            <!-- SLIDE 9: Parallelism in Slurm   -->
             <!-- =============================== -->
             <section>
+                <div class="slide-header">
+                    <img alt="Slurm" src="../assets/slurm_logo.svg" />
+                    <h3>Parallelism in Slurm</h3>
+                    <img alt="ilifu" src="../assets/ilifu_logo.svg" />
+                </div>
                 <div class="slide-content">
-                    <div class="slide-header">
-                        <span style="font-weight:700; font-size:0.75em; color:var(--brand-blue);">Session 3 — Parallelism</span>
-                        <img alt="ilifu" src="../assets/ilifu_logo.svg" />
-                    </div>
-                    <h2>Parallelism in SLURM</h2>
                     <table>
                         <thead>
                             <tr>
@@ -460,7 +444,7 @@ average = (57.5+80.5+60.0)/3 = 66
                                 <th><code>--nodes</code></th>
                                 <th><code>--ntasks</code></th>
                                 <th><code>--cpus-per-task</code></th>
-                                <th>Notes</th>
+                                <th>Application setting</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -469,109 +453,117 @@ average = (57.5+80.5+60.0)/3 = 66
                                 <td>1</td>
                                 <td>1</td>
                                 <td>1</td>
-                                <td>Default; no parallelism</td>
+                                <td>None — the default</td>
                             </tr>
                             <tr>
                                 <td>OpenMP / Threading</td>
                                 <td>1</td>
                                 <td>1</td>
-                                <td>N</td>
-                                <td>Set <code>OMP_NUM_THREADS=N</code></td>
+                                <td>8</td>
+                                <td><code>OMP_NUM_THREADS=8</code> or e.g. <code>--threads 8</code></td>
                             </tr>
                             <tr>
                                 <td>MPI (single-node)</td>
                                 <td>1</td>
-                                <td>N</td>
+                                <td>8</td>
                                 <td>1</td>
-                                <td><code>module load openmpi</code> + <code>mpirun</code></td>
+                                <td><code>mpirun</code> launches 8 ranks</td>
                             </tr>
                             <tr>
                                 <td>MPI (multi-node)</td>
-                                <td>N</td>
-                                <td>n×N</td>
+                                <td>2</td>
+                                <td>8 (4 per node)</td>
                                 <td>1</td>
-                                <td>Cross-node overhead; use cautiously on ilifu</td>
+                                <td><code>mpirun</code> — cross-node overhead; benchmark first</td>
                             </tr>
                             <tr>
                                 <td>Hybrid MPI+OpenMP</td>
-                                <td>1+</td>
-                                <td>N</td>
-                                <td>n</td>
-                                <td>Both <code>ntasks</code> and <code>cpus-per-task</code> &gt; 1</td>
+                                <td>2</td>
+                                <td>2 (1 per node)</td>
+                                <td>4</td>
+                                <td><code>mpirun</code> + <code>OMP_NUM_THREADS=4</code></td>
                             </tr>
                         </tbody>
                     </table>
                     <div class="info-box tip" style="margin-top:0.4em;">
-                        <strong>Tip:</strong> On ilifu, keep <code>--nodes=1</code> unless your workload genuinely
-                        requires multi-node MPI. Single-node processes communicate via shared memory — no network latency.
-                    </div>
-                    <div class="slide-footer">
-
+                        <strong>Tip:</strong> On ilifu, keep <code>--nodes=1</code> when the job fits on one node —
+                        communication can then use shared memory rather than the inter-node network. Use multiple nodes
+                        when you need more cores or memory than one node provides, and benchmark the difference.
                     </div>
                 </div>
+                <div class="slide-footer">
+                </div>
                 <aside class="notes">
-                    By default a job in the cluster will only have a single cpu allocated to it. This is what you'd use if you know your code has no parallelism — perhaps it's some kind of pre-processing where everything needs to be done sequentially.
+                    By default a job in the cluster has a single CPU allocated to it. That's what you'd use for code with no parallelism — perhaps some pre-processing where everything must happen sequentially.
 
-                    Then the next level of complexity would be using threading or OpenMP. Here we will be requesting multiple cores but only on a single node.  In the job scripts later we'll see we specify a single node, a single task, but multiple cpus per task. Usually you need to tell the software how many threads to actually use. In the case of OpenMP this can be done by setting the OMP_NUM_THREADS environmental variable. Otherwise it can usually be done by giving it a command line parameter. This is important as some software might mistakenly assume all the cores on the machine are available for use, but this might not be the case as your job will be restricted to what it requested.  Sometimes it's not explicitly clear that your software can use threading or OpenMP, e.g. if you use numpy a lot in your calculations — there are quite a few operations in there that have been coded to use OpenMP and will take advantage of multiple cores if they're available.
+                    The next level is threading or OpenMP: one task, multiple CPUs per task, all on one node. Requesting the CPUs is only half the story — you usually must also tell the software how many threads to use, with OMP_NUM_THREADS for OpenMP software or a command-line option for others. That's the last column of this table, and it matters because some software assumes all the cores on the machine are available, while your job is restricted to its allocation.
 
-                    Finally an MPI job requires one to use multiple tasks — these could all be on a single machine or spread across multiple machines. The number of tasks cannot exceed the number of CPUs on the machine — most of our machines have 32 cores, but there are a handful with a bit more.
+                    An MPI job uses multiple tasks — on one node or spread across several. The constraint to remember is per node: tasks per node times CPUs per task must fit within the CPUs of the node — 32 on most of our Main nodes, with a handful larger.
+
+                    The hybrid row combines both: here, two nodes, one rank per node, four threads per rank — eight cores in total, matching the tutorial's hybrid demo.
                 </aside>
             </section>
 
             <!-- =============================== -->
-            <!-- SLIDE 9: SLURM parameters       -->
-            <!-- (was slide 11)                  -->
+            <!-- SLIDE 10: Key Slurm parameters  -->
             <!-- =============================== -->
             <section>
+                <div class="slide-header">
+                    <img alt="Slurm" src="../assets/slurm_logo.svg" />
+                    <h3>Key Slurm Parameters (reference)</h3>
+                    <img alt="ilifu" src="../assets/ilifu_logo.svg" />
+                </div>
                 <div class="slide-content">
-                    <div class="slide-header">
-                        <span style="font-weight:700; font-size:0.75em; color:var(--brand-blue);">Session 3 — Parallelism</span>
-                        <img alt="ilifu" src="../assets/ilifu_logo.svg" />
-                    </div>
-                    <h2>Key SLURM Parameters</h2>
                     <div class="columns">
                         <div class="col">
                             <pre><code class="language-bash" data-trim="">#SBATCH --nodes=              # number of nodes allocated
-#SBATCH --cpus-per-task=      # CPUs per task (threading/OpenMP)
-#SBATCH --mem-per-cpu=        # memory per CPU
-#SBATCH --mem=                # memory per node
-#SBATCH --ntasks-per-node=    # number of tasks per node</code></pre>
+#SBATCH --ntasks=             # total tasks (normally MPI ranks)
+#SBATCH --ntasks-per-node=    # tasks placed on each node
+#SBATCH --cpus-per-task=      # CPU cores allocated to each task
+#SBATCH --mem=                # memory per allocated node
+#SBATCH --mem-per-cpu=        # memory per allocated CPU</code></pre>
+                            <div class="info-box tip" style="margin-top:0.5em;">
+                                Per node: <code>tasks × cpus-per-task</code> must fit within the node's CPUs
+                                (32 on most Main nodes).
+                            </div>
                         </div>
                         <div class="col">
                             <table>
                                 <thead>
-                                    <tr><th>Parameter</th><th>Controls</th><th>Typical value</th></tr>
+                                    <tr><th>Parameter</th><th>What it requests</th><th>Typical value</th></tr>
                                 </thead>
                                 <tbody>
-                                    <tr><td><code>--nodes</code></td><td>Number of machines</td><td>1 unless multi-node MPI</td></tr>
-                                    <tr><td><code>--ntasks-per-node</code></td><td>MPI processes per node</td><td>≤ 32 (CPUs per node)</td></tr>
-                                    <tr><td><code>--cpus-per-task</code></td><td>Threads per MPI process</td><td>≥ 2 for OpenMP / hybrid</td></tr>
-                                    <tr><td><code>--mem</code></td><td>RAM per node</td><td>Total = N × <code>--mem</code></td></tr>
+                                    <tr><td><code>--nodes</code></td><td>Compute nodes allocated</td><td>1 unless multi-node MPI</td></tr>
+                                    <tr><td><code>--ntasks</code></td><td>Total Slurm tasks (MPI ranks)</td><td>e.g. 8 for 8 ranks</td></tr>
+                                    <tr><td><code>--ntasks-per-node</code></td><td>Tasks on each node</td><td>with <code>--nodes</code> to control layout</td></tr>
+                                    <tr><td><code>--cpus-per-task</code></td><td>CPU cores per task</td><td>≥ 2 for OpenMP / hybrid</td></tr>
+                                    <tr><td><code>--mem</code></td><td>RAM per node</td><td>Total = nodes × <code>--mem</code></td></tr>
                                     <tr><td><code>--mem-per-cpu</code></td><td>RAM per CPU</td><td>Alternative to <code>--mem</code></td></tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                    <div class="slide-footer">
-                        <span><a href="https://docs.ilifu.ac.za/#/getting_started/submit_job_slurm?id=customising-your-job-using-sbatchsrun-parameters">SLURM parameters docs</a></span>
-                    </div>
+                </div>
+                <div class="slide-footer">
+                    <span><a href="https://docs.ilifu.ac.za/#/getting_started/submit_job_slurm?id=customising-your-job-using-sbatchsrun-parameters">Slurm parameters docs</a></span>
                 </div>
                 <aside class="notes">
-                    Okay next I'm going to talk about several scenarios for parallelism that you might be considering for your analysis. But first here is a list of the slurm parameters you will probably want to consider.
+                    This slide is here as a reference — you don't need to memorise it, and we'll see each parameter in a real script in the next few slides.
+
+                    One correction worth making explicitly, because the distinction trips people up: --cpus-per-task allocates CPU cores to each task; it does not create threads. The application creates the threads, and you configure how many with OMP_NUM_THREADS or the software's own option.
                 </aside>
             </section>
 
             <!-- =============================== -->
-            <!-- SLIDE 10: Serial + multi-CPU    -->
-            <!-- (was slide 12)                  -->
+            <!-- SLIDE 11: Serial + multi-CPU    -->
             <!-- =============================== -->
             <section>
+                <div class="slide-header">
+                    <img alt="Slurm" src="../assets/slurm_logo.svg" />
+                    <h3>Slurm — Serial and Multi-CPU Jobs</h3>
+                    <img alt="ilifu" src="../assets/ilifu_logo.svg" />
+                </div>
                 <div class="slide-content">
-                    <div class="slide-header">
-                        <span style="font-weight:700; font-size:0.75em; color:var(--brand-blue);">Session 3 — Parallelism</span>
-                        <img alt="ilifu" src="../assets/ilifu_logo.svg" />
-                    </div>
-                    <h2>SLURM — Serial and Multi-CPU Jobs</h2>
                     <div class="columns">
                         <div class="col">
                             <h3>Serial job (1 CPU)</h3>
@@ -580,204 +572,510 @@ average = (57.5+80.5+60.0)/3 = 66
 #SBATCH --cpus-per-task=1
 
 python myscript.py</code></pre>
-                            <h3 style="margin-top:0.5em;">OpenMP / threading job (N CPUs)</h3>
+                            <h3 style="margin-top:0.5em;">OpenMP / threading job (8 CPUs)</h3>
                             <pre><code class="language-bash" data-trim="">#SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=N
-#SBATCH --mem-per-cpu=XGB
+#SBATCH --cpus-per-task=8
+#SBATCH --mem-per-cpu=1GB
 
-export OMP_NUM_THREADS=N
-python myscript.py</code></pre>
+export OMP_NUM_THREADS="$SLURM_CPUS_PER_TASK"
+./my_threaded_program</code></pre>
                         </div>
                         <div class="col">
                             <h3>When to use each</h3>
                             <ul>
                                 <li><strong>Serial:</strong> code has no internal parallelism — increasing CPUs or nodes will <em>not</em> help</li>
-                                <li><strong>OpenMP:</strong> code uses threading internally (e.g. numpy, scikit-learn, many bioinformatics tools like BWA, STAR)</li>
+                                <li><strong>Threaded:</strong> software runs multiple threads on one node — configure it with the control it supports: <code>OMP_NUM_THREADS</code> for OpenMP code, a program option like <code>bwa -t 8</code> / <code>STAR --runThreadN 8</code>, or a library setting like <code>OPENBLAS_NUM_THREADS</code> for NumPy's BLAS backend</li>
                             </ul>
                             <h3 style="margin-top:0.5em;">Watch out for</h3>
                             <ul>
-                                <li>Always set <code>OMP_NUM_THREADS</code> explicitly — some software defaults to <em>all</em> cores on the node, not just your allocation</li>
-                                <li>Maximum 32 CPUs per node on the Main partition</li>
+                                <li>Always set the thread count explicitly — some software defaults to <em>all</em> cores on the node, not just your allocation</li>
+                                <li>Most Main nodes have 32 CPUs — and the maximum will not always give maximum speedup; test with fewer cores first</li>
                             </ul>
-                            <div class="info-box tip" style="margin-top:0.5em;">
-                                <strong>Note:</strong> The maximum CPUs per node (32) will not always give maximum speedup — test with fewer cores first.
-                            </div>
                         </div>
                     </div>
-                    <div class="slide-footer">
-
+                    <div class="info-box tip" style="margin-top:0.4em;">
+                        These snippets show only the resource layout — a complete script also needs
+                        <code>--time</code>, <code>--mem</code>, <code>--output</code>/<code>--error</code> and a job name,
+                        as covered in Session 1.
                     </div>
                 </div>
+                <div class="slide-footer">
+                </div>
                 <aside class="notes">
+                    Two single-node layouts. The serial job is Slurm's default shape: one node, one task, one CPU.
+
+                    The threaded job requests eight CPUs for its single task, and then — the crucial line — tells the software to actually use them. Using the SLURM_CPUS_PER_TASK environment variable keeps the thread count in sync with the allocation if you later change the request.
+
+                    The one sentence to remember from this slide: requesting CPUs does not make software parallel — you must also configure the software, with whatever control it supports.
                 </aside>
             </section>
 
             <!-- =============================== -->
-            <!-- SLIDE 11: Multi-task jobs       -->
-            <!-- (was slide 13)                  -->
+            <!-- SLIDE 12: Multi-task jobs       -->
             <!-- =============================== -->
             <section>
+                <div class="slide-header">
+                    <img alt="Slurm" src="../assets/slurm_logo.svg" />
+                    <h3>Slurm — Multi-task (MPI) Jobs</h3>
+                    <img alt="ilifu" src="../assets/ilifu_logo.svg" />
+                </div>
                 <div class="slide-content">
-                    <div class="slide-header">
-                        <span style="font-weight:700; font-size:0.75em; color:var(--brand-blue);">Session 3 — Parallelism</span>
-                        <img alt="ilifu" src="../assets/ilifu_logo.svg" />
-                    </div>
-                    <h2>SLURM — Multi-task (MPI) Jobs</h2>
                     <div class="columns">
                         <div class="col">
-                            <h3>Using <code>--ntasks</code> (SLURM allocates nodes)</h3>
-                            <pre><code class="language-bash" data-trim="">#SBATCH --ntasks=N
+                            <h3>Using <code>--ntasks</code> (Slurm allocates nodes)</h3>
+                            <pre><code class="language-bash" data-trim="">#SBATCH --ntasks=8
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=XGB
+#SBATCH --mem-per-cpu=1GB
 
-module add openmpi
-mpirun python myscript.py</code></pre>
+module add openmpi/5.0.3
+mpirun python simple_mpi.py</code></pre>
                             <h3 style="margin-top:0.5em;">Using <code>--ntasks-per-node</code> (you control layout)</h3>
                             <pre><code class="language-bash" data-trim="">#SBATCH --nodes=1
-#SBATCH --ntasks-per-node=N
+#SBATCH --ntasks-per-node=8
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=XGB
+#SBATCH --mem=8GB
 
-module add openmpi
-mpirun python myscript.py</code></pre>
+module add openmpi/5.0.3
+mpirun python simple_mpi.py</code></pre>
                         </div>
                         <div class="col">
                             <h3>Key differences</h3>
                             <ul>
-                                <li><strong><code>--ntasks=N</code></strong> — SLURM decides how to spread N tasks across nodes; may use multiple nodes</li>
-                                <li><strong><code>--ntasks-per-node=N</code></strong> — you specify exactly how many tasks per node; requires <code>--nodes</code> to be set</li>
+                                <li><strong><code>--ntasks=8</code></strong> — Slurm decides how to spread 8 tasks across nodes; may use multiple nodes</li>
+                                <li><strong><code>--ntasks-per-node=8</code></strong> — you specify exactly how many tasks per node; set <code>--nodes</code> too</li>
+                                <li><code>mpirun</code> reads the Slurm allocation — no <code>-np</code> needed (<code>srun</code> can also launch MPI programs)</li>
                             </ul>
                             <h3 style="margin-top:0.5em;">On ilifu</h3>
                             <ul>
-                                <li>Prefer <code>--nodes=1 --ntasks-per-node=N</code> to stay on one node</li>
+                                <li>Prefer <code>--nodes=1 --ntasks-per-node=8</code> to stay on one node</li>
                                 <li>Avoids accidental multi-node allocation that adds latency</li>
-                                <li>N cannot exceed CPUs per node (≤ 32 on Main)</li>
+                                <li>Tasks × CPUs per task must fit the node (32 CPUs on most Main nodes)</li>
                             </ul>
                         </div>
                     </div>
-                    <div class="slide-footer">
-
-                    </div>
+                </div>
+                <div class="slide-footer">
                 </div>
                 <aside class="notes">
+                    Two ways to request an MPI job. With --ntasks alone, Slurm places the 8 tasks wherever it finds free CPUs — possibly across several nodes. With --nodes plus --ntasks-per-node you pin the layout down.
+
+                    On ilifu, because of the network we discussed, prefer the explicit form that keeps the ranks on one node when they fit.
+
+                    Notice that mpirun gets no process count: it reads the allocation Slurm made and launches one rank per task automatically. The script here is exactly the tutorial's — simple_mpi.py, with openmpi/5.0.3 — so what you see on the slide is what you'll run in the demo.
                 </aside>
             </section>
 
             <!-- =============================== -->
-            <!-- SLIDE 12: Multi-node + hybrid   -->
-            <!-- (was slide 14)                  -->
+            <!-- SLIDE 13: Multi-node + hybrid   -->
             <!-- =============================== -->
             <section>
+                <div class="slide-header">
+                    <img alt="Slurm" src="../assets/slurm_logo.svg" />
+                    <h3>Slurm — Multi-node and Hybrid Jobs</h3>
+                    <img alt="ilifu" src="../assets/ilifu_logo.svg" />
+                </div>
                 <div class="slide-content">
-                    <div class="slide-header">
-                        <span style="font-weight:700; font-size:0.75em; color:var(--brand-blue);">Session 3 — Parallelism</span>
-                        <img alt="ilifu" src="../assets/ilifu_logo.svg" />
-                    </div>
-                    <h2>SLURM — Multi-node and Hybrid Jobs</h2>
                     <div class="columns">
                         <div class="col">
                             <h3>Multi-node MPI</h3>
-                            <pre><code class="language-bash" data-trim="">#SBATCH --nodes=N
-#SBATCH --ntasks-per-node=n
+                            <pre><code class="language-bash" data-trim="">#SBATCH --nodes=2
+#SBATCH --ntasks-per-node=4
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=XGB
-module add openmpi
-mpirun python myscript.py</code></pre>
-                            <p>N nodes × n tasks each = N×n total MPI processes.<br/><code>--mem</code> is <em>per node</em>, so N×XGB total RAM.</p>
+#SBATCH --mem=4GB
+
+module add openmpi/5.0.3
+mpirun python simple_mpi.py</code></pre>
+                            <p>2 nodes × 4 tasks each = 8 MPI ranks.<br/><code>--mem</code> is <em>per node</em>, so 2 × 4 GB total RAM.</p>
                         </div>
                         <div class="col">
                             <h3>Hybrid MPI + OpenMP</h3>
-                            <pre><code class="language-bash" data-trim="">#SBATCH --ntasks=N
-#SBATCH --cpus-per-task=n
-module add openmpi
-mpirun python myscript.py</code></pre>
-                            <p>N MPI processes × n OpenMP threads each.<br/>Total cores = N×n.</p>
+                            <pre><code class="language-bash" data-trim="">#SBATCH --nodes=2
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=4
+
+module add openmpi/5.0.3
+export OMP_NUM_THREADS="$SLURM_CPUS_PER_TASK"
+mpirun ./hybrid_sum</code></pre>
+                            <p>2 nodes × 1 rank × 4 OpenMP threads = 8 cores in total.</p>
                             <div class="info-box" style="margin-top:0.5em;">
                                 <strong>Remember:</strong> Inter-node communication is slower than intra-node on ilifu.
                                 Always benchmark before scaling to multiple nodes.
                             </div>
                         </div>
                     </div>
-                    <div class="slide-footer">
-
-                    </div>
+                </div>
+                <div class="slide-footer">
                 </div>
                 <aside class="notes">
+                    On the left, the multi-node MPI layout the demo uses: two nodes, four ranks on each, eight ranks in total. Note that --mem is per node.
+
+                    On the right, the hybrid layout from the tutorial's hybrid_sum demo: one MPI rank per node, four OpenMP threads inside each rank. The export line is essential — without it the ranks are allocated four CPUs each but OpenMP is never told to use them.
+
+                    A caution for hybrid jobs specifically: how the ranks and their threads are bound to physical cores can dominate performance, and the defaults are not always sensible. If your hybrid job shows no speedup over serial, suspect binding before blaming the code — and benchmark, which is exactly what the tutorial's job scripts let you do.
                 </aside>
             </section>
 
             <!-- =============================== -->
-            <!-- SLIDE 13: Live Demo             -->
-            <!-- (was slide 15)                  -->
+            <!-- SLIDE 14: Live Demo             -->
             <!-- =============================== -->
             <section>
+                <div class="slide-header">
+                    <img alt="Slurm" src="../assets/slurm_logo.svg" />
+                    <h3>💻 Live Demo — make a prediction</h3>
+                    <img alt="ilifu" src="../assets/ilifu_logo.svg" />
+                </div>
                 <div class="slide-content">
-                    <div class="slide-header">
-                        <span style="font-weight:700; font-size:0.75em; color:var(--brand-blue);">Session 3 — Parallelism</span>
-                        <img alt="ilifu" src="../assets/ilifu_logo.svg" />
-                    </div>
-                    <h2 class="demo-title" style="text-align:center; margin-top:1.5em;">💻 Live Demo</h2>
-                    <div class="slide-footer">
-                        <span><a href="https://github.com/ilifu/ilifu_user_training/tree/main/session3/tutorial1">Demo Repository</a></span>
+                    <p>Same program (<code>simple_mpi.py</code>), same total work — four different layouts:</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Run</th>
+                                <th>Script</th>
+                                <th>Layout</th>
+                                <th>Your prediction?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Baseline</td>
+                                <td><code>1_cpu_1_node.sbatch</code></td>
+                                <td>1 node × 1 rank</td>
+                                <td>reference time</td>
+                            </tr>
+                            <tr>
+                                <td>Same node</td>
+                                <td><code>4_cpus_1_node.sbatch</code></td>
+                                <td>1 node × 4 ranks</td>
+                                <td>?</td>
+                            </tr>
+                            <tr>
+                                <td>Same node</td>
+                                <td><code>8_cpus_1_node.sbatch</code></td>
+                                <td>1 node × 8 ranks</td>
+                                <td>?</td>
+                            </tr>
+                            <tr>
+                                <td>Two nodes</td>
+                                <td><code>8_cpus_2_nodes.sbatch</code></td>
+                                <td>2 nodes × 4 ranks</td>
+                                <td>?</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="info-box tip fragment" style="margin-top:0.5em;">
+                        <strong>Before we run:</strong> rank the four runs from fastest to slowest.
+                        Will 4 ranks be 4× faster? Will the two-node run beat the one-node run with the same 8 ranks?
                     </div>
                 </div>
+                <div class="slide-footer">
+                    <span><a href="https://github.com/ilifu/ilifu_user_training/tree/main/session3/tutorial1">Demo Repository</a></span>
+                </div>
                 <aside class="notes">
-                    And now it's time for me to have problems with Zoom.
+                    Runbook — setup (once): cd session3/tutorial1; mkdir -p logs; module add openmpi/5.0.3; uv venv .venv; source .venv/bin/activate; uv sync.
+
+                    Submit: sbatch 1_cpu_1_node.sbatch; sbatch 4_cpus_1_node.sbatch; sbatch 8_cpus_1_node.sbatch; sbatch 8_cpus_2_nodes.sbatch. Watch with squeue -u $USER.
+
+                    Collect: grep "total time" logs/*.out.
+
+                    Before submitting, ask the audience to rank the runs and commit to a prediction — especially whether the 2-node run beats the 1-node run with the same 8 ranks.
+
+                    Fallback if the cluster is unavailable or slow: the next slide has the measured results from a previous run — talk through those instead.
                 </aside>
             </section>
 
             <!-- =============================== -->
-            <!-- SLIDE 14: Best practices        -->
-            <!-- (was slide 16)                  -->
+            <!-- SLIDE 15: Measured results      -->
             <!-- =============================== -->
             <section>
+                <div class="slide-header">
+                    <img alt="Slurm" src="../assets/slurm_logo.svg" />
+                    <h3>What we measured</h3>
+                    <img alt="ilifu" src="../assets/ilifu_logo.svg" />
+                </div>
                 <div class="slide-content">
-                    <div class="slide-header">
-                        <span style="font-weight:700; font-size:0.75em; color:var(--brand-blue);">Session 3 — Parallelism</span>
-                        <img alt="ilifu" src="../assets/ilifu_logo.svg" />
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Run</th>
+                                <th>Average time</th>
+                                <th>Speedup (T₁ / Tₚ)</th>
+                                <th>Efficiency (speedup / p)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fragment">
+                                <td>1 rank, 1 node</td>
+                                <td>~0.76 s</td>
+                                <td>1×</td>
+                                <td>100%</td>
+                            </tr>
+                            <tr class="fragment">
+                                <td>4 ranks, 1 node</td>
+                                <td>~0.25 s</td>
+                                <td>~3×</td>
+                                <td>~76%</td>
+                            </tr>
+                            <tr class="fragment">
+                                <td>8 ranks, 1 node</td>
+                                <td>~0.155 s</td>
+                                <td>~4.9×</td>
+                                <td>~61%</td>
+                            </tr>
+                            <tr class="fragment">
+                                <td>8 ranks, 2 nodes</td>
+                                <td>~0.173 s</td>
+                                <td>~4.4×</td>
+                                <td>~55%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="info-box fragment" style="margin-top:0.5em;">
+                        <strong>Same 8 ranks, split over two nodes → slower.</strong> The work didn't change; the
+                        communication path did. And even on one node, speedup is sub-linear: splitting, coordinating and
+                        combining all cost time.
                     </div>
-                    <h2>Best Practices</h2>
+                </div>
+                <div class="slide-footer">
+                    <span><a href="https://github.com/ilifu/ilifu_user_training/tree/main/session3/tutorial1">Full results in the tutorial README</a></span>
+                </div>
+                <aside class="notes">
+                    Example results from a previous run — your times will vary a little, but the pattern is stable.
+
+                    Three observations. First, parallelism works: 8 ranks run the job about five times faster than one.
+
+                    Second, speedup is not linear: 4 ranks give roughly 3×, not 4×; 8 ranks give roughly 5×, not 8×. Efficiency drops as we add workers, because coordination overhead grows while each worker's share of the work shrinks.
+
+                    Third — the punchline — the same 8 ranks split across two nodes are slower than 8 ranks on one node. We added no work and no workers; we only changed how the ranks communicate: over the network instead of through shared memory. For this small, chatty workload, that overhead exceeds any benefit. Note what this experiment does and doesn't show: it demonstrates communication overhead — it does not say multi-node jobs are useless. If your job needs more memory or more cores than one node has, multiple nodes are exactly the right tool; benchmark to see whether the extra resources outweigh the overhead.
+                </aside>
+            </section>
+
+            <!-- =============================== -->
+            <!-- SLIDE 16: Best practices        -->
+            <!-- =============================== -->
+            <section>
+                <div class="slide-header">
+                    <img alt="Slurm" src="../assets/slurm_logo.svg" />
+                    <h3>Best Practices for Parallel Jobs</h3>
+                    <img alt="ilifu" src="../assets/ilifu_logo.svg" />
+                </div>
+                <div class="slide-content">
                     <div class="do-dont fragment">
-                        <div class="dont-col">
-                            <h3>✗ Don't</h3>
-                            <ul>
-                                <li>Run software / heavy processes on the login node</li>
-                                <li>Transfer data via the login node — use <code>transfer.ilifu.ac.za</code></li>
-                                <li>Over-allocate resources and hog the cluster</li>
-                                <li>Use <code>srun</code> / screen / tmux / mosh for long jobs (volatile — job dies if connection drops)</li>
-                                <li>Store large files in your home directory (<code>/users</code>)</li>
-                            </ul>
-                        </div>
-                        <div class="do-col fragment">
+                        <div class="do-col">
                             <h3>✓ Do</h3>
                             <ul>
-                                <li>Use <code>sbatch</code> for all persistent job submission</li>
-                                <li>Use <code>transfer.ilifu.ac.za</code> for external/internal data transfers</li>
-                                <li>Check available resources with <code>sinfo</code> before large jobs</li>
-                                <li>Request realistic walltime and memory — shorter = higher queue priority</li>
-                                <li>Clean up: old raw data, temp products, <code>/scratch</code> files</li>
-                                <li>Use Singularity containers for reproducible software environments</li>
+                                <li>Confirm the software actually supports the parallel model before requesting CPUs</li>
+                                <li>Start on one node and benchmark several task / thread counts</li>
+                                <li>Keep tasks × CPUs-per-task within one node's CPUs where possible</li>
+                                <li>Measure speedup and resource efficiency (<code>seff</code> — next tutorial)</li>
+                                <li>Use multiple nodes only when memory, CPU demand or measured scaling justify it</li>
+                                <li>Use <code>sbatch</code> for unattended or long-running work</li>
+                            </ul>
+                        </div>
+                        <div class="dont-col fragment">
+                            <h3>✗ Don't</h3>
+                            <ul>
+                                <li>Assume more CPUs automatically means faster — test it</li>
+                                <li>Spread communication-heavy jobs across nodes without benchmarking first</li>
+                                <li>Substantially over-request CPUs, memory or run time — request what a measured test run needs, plus a margin</li>
+                                <li>Rely on interactive sessions for long jobs — interactive <code>srun</code> / <code>sinteractive</code> is for short testing and debugging (Session 2)</li>
                             </ul>
                         </div>
                     </div>
-                    <div class="slide-footer">
-                        <span><a href="https://docs.ilifu.ac.za/#/getting_started/best_practices">Best Practices docs</a></span>
+                    <div class="info-box tip fragment" style="margin-top:0.4em;">
+                        General cluster etiquette — login-node use, data transfers, storage cleanup — is covered in
+                        Session 1 and the <a href="https://docs.ilifu.ac.za/#/getting_started/best_practices">Best Practices docs</a>.
                     </div>
                 </div>
+                <div class="slide-footer">
+                    <span><a href="https://docs.ilifu.ac.za/#/getting_started/best_practices">Best Practices docs</a></span>
+                </div>
                 <aside class="notes">
+                    These are the practices that specifically change how you run parallel jobs.
+
+                    The workflow to internalise: confirm the software can use the resources, start small on one node, measure, and only then scale — and only across nodes when the memory or CPU demand, or your own measurements, justify it.
+
+                    Accurate, realistic requests also help your jobs start sooner: a job with a modest, honest time limit is easier for Slurm to backfill into gaps in the schedule.
+
+                    The general etiquette — don't compute on the login node, use the transfer server, clean up scratch — was covered in Session 1; the docs link has the full list.
                 </aside>
             </section>
 
+            <!-- =============================== -->
+            <!-- SLIDE 17: Reference table        -->
+            <!-- =============================== -->
+            <section>
+                <div class="slide-header">
+                    <img alt="Slurm" src="../assets/slurm_logo.svg" />
+                    <h3>Reference: current cluster resources</h3>
+                    <img alt="ilifu" src="../assets/ilifu_logo.svg" />
+                </div>
+                <div class="slide-content">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Partition</th>
+                                <th>Node names</th>
+                                <th>Default CPUs</th>
+                                <th>Max CPUs</th>
+                                <th>Default Memory (GiB)</th>
+                                <th>Max Memory (GiB)</th>
+                                <th>Default wall-time</th>
+                                <th>Max wall-time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Main</td>
+                                <td>compute-[002-021]</td>
+                                <td>1</td>
+                                <td>32</td>
+                                <td>3</td>
+                                <td>232</td>
+                                <td>3 hours</td>
+                                <td>14 days</td>
+                            </tr>
+                            <tr>
+                                <td>Main</td>
+                                <td>compute-[101-105]</td>
+                                <td>1</td>
+                                <td>48</td>
+                                <td>3</td>
+                                <td>232</td>
+                                <td>3 hours</td>
+                                <td>14 days</td>
+                            </tr>
+                            <tr>
+                                <td>Main</td>
+                                <td>compute-[201-260]</td>
+                                <td>1</td>
+                                <td>32</td>
+                                <td>3</td>
+                                <td>251</td>
+                                <td>3 hours</td>
+                                <td>14 days</td>
+                            </tr>
+                            <tr>
+                                <td>HighMem</td>
+                                <td>highmem-[001-002]</td>
+                                <td>1</td>
+                                <td>32</td>
+                                <td>15</td>
+                                <td>503</td>
+                                <td>3 hours</td>
+                                <td>14 days</td>
+                            </tr>
+                            <tr>
+                                <td>HighMem</td>
+                                <td>highmem-003</td>
+                                <td>1</td>
+                                <td>96</td>
+                                <td>15</td>
+                                <td>1508</td>
+                                <td>3 hours</td>
+                                <td>14 days</td>
+                            </tr>
+                            <tr>
+                                <td>HighMem</td>
+                                <td>highmem-[004-007]</td>
+                                <td>1</td>
+                                <td>32</td>
+                                <td>15</td>
+                                <td>503</td>
+                                <td>3 hours</td>
+                                <td>14 days</td>
+                            </tr>
+                            <tr>
+                                <td>HighMem</td>
+                                <td>highmem-008</td>
+                                <td>1</td>
+                                <td>32</td>
+                                <td>15</td>
+                                <td>1007</td>
+                                <td>3 hours</td>
+                                <td>14 days</td>
+                            </tr>
+                            <tr>
+                                <td>GPU</td>
+                                <td>gpu-[001-004]</td>
+                                <td>1</td>
+                                <td>32</td>
+                                <td>7</td>
+                                <td>232</td>
+                                <td>3 hours</td>
+                                <td>3 days</td>
+                            </tr>
+                            <tr>
+                                <td>GPU</td>
+                                <td>gpu-005</td>
+                                <td>1</td>
+                                <td>24</td>
+                                <td>7</td>
+                                <td>232</td>
+                                <td>3 hours</td>
+                                <td>3 days</td>
+                            </tr>
+                            <tr>
+                                <td>GPU</td>
+                                <td>gpu-006</td>
+                                <td>1</td>
+                                <td>48</td>
+                                <td>7</td>
+                                <td>354</td>
+                                <td>3 hours</td>
+                                <td>3 days</td>
+                            </tr>
+                            <tr>
+                                <td>GPU</td>
+                                <td>gpu-007</td>
+                                <td>1</td>
+                                <td>48</td>
+                                <td>7</td>
+                                <td>354</td>
+                                <td>3 hours</td>
+                                <td>3 days</td>
+                            </tr>
+                            <tr>
+                                <td>Devel</td>
+                                <td>compute-001</td>
+                                <td>1</td>
+                                <td>32</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>3 hours</td>
+                                <td>5 days</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p><small>Default memory scales with the number of CPUs allocated. Jobs on the Devel partition
+                            cannot allocate memory. The current version of this table is always in the
+                            <a href="https://docs.ilifu.ac.za/#/tech_docs/resource_allocation?id=maximum-allocation">ilifu
+                                documentation</a>.</small></p>
+                </div>
+                <div class="slide-footer">
+                    <a href="https://docs.ilifu.ac.za/#/tech_docs/resource_allocation?id=maximum-allocation">Maximum
+                        Allocation</a>
+                </div>
+                <aside class="notes">
+                    This table is here as a reference — you don't need to memorise it, and the authoritative version lives in the ilifu documentation, which is always current.
+
+                    For this session the relevant numbers are the CPUs per node: 32 on most Main nodes, 48 on a few, and up to 96 on the largest HighMem node — these are the limits your tasks × CPUs-per-task layout must fit within.
+                </aside>
+            </section>
 
             <!-- =============================== -->
-            <!-- SLIDE 16: Thank you             -->
-            <!-- (was slide 18)                  -->
+            <!-- SLIDE 18: Closing               -->
             <!-- =============================== -->
             <section class="title-slide">
-                <h1 style="font-size: 2.8em; margin-bottom: 0.2em;">Thank you for your time!</h1>
-                <h2 class="subtitle" style="font-size: 1.1em; color: var(--brand-subtle); margin-bottom: 2em;">We hope
-                    this presentation was helpful.</h2>
+                <h1 style="font-size: 2.8em; margin-bottom: 0.2em;">You can now&hellip;</h1>
+                <div style="display: inline-block; text-align: left; margin-bottom: 2em;">
+                    <ul>
+                        <li>distinguish processes, threads, tasks, CPUs and nodes;</li>
+                        <li>choose a Slurm layout that matches your software;</li>
+                        <li>compare single-node and multi-node scaling; and</li>
+                        <li>explain why more resources do not guarantee proportional speedup.</li>
+                    </ul>
+                </div>
                 <div class="thank-you-cards">
                     <a href="mailto:support@ilifu.ac.za">
                         <div class="support-card">
@@ -794,7 +1092,13 @@ mpirun python myscript.py</code></pre>
                         </div>
                     </a>
                 </div>
+                <div class="slide-footer">
+                    <a href="tutorial1/">Try it yourself: Tutorial 1 — Parallel Scaling</a>
+                </div>
                 <aside class="notes">
+                    Thank you everyone for joining today's session. These are the four things you set out to learn at the start — you've now seen each of them demonstrated, and you can reproduce every experiment yourself with the Tutorial 1 files linked below.
+
+                    If you have any further questions or run into issues, please reach out to our support team at support@ilifu.ac.za, and remember the documentation at docs.ilifu.ac.za covers everything from today in detail.
                 </aside>
             </section>
 
